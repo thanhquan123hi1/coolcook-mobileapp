@@ -21,6 +21,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.coolcook.app.R;
+import com.coolcook.app.ui.home.HomeActivity;
 import com.google.android.material.card.MaterialCardView;
 
 public class AuthActivity extends AppCompatActivity {
@@ -67,6 +68,14 @@ public class AuthActivity extends AppCompatActivity {
 
         findViewById(R.id.txtSwitchToRegister).setOnClickListener(v -> switchMode(true));
         findViewById(R.id.txtSwitchToLogin).setOnClickListener(v -> switchMode(false));
+        findViewById(R.id.btnSubmitLogin).setOnClickListener(v -> openHomeDemo());
+    }
+
+    private void openHomeDemo() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
     }
 
     private void applyInsets() {

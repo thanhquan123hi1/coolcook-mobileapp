@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:2:1-36:12
-INJECTED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:2:1-36:12
-INJECTED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:2:1-36:12
-INJECTED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:2:1-36:12
+ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:2:1-41:12
+INJECTED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:2:1-41:12
+INJECTED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:2:1-41:12
+INJECTED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:2:1-41:12
 MERGED from [com.google.android.material:material:1.13.0] C:\Users\phung\.gradle\caches\9.3.1\transforms\ec5b6d3ae16773eacdd6fd93aa595fae\workspace\transformed\material-1.13.0\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.2.1] C:\Users\phung\.gradle\caches\9.3.1\transforms\ade3d3fbc8bc043996c31b798770f0f5\workspace\transformed\constraintlayout-2.2.1\AndroidManifest.xml:2:1-9:12
 MERGED from [androidx.appcompat:appcompat-resources:1.7.1] C:\Users\phung\.gradle\caches\9.3.1\transforms\fcc358a74e8ee0ef4855a5991ab66553\workspace\transformed\appcompat-resources-1.7.1\AndroidManifest.xml:2:1-7:12
@@ -95,8 +95,8 @@ MERGED from [com.google.android.play:core-common:2.0.3] C:\Users\phung\.gradle\c
 	xmlns:android
 		ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:2:11-69
 application
-ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:4:5-34:19
-INJECTED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:4:5-34:19
+ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:4:5-39:19
+INJECTED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:4:5-39:19
 MERGED from [com.google.android.material:material:1.13.0] C:\Users\phung\.gradle\caches\9.3.1\transforms\ec5b6d3ae16773eacdd6fd93aa595fae\workspace\transformed\material-1.13.0\AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.13.0] C:\Users\phung\.gradle\caches\9.3.1\transforms\ec5b6d3ae16773eacdd6fd93aa595fae\workspace\transformed\material-1.13.0\AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.2.1] C:\Users\phung\.gradle\caches\9.3.1\transforms\ade3d3fbc8bc043996c31b798770f0f5\workspace\transformed\constraintlayout-2.2.1\AndroidManifest.xml:7:5-20
@@ -205,7 +205,7 @@ ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:24:9-28:20
 		ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:27:13-50
 	android:name
 		ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:25:13-49
-activity#com.coolcook.app.ui.auth.AuthActivity
+activity#com.coolcook.app.ui.home.HomeActivity
 ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:30:9-33:53
 	android:exported
 		ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:32:13-37
@@ -213,6 +213,14 @@ ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:30:9-33:53
 		ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:33:13-50
 	android:name
 		ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:31:13-49
+activity#com.coolcook.app.ui.auth.AuthActivity
+ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:35:9-38:53
+	android:exported
+		ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:37:13-37
+	android:theme
+		ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:38:13-50
+	android:name
+		ADDED from D:\Android\coolcook\app\src\main\AndroidManifest.xml:36:13-49
 uses-sdk
 INJECTED from D:\Android\coolcook\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from D:\Android\coolcook\app\src\main\AndroidManifest.xml

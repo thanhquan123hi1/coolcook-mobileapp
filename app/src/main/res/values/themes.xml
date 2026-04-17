@@ -21,6 +21,17 @@
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
+    <style name="ShapeAppearance.Coolcook.HomeRecipeImage" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamilyTopLeft">rounded</item>
+        <item name="cornerFamilyTopRight">rounded</item>
+        <item name="cornerFamilyBottomLeft">rounded</item>
+        <item name="cornerFamilyBottomRight">rounded</item>
+        <item name="cornerSizeTopLeft">12dp</item>
+        <item name="cornerSizeTopRight">12dp</item>
+        <item name="cornerSizeBottomLeft">12dp</item>
+        <item name="cornerSizeBottomRight">12dp</item>
+    </style>
+
     <style name="Theme.Coolcook.Splash" parent="Base.Theme.Coolcook">
         <!-- Match splash layout background so launch feels like a single screen. -->
         <item name="android:windowBackground">#fff8f3</item>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Compact phones (default): keep Stitch look while preventing crowding on <= 359dp width. -->
+    <dimen name="home_content_padding_horizontal">16dp</dimen>
+    <dimen name="home_content_padding_top">10dp</dimen>
+    <dimen name="home_content_padding_bottom">18dp</dimen>
+
+    <dimen name="home_search_height">50dp</dimen>
+    <dimen name="home_search_margin_top">12dp</dimen>
+    <dimen name="home_search_padding_horizontal">12dp</dimen>
+    <dimen name="home_search_text_margin_start">8dp</dimen>
+
+    <dimen name="home_feature_margin_top">14dp</dimen>
+    <dimen name="home_feature_min_height">170dp</dimen>
+    <dimen name="home_feature_padding">14dp</dimen>
+    <dimen name="home_feature_text_margin_end">10dp</dimen>
+    <dimen name="home_feature_button_width">96dp</dimen>
+    <dimen name="home_feature_button_height">36dp</dimen>
+    <dimen name="home_feature_button_margin_top">12dp</dimen>
+    <dimen name="home_feature_image_size">122dp</dimen>
+
+    <dimen name="home_quick_row_margin_top_first">14dp</dimen>
+    <dimen name="home_quick_row_margin_top_second">10dp</dimen>
+    <dimen name="home_quick_column_gap">10dp</dimen>
+    <dimen name="home_quick_card_min_height">124dp</dimen>
+    <dimen name="home_quick_card_padding_horizontal">10dp</dimen>
+    <dimen name="home_quick_card_padding_vertical">12dp</dimen>
+    <dimen name="home_quick_card_icon_size">40dp</dimen>
+    <dimen name="home_quick_card_label_margin_top">8dp</dimen>
+
+    <dimen name="home_today_section_margin_top">18dp</dimen>
+    <dimen name="home_today_list_margin_top">10dp</dimen>
+    <dimen name="home_recipe_card_width">190dp</dimen>
+    <dimen name="home_recipe_card_gap">10dp</dimen>
+    <dimen name="home_recipe_card_padding">9dp</dimen>
+    <dimen name="home_recipe_image_height">126dp</dimen>
+    <dimen name="home_recipe_fav_size">24dp</dimen>
+    <dimen name="home_recipe_fav_margin">7dp</dimen>
+    <dimen name="home_recipe_title_margin_top">8dp</dimen>
+    <dimen name="home_recipe_meta_margin_top">5dp</dimen>
+
+    <dimen name="home_fit_title_margin_top">20dp</dimen>
+    <dimen name="home_fit_list_margin_top">10dp</dimen>
+    <dimen name="home_goal_card_min_height">68dp</dimen>
+    <dimen name="home_goal_card_padding_horizontal">10dp</dimen>
+    <dimen name="home_goal_card_padding_vertical">10dp</dimen>
+    <dimen name="home_goal_icon_size">34dp</dimen>
+    <dimen name="home_goal_text_margin_start">10dp</dimen>
+    <dimen name="home_goal_subtitle_margin_top">2dp</dimen>
+    <dimen name="home_goal_card_spacing">8dp</dimen>
+
+    <dimen name="home_bottom_nav_margin_horizontal">12dp</dimen>
+    <dimen name="home_bottom_nav_margin_bottom">10dp</dimen>
+    <dimen name="home_bottom_nav_padding_horizontal">6dp</dimen>
+    <dimen name="home_bottom_nav_padding_vertical">8dp</dimen>
+    <dimen name="home_bottom_nav_center_button_size">50dp</dimen>
+    <dimen name="home_bottom_nav_center_icon_size">22sp</dimen>
+    <dimen name="home_bottom_nav_active_indicator_width">16dp</dimen>
+    <dimen name="home_bottom_nav_active_indicator_height">3dp</dimen>
+    <dimen name="home_bottom_nav_active_indicator_margin_top">3dp</dimen>
+</resources>

@@ -27,4 +27,35 @@
     <string name="auth_login_now">Đăng nhập ngay</string>
     <string name="icon_visibility_off">visibility_off</string>
     <string name="icon_visibility_on">visibility</string>
+
+    <string name="home_greeting">Xin chào,</string>
+    <string name="home_user_name">Đức</string>
+    <string name="home_question">Hôm nay bạn muốn nấu gì?</string>
+    <string name="home_search_hint">Tìm món ăn, nguyên liệu...</string>
+    <string name="home_feature_title">Khám phá món ngon từ nguyên liệu bạn đang có</string>
+    <string name="home_feature_action">Quét ngay</string>
+    <string name="home_feature_image_desc">Món ăn gợi ý</string>
+    <string name="home_quick_scan">Quét nguyên liệu</string>
+    <string name="home_quick_suggest">Gợi ý món ăn</string>
+    <string name="home_quick_health">Theo sức khỏe</string>
+    <string name="home_quick_ai">Chat AI</string>
+    <string name="home_today_title">Gợi ý hôm nay</string>
+    <string name="home_see_all">Xem tất cả</string>
+    <string name="home_recipe_1">Phở Bò Truyền Thống</string>
+    <string name="home_recipe_2">Gỏi Cuốn Tôm Thịt</string>
+    <string name="home_recipe_tag_1">30 PHÚT</string>
+    <string name="home_recipe_tag_2">15 PHÚT</string>
+    <string name="home_recipe_difficulty">DỄ</string>
+    <string name="home_fit_title">Phù hợp cho bạn</string>
+    <string name="home_goal_weight">Món ít dầu mỡ</string>
+    <string name="home_goal_weight_sub">Thanh đạm, dễ tiêu</string>
+    <string name="home_goal_energy">Món tốt cho dạ dày</string>
+    <string name="home_goal_energy_sub">Mềm, dễ tiêu hóa</string>
+    <string name="home_goal_fast">Món giàu protein</string>
+    <string name="home_goal_fast_sub">Xây dựng cơ bắp</string>
+    <string name="home_nav_home">Trang chủ</string>
+    <string name="home_nav_saved">Đã lưu</string>
+    <string name="home_nav_profile">Hồ sơ</string>
+    <string name="home_notification_desc">Thông báo</string>
+    <string name="home_avatar_desc">Ảnh đại diện</string>
 </resources>

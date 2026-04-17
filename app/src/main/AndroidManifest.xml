@@ -28,6 +28,11 @@
         </activity>
 
         <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Coolcook" />
+
+        <activity
             android:name=".ui.auth.AuthActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook" />

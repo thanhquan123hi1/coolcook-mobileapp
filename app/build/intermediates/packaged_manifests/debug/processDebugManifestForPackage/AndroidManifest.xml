@@ -52,6 +52,10 @@
             android:theme="@style/Theme.Coolcook" >
         </activity>
         <activity
+            android:name="com.coolcook.app.ui.home.HomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Coolcook" />
+        <activity
             android:name="com.coolcook.app.ui.auth.AuthActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook" />
