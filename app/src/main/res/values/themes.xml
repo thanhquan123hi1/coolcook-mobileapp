@@ -1,0 +1,31 @@
+﻿<resources>
+    <style name="CircleImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Base.Theme.Coolcook" parent="Theme.Material3.DayNight.NoActionBar">
+    </style>
+
+    <style name="Theme.Coolcook" parent="Base.Theme.Coolcook">
+    </style>
+
+    <style name="ShapeAppearance.Coolcook.AuthCard" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamilyTopLeft">rounded</item>
+        <item name="cornerFamilyTopRight">rounded</item>
+        <item name="cornerFamilyBottomLeft">rounded</item>
+        <item name="cornerFamilyBottomRight">rounded</item>
+        <item name="cornerSizeTopLeft">40dp</item>
+        <item name="cornerSizeTopRight">40dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <style name="Theme.Coolcook.Splash" parent="Base.Theme.Coolcook">
+        <!-- Match splash layout background so launch feels like a single screen. -->
+        <item name="android:windowBackground">#fff8f3</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+</resources>

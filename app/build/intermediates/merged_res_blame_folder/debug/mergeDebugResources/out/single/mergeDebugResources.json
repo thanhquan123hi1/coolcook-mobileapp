@@ -1,0 +1,178 @@
+[
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\anim_slide_in_left_scale.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\anim\\slide_in_left_scale.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_img_welcome_hero.jpg.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\img_welcome_hero.jpg"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_bg_decor_bottom_left.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\bg_decor_bottom_left.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_bg_auth_social_button.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\bg_auth_social_button.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_bg_auth_image_overlay.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\bg_auth_image_overlay.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\anim_slide_out_left_scale.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\anim\\slide_out_left_scale.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_bg_auth_back_button.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\bg_auth_back_button.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_bg_accent_circle.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\bg_accent_circle.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_ic_launcher_background.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\ic_launcher_background.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_bg_btn_login.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\bg_btn_login.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\xml_data_extraction_rules.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\xml\\data_extraction_rules.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\mipmap-xxxhdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_bg_hero_blob.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\bg_hero_blob.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\mipmap-xhdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\mipmap-hdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_transparent_drawable.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\transparent_drawable.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_transparent_icon.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\transparent_icon.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\layout_activity_auth.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\layout\\activity_auth.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\mipmap-anydpi_ic_launcher.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\mipmap-anydpi\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\font_material_symbols_outlined.ttf.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\font\\material_symbols_outlined.ttf"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_ic_facebook.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\ic_facebook.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\anim_slide_out_right_scale.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\anim\\slide_out_right_scale.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\mipmap-xxxhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\xml_backup_rules.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\xml\\backup_rules.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\layout_activity_splash.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\layout\\activity_splash.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_bg_logo_circle.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\bg_logo_circle.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\layout_activity_main.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\anim_slide_in_right_scale.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\anim\\slide_in_right_scale.xml"
+    },
+    {
+        "merged": "com.coolcook.app-debug-50:/drawable_img_auth_background.jpg.flat",
+        "source": "com.coolcook.app-main-52:/drawable/img_auth_background.jpg"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_ic_launcher_foreground.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_bg_circle_white.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\bg_circle_white.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_img_auth_background.jpg.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\img_auth_background.jpg"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_ic_google.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\ic_google.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\mipmap-xxhdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\font_plus_jakarta_sans.ttf.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\font\\plus_jakarta_sans.ttf"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\mipmap-anydpi_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\mipmap-anydpi\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_bg_decor_top_right.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\bg_decor_top_right.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\drawable_ic_arrow_back_24.xml.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\drawable\\ic_arrow_back_24.xml"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\mipmap-mdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\mipmap-xxhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\mipmap-mdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\mipmap-xhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\font_manrope.ttf.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\font\\manrope.ttf"
+    },
+    {
+        "merged": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-debug-50:\\mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\phung\\.gradle\\daemon\\9.3.1\\com.coolcook.app-main-52:\\mipmap-hdpi\\ic_launcher_round.webp"
+    }
+]

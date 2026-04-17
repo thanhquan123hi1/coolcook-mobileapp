@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CoolCook</string>
+    <string name="welcome_title">Chào mừng đến với CoolCook</string>
+    <string name="welcome_subtitle">Khám phá thế giới ẩm thực của bạn</string>
+    <string name="btn_login">Đăng nhập</string>
+    <string name="no_account_register">Nếu chưa có tài khoản? <u><b><font color='#964900'>Đăng ký ngay</font></b></u></string>
+
+    <string name="auth_back">Quay lại</string>
+    <string name="auth_background_desc">Ảnh nền món ăn</string>
+    <string name="auth_login_title">Đăng nhập</string>
+    <string name="auth_login_subtitle">Chào mừng bạn quay lại với căn bếp CoolCook.</string>
+    <string name="auth_register_title">Đăng ký</string>
+    <string name="auth_register_subtitle">Bắt đầu hành trình ẩm thực của bạn cùng CoolCook.</string>
+    <string name="auth_full_name">Họ và tên</string>
+    <string name="auth_email">Email</string>
+    <string name="auth_password">Mật khẩu</string>
+    <string name="auth_confirm_password">Nhập lại mật khẩu</string>
+    <string name="auth_remember">Ghi nhớ tôi</string>
+    <string name="auth_forgot">Quên mật khẩu?</string>
+    <string name="auth_or_connect">HOẶC KẾT NỐI VỚI</string>
+    <string name="auth_google">Google</string>
+    <string name="auth_facebook">Facebook</string>
+    <string name="auth_no_account">Chưa có tài khoản?</string>
+    <string name="auth_register_now">Đăng ký ngay</string>
+    <string name="auth_has_account">Đã có tài khoản?</string>
+    <string name="auth_login_now">Đăng nhập ngay</string>
+    <string name="icon_visibility_off">visibility_off</string>
+    <string name="icon_visibility_on">visibility</string>
+</resources>

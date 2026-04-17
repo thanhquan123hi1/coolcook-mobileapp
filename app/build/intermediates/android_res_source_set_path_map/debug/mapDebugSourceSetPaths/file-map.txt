@@ -1,0 +1,8 @@
+com.coolcook.app-pngs-0 D:\Android\coolcook\app\build\generated\res\pngs\debug
+com.coolcook.app-res-1 D:\Android\coolcook\app\build\generated\res\processDebugGoogleServices
+com.coolcook.app-updated_navigation_xml-2 D:\Android\coolcook\app\build\generated\updated_navigation_xml\debug
+com.coolcook.app-packageDebugResources-3 D:\Android\coolcook\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.coolcook.app-packageDebugResources-4 D:\Android\coolcook\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.coolcook.app-debug-5 D:\Android\coolcook\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.coolcook.app-debug-6 D:\Android\coolcook\app\src\debug\res
+com.coolcook.app-main-7 D:\Android\coolcook\app\src\main\res

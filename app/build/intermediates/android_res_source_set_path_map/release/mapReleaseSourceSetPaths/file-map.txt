@@ -1,0 +1,7 @@
+com.coolcook.app-pngs-0 D:\Android\coolcook\app\build\generated\res\pngs\release
+com.coolcook.app-updated_navigation_xml-1 D:\Android\coolcook\app\build\generated\updated_navigation_xml\release
+com.coolcook.app-packageReleaseResources-2 D:\Android\coolcook\app\build\intermediates\incremental\release\packageReleaseResources\merged.dir
+com.coolcook.app-packageReleaseResources-3 D:\Android\coolcook\app\build\intermediates\incremental\release\packageReleaseResources\stripped.dir
+com.coolcook.app-release-4 D:\Android\coolcook\app\build\intermediates\merged_res\release\mergeReleaseResources
+com.coolcook.app-main-5 D:\Android\coolcook\app\src\main\res
+com.coolcook.app-release-6 D:\Android\coolcook\app\src\release\res

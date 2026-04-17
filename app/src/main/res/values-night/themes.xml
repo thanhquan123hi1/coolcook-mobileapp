@@ -1,0 +1,14 @@
+<resources>
+    <style name="Base.Theme.Coolcook" parent="Theme.Material3.DayNight.NoActionBar">
+    </style>
+
+    <style name="Theme.Coolcook" parent="Base.Theme.Coolcook">
+    </style>
+
+    <style name="Theme.Coolcook.Splash" parent="Base.Theme.Coolcook">
+        <item name="android:windowBackground">#fff8f3</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+</resources>

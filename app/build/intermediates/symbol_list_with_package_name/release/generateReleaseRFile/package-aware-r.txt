@@ -1,0 +1,21 @@
+com.coolcook.app
+color black
+color white
+drawable bg_accent_circle
+drawable bg_logo_circle
+drawable ic_launcher_background
+drawable ic_launcher_foreground
+font material_symbols_outlined
+id logoContainer
+id main
+id textTitle
+layout activity_main
+layout activity_splash
+mipmap ic_launcher
+mipmap ic_launcher_round
+string app_name
+style Base_Theme_Coolcook
+style Theme_App_Starting
+style Theme_Coolcook
+xml backup_rules
+xml data_extraction_rules

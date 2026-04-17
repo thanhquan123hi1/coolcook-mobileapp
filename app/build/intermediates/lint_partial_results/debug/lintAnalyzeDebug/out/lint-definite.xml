@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 9.1.1" type="incidents">
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.core:core-splashscreen than 1.0.1 is available: 1.2.0">
+        <fix-replace
+            description="Change to 1.2.0"
+            family="Update versions"
+            oldString="1.0.1"
+            replacement="1.2.0"
+            priority="0"/>
+        <location
+            file="../gradle/libs.versions.toml"
+            line="2"
+            column="20"
+            startOffset="31"
+            endLine="2"
+            endColumn="27"
+            endOffset="38"/>
+    </incident>
+
+    <incident
+        id="Overdraw"
+        severity="warning"
+        message="Possible overdraw: Root element paints background `#fff8f3` with a theme that also paints a background (inferred theme is `@style/Theme_App_Starting`)">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_splash.xml"
+            line="7"
+            column="5"
+            startOffset="301"
+            endLine="7"
+            endColumn="33"
+            endOffset="329"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;restaurant&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_splash.xml"
+            line="14"
+            column="9"
+            startOffset="503"
+            endLine="14"
+            endColumn="34"
+            endOffset="528"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;kitchen&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_splash.xml"
+            line="28"
+            column="9"
+            startOffset="1037"
+            endLine="28"
+            endColumn="31"
+            endOffset="1059"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;blender&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_splash.xml"
+            line="43"
+            column="9"
+            startOffset="1588"
+            endLine="43"
+            endColumn="31"
+            endOffset="1610"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;soup_kitchen&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_splash.xml"
+            line="57"
+            column="9"
+            startOffset="2108"
+            endLine="57"
+            endColumn="36"
+            endOffset="2135"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;local_pizza&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_splash.xml"
+            line="72"
+            column="9"
+            startOffset="2661"
+            endLine="72"
+            endColumn="35"
+            endOffset="2687"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;bakery_dining&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_splash.xml"
+            line="86"
+            column="9"
+            startOffset="3200"
+            endLine="86"
+            endColumn="37"
+            endOffset="3228"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;egg_alt&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_splash.xml"
+            line="101"
+            column="9"
+            startOffset="3769"
+            endLine="101"
+            endColumn="31"
+            endOffset="3791"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;local_dining&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_splash.xml"
+            line="115"
+            column="9"
+            startOffset="4298"
+            endLine="115"
+            endColumn="36"
+            endOffset="4325"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;restaurant_menu&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_splash.xml"
+            line="148"
+            column="17"
+            startOffset="5642"
+            endLine="148"
+            endColumn="47"
+            endOffset="5672"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;CoolCook&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_splash.xml"
+            line="169"
+            column="13"
+            startOffset="6505"
+            endLine="169"
+            endColumn="36"
+            endOffset="6528"/>
+    </incident>
+
+    <incident
+        id="HardcodedText"
+        severity="warning"
+        message="Hardcoded string &quot;Trợ lý nấu ăn thông minh của bạn&quot;, should use `@string` resource">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/layout/activity_splash.xml"
+            line="182"
+            column="13"
+            startOffset="7052"
+            endLine="182"
+            endColumn="60"
+            endOffset="7099"/>
+    </incident>
+
+</incidents>

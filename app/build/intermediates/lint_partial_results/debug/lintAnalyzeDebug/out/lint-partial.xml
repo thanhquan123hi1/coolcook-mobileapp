@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 9.1.1" type="partial_results">
+    <map id="UnsafeIntentLaunch">
+            <map id="unprotected">
+                <entry
+                    name="com.coolcook.app.SplashActivity"
+                    boolean="true"/>
+            </map>
+    </map>
+    <map id="UnusedResources">
+        <location id="R.color.black"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/colors.xml"
+            line="3"
+            column="12"
+            startOffset="62"
+            endLine="3"
+            endColumn="24"
+            endOffset="74"/>
+        <location id="R.color.white"
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/values/colors.xml"
+            line="4"
+            column="12"
+            startOffset="104"
+            endLine="4"
+            endColumn="24"
+            endOffset="116"/>
+        <entry
+            name="model"
+            string="color[black(D),white(D)],drawable[bg_accent_circle(U),bg_logo_circle(U),ic_launcher_background(U),ic_launcher_foreground(U),ic_launcher_foreground_1(R)],font[material_symbols_outlined(R)],id[main(U),logoContainer(U),textTitle(U)],layout[activity_main(U),activity_splash(U)],mipmap[ic_launcher(U),ic_launcher_round(U)],string[app_name(U)],style[Theme_Coolcook(U),Theme_App_Starting(U),Base_Theme_Coolcook(U),Theme_Material3_DayNight_NoActionBar(R)],xml[data_extraction_rules(U),backup_rules(U)];5^6,c^7^3^2^9^a,d^4^5,e^4^5,10^12,11^10^12,12^13;;;"/>
+    </map>
+
+</incidents>

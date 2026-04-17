@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 9.1.1" type="conditional_incidents">
+
+    <incident
+        id="CustomSplashScreen"
+        severity="warning"
+        message="The application should not provide its own launch screen">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/coolcook/app/SplashActivity.java"
+            line="12"
+            column="14"
+            startOffset="279"
+            endLine="12"
+            endColumn="28"
+            endOffset="293"/>
+        <map>
+            <condition targetGE="31"/>
+        </map>
+    </incident>
+
+</incidents>

@@ -1,0 +1,138 @@
+D:\Android\coolcook\app\src\main\java\com\coolcook\app\SplashActivity.java:12: Warning: The application should not provide its own launch screen [CustomSplashScreen]
+public class SplashActivity extends AppCompatActivity {
+             ~~~~~~~~~~~~~~
+
+   Explanation for issues of type "CustomSplashScreen":
+   Starting in Android 12 (API 31+), the application's Launch Screen is
+   provided by the system and the application should not create its own,
+   otherwise the user will see two splashscreens. Please check the
+   SplashScreen class to check how the Splash Screen can be controlled and
+   customized.
+
+   https://developer.android.com/guide/topics/ui/splash-screen
+
+D:\Android\coolcook\gradle\libs.versions.toml:2: Warning: A newer version of androidx.core:core-splashscreen than 1.0.1 is available: 1.2.0 [GradleDependency]
+coreSplashscreen = "1.0.1"
+                   ~~~~~~~
+
+   Explanation for issues of type "GradleDependency":
+   This detector looks for usages of libraries where the version you are using
+   is not the current stable release. Using older versions is fine, and there
+   are cases where you deliberately want to stick with an older version.
+   However, you may simply not be aware that a more recent version is
+   available, and that is what this lint check helps find.
+
+D:\Android\coolcook\app\src\main\res\layout\activity_splash.xml:7: Warning: Possible overdraw: Root element paints background #fff8f3 with a theme that also paints a background (inferred theme is @style/Theme_App_Starting) [Overdraw]
+    android:background="#fff8f3">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "Overdraw":
+   If you set a background drawable on a root view, then you should use a
+   custom theme where the theme background is null. Otherwise, the theme
+   background will be painted first, only to have your custom background
+   completely cover it; this is called "overdraw".
+
+   NOTE: This detector relies on figuring out which layouts are associated
+   with which activities based on scanning the Java code, and it's currently
+   doing that using an inexact pattern matching algorithm. Therefore, it can
+   incorrectly conclude which activity the layout is associated with and then
+   wrongly complain that a background-theme is hidden.
+
+   If you want your custom background on multiple pages, then you should
+   consider making a custom theme with your custom background and just using
+   that theme instead of a root element background.
+
+   Of course it's possible that your custom drawable is translucent and you
+   want it to be mixed with the background. However, you will get better
+   performance if you pre-mix the background with your drawable and use that
+   resulting image or color as a custom theme background instead.
+
+D:\Android\coolcook\app\src\main\res\values\colors.xml:3: Warning: The resource R.color.black appears to be unused [UnusedResources]
+    <color name="black">#FF000000</color>
+           ~~~~~~~~~~~~
+D:\Android\coolcook\app\src\main\res\values\colors.xml:4: Warning: The resource R.color.white appears to be unused [UnusedResources]
+    <color name="white">#FFFFFFFF</color>
+           ~~~~~~~~~~~~
+
+   Explanation for issues of type "UnusedResources":
+   Unused resources make applications larger and slow down builds.
+
+
+   The unused resource check can ignore tests. If you want to include
+   resources that are only referenced from tests, consider packaging them in a
+   test source set instead.
+
+   You can include test sources in the unused resource check by setting the
+   system property lint.unused-resources.include-tests =true, and to exclude
+   them (usually for performance reasons), use
+   lint.unused-resources.exclude-tests =true.
+   ,
+
+   Available options:
+
+   **skip-libraries** (default is true):
+   Whether the unused resource check should skip reporting unused resources in libraries.
+
+   Many libraries will declare resources that are part of the library surface; other modules depending on the library will also reference the resources. To avoid reporting all these resources as unused (in the context of a library), the unused resource check normally skips reporting unused resources in libraries. Instead, run the unused resource check on the consuming app module (along with `checkDependencies=true`).
+
+   However, there are cases where you want to check that all the resources declared in a library are used; in that case, you can disable the skip option.
+
+   To configure this option, use a `lint.xml` file with an <option> like this:
+
+   ```xml
+   <lint>
+       <issue id="UnusedResources">
+           <option name="skip-libraries" value="true" />
+       </issue>
+   </lint>
+   ```
+
+D:\Android\coolcook\app\src\main\res\layout\activity_splash.xml:14: Warning: Hardcoded string "restaurant", should use @string resource [HardcodedText]
+        android:text="restaurant"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\Android\coolcook\app\src\main\res\layout\activity_splash.xml:28: Warning: Hardcoded string "kitchen", should use @string resource [HardcodedText]
+        android:text="kitchen"
+        ~~~~~~~~~~~~~~~~~~~~~~
+D:\Android\coolcook\app\src\main\res\layout\activity_splash.xml:43: Warning: Hardcoded string "blender", should use @string resource [HardcodedText]
+        android:text="blender"
+        ~~~~~~~~~~~~~~~~~~~~~~
+D:\Android\coolcook\app\src\main\res\layout\activity_splash.xml:57: Warning: Hardcoded string "soup_kitchen", should use @string resource [HardcodedText]
+        android:text="soup_kitchen"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\Android\coolcook\app\src\main\res\layout\activity_splash.xml:72: Warning: Hardcoded string "local_pizza", should use @string resource [HardcodedText]
+        android:text="local_pizza"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\Android\coolcook\app\src\main\res\layout\activity_splash.xml:86: Warning: Hardcoded string "bakery_dining", should use @string resource [HardcodedText]
+        android:text="bakery_dining"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\Android\coolcook\app\src\main\res\layout\activity_splash.xml:101: Warning: Hardcoded string "egg_alt", should use @string resource [HardcodedText]
+        android:text="egg_alt"
+        ~~~~~~~~~~~~~~~~~~~~~~
+D:\Android\coolcook\app\src\main\res\layout\activity_splash.xml:115: Warning: Hardcoded string "local_dining", should use @string resource [HardcodedText]
+        android:text="local_dining"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\Android\coolcook\app\src\main\res\layout\activity_splash.xml:148: Warning: Hardcoded string "restaurant_menu", should use @string resource [HardcodedText]
+                android:text="restaurant_menu"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\Android\coolcook\app\src\main\res\layout\activity_splash.xml:169: Warning: Hardcoded string "CoolCook", should use @string resource [HardcodedText]
+            android:text="CoolCook"
+            ~~~~~~~~~~~~~~~~~~~~~~~
+D:\Android\coolcook\app\src\main\res\layout\activity_splash.xml:182: Warning: Hardcoded string "Trợ lý nấu ăn thông minh của bạn", should use @string resource [HardcodedText]
+            android:text="Trợ lý nấu ăn thông minh của bạn"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "HardcodedText":
+   Hardcoding text attributes directly in layout files is bad for several
+   reasons:
+
+   * When creating configuration variations (for example for landscape or
+   portrait) you have to repeat the actual text (and keep it up to date when
+   making changes)
+
+   * The application cannot be translated to other languages by just adding
+   new translations for existing string resources.
+
+   There are quickfixes to automatically extract this hardcoded string into a
+   resource lookup.
+
+0 errors, 16 warnings
