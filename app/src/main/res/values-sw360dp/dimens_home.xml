@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Baseline phones (>= 360dp): tuned to match the Stitch home screen proportions. -->
+    <!-- Baseline phones (>= 360dp): match Stitch proportions for the home section. -->
     <dimen name="home_content_padding_horizontal">24dp</dimen>
     <dimen name="home_content_padding_top">14dp</dimen>
     <dimen name="home_content_padding_bottom">24dp</dimen>
@@ -12,34 +12,35 @@
 
     <dimen name="home_feature_margin_top">20dp</dimen>
     <dimen name="home_feature_min_height">200dp</dimen>
-    <dimen name="home_feature_padding">20dp</dimen>
-    <dimen name="home_feature_text_margin_end">16dp</dimen>
-    <dimen name="home_feature_button_width">112dp</dimen>
-    <dimen name="home_feature_button_height">42dp</dimen>
+    <dimen name="home_feature_padding">24dp</dimen>
+    <dimen name="home_feature_text_margin_end">12dp</dimen>
+    <dimen name="home_feature_button_width">104dp</dimen>
+    <dimen name="home_feature_button_height">40dp</dimen>
     <dimen name="home_feature_button_margin_top">16dp</dimen>
     <dimen name="home_feature_image_size">160dp</dimen>
 
     <dimen name="home_quick_row_margin_top_first">20dp</dimen>
     <dimen name="home_quick_row_margin_top_second">16dp</dimen>
     <dimen name="home_quick_column_gap">16dp</dimen>
-    <dimen name="home_quick_card_min_height">152dp</dimen>
+    <dimen name="home_quick_card_min_height">148dp</dimen>
     <dimen name="home_quick_card_padding_horizontal">16dp</dimen>
     <dimen name="home_quick_card_padding_vertical">16dp</dimen>
     <dimen name="home_quick_card_icon_size">56dp</dimen>
     <dimen name="home_quick_card_label_margin_top">12dp</dimen>
 
-    <dimen name="home_today_section_margin_top">28dp</dimen>
+    <dimen name="home_today_section_margin_top">32dp</dimen>
     <dimen name="home_today_list_margin_top">16dp</dimen>
     <dimen name="home_recipe_card_width">240dp</dimen>
     <dimen name="home_recipe_card_gap">16dp</dimen>
-    <dimen name="home_recipe_card_padding">12dp</dimen>
+    <dimen name="home_recipe_card_padding">0dp</dimen>
+    <dimen name="home_recipe_content_padding">16dp</dimen>
     <dimen name="home_recipe_image_height">160dp</dimen>
     <dimen name="home_recipe_fav_size">32dp</dimen>
-    <dimen name="home_recipe_fav_margin">10dp</dimen>
-    <dimen name="home_recipe_title_margin_top">12dp</dimen>
+    <dimen name="home_recipe_fav_margin">12dp</dimen>
+    <dimen name="home_recipe_title_margin_top">0dp</dimen>
     <dimen name="home_recipe_meta_margin_top">8dp</dimen>
 
-    <dimen name="home_fit_title_margin_top">28dp</dimen>
+    <dimen name="home_fit_title_margin_top">32dp</dimen>
     <dimen name="home_fit_list_margin_top">16dp</dimen>
     <dimen name="home_goal_card_min_height">88dp</dimen>
     <dimen name="home_goal_card_padding_horizontal">16dp</dimen>
@@ -49,13 +50,53 @@
     <dimen name="home_goal_subtitle_margin_top">2dp</dimen>
     <dimen name="home_goal_card_spacing">12dp</dimen>
 
-    <dimen name="home_bottom_nav_margin_horizontal">20dp</dimen>
-    <dimen name="home_bottom_nav_margin_bottom">24dp</dimen>
+    <dimen name="home_bottom_nav_margin_horizontal">0dp</dimen>
+    <dimen name="home_bottom_nav_margin_bottom">16dp</dimen>
     <dimen name="home_bottom_nav_padding_horizontal">8dp</dimen>
-    <dimen name="home_bottom_nav_padding_vertical">10dp</dimen>
+    <dimen name="home_bottom_nav_padding_vertical">8dp</dimen>
+    <dimen name="home_bottom_nav_height">72dp</dimen>
+    <dimen name="home_bottom_nav_item_min_height">40dp</dimen>
+    <dimen name="home_bottom_nav_item_vertical_padding">6dp</dimen>
+    <dimen name="home_bottom_nav_icon_size">24dp</dimen>
     <dimen name="home_bottom_nav_center_button_size">56dp</dimen>
-    <dimen name="home_bottom_nav_center_icon_size">24sp</dimen>
+    <dimen name="home_bottom_nav_center_icon_size">26dp</dimen>
+    <dimen name="home_bottom_nav_center_button_offset">-8dp</dimen>
+    <dimen name="home_bottom_nav_icon_lift">2dp</dimen>
+    <dimen name="home_bottom_nav_elevation">14dp</dimen>
+    <dimen name="home_bottom_nav_center_elevation">8dp</dimen>
     <dimen name="home_bottom_nav_active_indicator_width">18dp</dimen>
     <dimen name="home_bottom_nav_active_indicator_height">3dp</dimen>
     <dimen name="home_bottom_nav_active_indicator_margin_top">3dp</dimen>
+    <dimen name="home_bottom_nav_ripple_size">42dp</dimen>
+    <dimen name="home_bottom_nav_bounce_lift_extra">1.5dp</dimen>
+    <dimen name="home_bottom_nav_tap_press_offset">1dp</dimen>
+    <dimen name="home_bottom_nav_tap_rebound_offset">2dp</dimen>
+
+    <dimen name="profile_content_padding_horizontal">20dp</dimen>
+    <dimen name="profile_content_padding_top">24dp</dimen>
+    <dimen name="profile_content_padding_bottom">136dp</dimen>
+    <dimen name="profile_avatar_size">88dp</dimen>
+    <dimen name="profile_edit_button_size">56dp</dimen>
+    <dimen name="profile_header_name_text_size">22sp</dimen>
+    <dimen name="profile_header_email_text_size">16sp</dimen>
+    <dimen name="profile_stats_card_margin_top">24dp</dimen>
+    <dimen name="profile_stats_card_padding_horizontal">10dp</dimen>
+    <dimen name="profile_stats_card_padding_vertical">20dp</dimen>
+    <dimen name="profile_stats_value_text_size">24sp</dimen>
+    <dimen name="profile_stats_label_text_size">14sp</dimen>
+    <dimen name="profile_section_title_margin_top">34dp</dimen>
+    <dimen name="profile_section_title_text_size">22sp</dimen>
+    <dimen name="profile_action_item_margin_top">12dp</dimen>
+    <dimen name="profile_action_item_min_height">84dp</dimen>
+    <dimen name="profile_action_item_padding_horizontal">16dp</dimen>
+    <dimen name="profile_action_icon_container_size">48dp</dimen>
+    <dimen name="profile_action_icon_size">24sp</dimen>
+    <dimen name="profile_action_text_margin_start">14dp</dimen>
+    <dimen name="profile_action_text_size">18sp</dimen>
+    <dimen name="profile_footer_section_margin_top">20dp</dimen>
+    <dimen name="profile_toggle_track_width">56dp</dimen>
+    <dimen name="profile_toggle_track_height">32dp</dimen>
+    <dimen name="profile_toggle_thumb_size">26dp</dimen>
+    <dimen name="profile_logout_margin_top">18dp</dimen>
+    <dimen name="profile_logout_height">78dp</dimen>
 </resources>

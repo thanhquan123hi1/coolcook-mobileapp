@@ -27,7 +27,26 @@
     <string name="auth_login_now">Đăng nhập ngay</string>
     <string name="icon_visibility_off">visibility_off</string>
     <string name="icon_visibility_on">visibility</string>
-
+    <string name="auth_loading">Đang xử lý...</string>
+    <string name="auth_success_register">Đăng ký thành công.</string>
+    <string name="auth_error_email_required">Vui lòng nhập email.</string>
+    <string name="auth_error_email_invalid">Email không đúng định dạng.</string>
+    <string name="auth_error_password_required">Vui lòng nhập mật khẩu.</string>
+    <string name="auth_error_password_min">Mật khẩu phải có ít nhất 6 ký tự.</string>
+    <string name="auth_error_confirm_password_required">Vui lòng nhập lại mật khẩu.</string>
+    <string name="auth_error_confirm_password_mismatch">Mật khẩu xác nhận không khớp.</string>
+    <string name="auth_error_register_failed">Đăng ký thất bại. Vui lòng thử lại.</string>
+    <string name="auth_error_login_failed">Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.</string>
+    <string name="auth_error_google_config_missing">Google Sign-In chưa được cấu hình đúng trong Firebase.</string>
+    <string name="auth_error_google_cancelled">Bạn đã hủy đăng nhập Google.</string>
+    <string name="auth_error_google_failed">Đăng nhập Google thất bại.</string>
+    <string name="auth_error_facebook_config_missing">Facebook Login chưa được cấu hình App ID/Client Token.</string>
+    <string name="auth_error_facebook_cancelled">Bạn đã hủy đăng nhập Facebook.</string>
+    <string name="auth_error_facebook_failed">Đăng nhập Facebook thất bại.</string>
+    <string name="auth_error_unknown">Có lỗi xảy ra. Vui lòng thử lại.</string>
+    <string name="auth_error_user_exists">Email này đã được đăng ký.</string>
+    <string name="auth_error_invalid_credentials">Email hoặc mật khẩu không đúng.</string>
+    <string name="auth_error_network">Lỗi kết nối mạng. Vui lòng thử lại.</string>
     <string name="home_greeting">Xin chào,</string>
     <string name="home_user_name">Đức</string>
     <string name="home_question">Hôm nay bạn muốn nấu gì?</string>
@@ -54,8 +73,27 @@
     <string name="home_goal_fast">Món giàu protein</string>
     <string name="home_goal_fast_sub">Xây dựng cơ bắp</string>
     <string name="home_nav_home">Trang chủ</string>
+    <string name="home_nav_search">Tìm kiếm</string>
+    <string name="home_nav_camera">Quét bằng camera</string>
+    <string name="home_nav_history">Lịch sử</string>
     <string name="home_nav_saved">Đã lưu</string>
     <string name="home_nav_profile">Hồ sơ</string>
     <string name="home_notification_desc">Thông báo</string>
     <string name="home_avatar_desc">Ảnh đại diện</string>
+
+    <string name="profile_edit_title">Chỉnh sửa thông tin</string>
+    <string name="profile_edit_full_name_label">HỌ VÀ TÊN</string>
+    <string name="profile_edit_phone_label">SỐ ĐIỆN THOẠI</string>
+    <string name="profile_edit_birthday_label">NGÀY SINH</string>
+    <string name="profile_edit_save">LƯU THAY ĐỔI</string>
+    <string name="profile_edit_close_desc">Đóng popup chỉnh sửa thông tin</string>
+    <string name="profile_edit_pick_avatar_desc">Chọn ảnh đại diện</string>
+    <string name="profile_edit_error_required">Không được để trống</string>
+    <string name="profile_edit_error_phone_invalid">Số điện thoại chỉ được nhập chữ số</string>
+    <string name="profile_edit_saved_success">Đã lưu thành công</string>
+    <string name="profile_edit_saving">Đang lưu...</string>
+    <string name="profile_edit_save_failed">Lưu thất bại. Vui lòng thử lại.</string>
+    <string name="profile_edit_upload_failed">Tải ảnh lên Cloudinary thất bại.</string>
+    <string name="profile_edit_cloudinary_missing">Thiếu cấu hình Cloudinary trong file .env</string>
+    <string name="profile_edit_user_missing">Không tìm thấy người dùng đăng nhập.</string>
 </resources>

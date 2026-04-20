@@ -1,0 +1,20 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Firebase and social auth config
+app/google-services.json
+
+# Android local config
+local.properties
+
+# Build outputs
+**/build/
+
+# IDE and temp files
+.idea/workspace.xml
+.gradle/
+.kotlin/
+.tmp/
+.stitch_tmp/

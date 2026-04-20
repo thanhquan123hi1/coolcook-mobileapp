@@ -16,17 +16,19 @@
     <color name="outline">#877365</color>
     <color name="outline_variant">#DAC2B1</color>
     <color name="on_surface">#1F1B16</color>
-    <color name="on_surface_variant">#544437</color>
+    <color name="on_surface_variant">#443428</color>
     <color name="on_primary">#FFFFFF</color>
     <color name="error">#BA1A1A</color>
     <color name="error_container">#FFDAD6</color>
 
     <color name="home_accent">#EA580C</color>
-    <color name="home_search_placeholder">#877365</color>
+    <color name="home_search_placeholder">#6F5B4B</color>
     <color name="home_feature_start">#F8DFC3</color>
     <color name="home_feature_end">#F7BB7A</color>
     <color name="home_quick_icon_bg">#FFF2E5</color>
-    <color name="home_nav_inactive">#80544437</color>
+    <color name="home_nav_inactive">#80443428</color>
+    <color name="home_nav_ripple">#1F8F4E00</color>
+    <color name="home_nav_center_ripple">#4DFFFFFF</color>
     <color name="home_meta">#EA580C</color>
     <color name="home_avatar_border">#4DFFB77A</color>
     <color name="home_primary_soft_bg">#33FFB77A</color>
