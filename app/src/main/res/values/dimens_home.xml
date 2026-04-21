@@ -17,6 +17,9 @@
     <dimen name="home_feature_button_height">36dp</dimen>
     <dimen name="home_feature_button_margin_top">12dp</dimen>
     <dimen name="home_feature_image_size">136dp</dimen>
+    <dimen name="home_card_elevation">1.5dp</dimen>
+    <dimen name="home_surface_elevation">1.5dp</dimen>
+    <dimen name="home_feature_image_elevation">1dp</dimen>
 
     <dimen name="home_quick_row_margin_top_first">14dp</dimen>
     <dimen name="home_quick_row_margin_top_second">10dp</dimen>
@@ -51,22 +54,24 @@
 
     <dimen name="home_bottom_nav_margin_horizontal">0dp</dimen>
     <dimen name="home_bottom_nav_margin_bottom">20dp</dimen>
-    <dimen name="home_bottom_nav_padding_horizontal">8dp</dimen>
-    <dimen name="home_bottom_nav_padding_vertical">8dp</dimen>
-    <dimen name="home_bottom_nav_height">72dp</dimen>
-    <dimen name="home_bottom_nav_item_min_height">40dp</dimen>
-    <dimen name="home_bottom_nav_item_vertical_padding">6dp</dimen>
+    <dimen name="home_bottom_nav_padding_horizontal">10dp</dimen>
+    <dimen name="home_bottom_nav_padding_vertical">6dp</dimen>
+    <dimen name="home_bottom_nav_height">80dp</dimen>
+    <dimen name="home_bottom_nav_item_min_height">52dp</dimen>
+    <dimen name="home_bottom_nav_item_vertical_padding">4dp</dimen>
     <dimen name="home_bottom_nav_icon_size">24dp</dimen>
+    <dimen name="home_bottom_nav_label_text_size">11sp</dimen>
+    <dimen name="home_bottom_nav_label_margin_top">4dp</dimen>
     <dimen name="home_bottom_nav_center_button_size">56dp</dimen>
     <dimen name="home_bottom_nav_center_icon_size">26dp</dimen>
-    <dimen name="home_bottom_nav_center_button_offset">-8dp</dimen>
+    <dimen name="home_bottom_nav_center_button_offset">-6dp</dimen>
     <dimen name="home_bottom_nav_icon_lift">2dp</dimen>
-    <dimen name="home_bottom_nav_elevation">14dp</dimen>
-    <dimen name="home_bottom_nav_center_elevation">8dp</dimen>
+    <dimen name="home_bottom_nav_elevation">10dp</dimen>
+    <dimen name="home_bottom_nav_center_elevation">6dp</dimen>
     <dimen name="home_bottom_nav_active_indicator_width">16dp</dimen>
     <dimen name="home_bottom_nav_active_indicator_height">3dp</dimen>
     <dimen name="home_bottom_nav_active_indicator_margin_top">3dp</dimen>
-    <dimen name="home_bottom_nav_ripple_size">42dp</dimen>
+    <dimen name="home_bottom_nav_ripple_size">48dp</dimen>
     <dimen name="home_bottom_nav_bounce_lift_extra">1.5dp</dimen>
     <dimen name="home_bottom_nav_tap_press_offset">1dp</dimen>
     <dimen name="home_bottom_nav_tap_rebound_offset">2dp</dimen>
@@ -76,6 +81,8 @@
     <dimen name="profile_content_padding_bottom">128dp</dimen>
     <dimen name="profile_avatar_size">88dp</dimen>
     <dimen name="profile_edit_button_size">56dp</dimen>
+    <dimen name="profile_edit_avatar_size">132dp</dimen>
+    <dimen name="profile_edit_avatar_camera_size">44dp</dimen>
     <dimen name="profile_header_name_text_size">22sp</dimen>
     <dimen name="profile_header_email_text_size">16sp</dimen>
     <dimen name="profile_stats_card_margin_top">24dp</dimen>

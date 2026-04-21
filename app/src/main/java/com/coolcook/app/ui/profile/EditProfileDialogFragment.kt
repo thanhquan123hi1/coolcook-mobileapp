@@ -2,7 +2,9 @@ package com.coolcook.app.ui.profile
 
 import android.app.DatePickerDialog
 import android.app.Dialog
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.ImageDecoder
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -12,31 +14,40 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
 import com.coolcook.app.BuildConfig
 import com.coolcook.app.R
+import com.coolcook.app.util.AvatarImageUtils
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.max
+import kotlin.math.roundToInt
 
 class EditProfileDialogFragment : DialogFragment() {
 
     private lateinit var imgAvatar: ShapeableImageView
+    private lateinit var btnCloseDialog: View
+    private lateinit var btnAvatarCamera: View
     private lateinit var tilFullName: TextInputLayout
     private lateinit var tilPhone: TextInputLayout
     private lateinit var tilBirthDate: TextInputLayout
@@ -44,6 +55,9 @@ class EditProfileDialogFragment : DialogFragment() {
     private lateinit var edtPhone: TextInputEditText
     private lateinit var edtBirthDate: TextInputEditText
     private lateinit var btnSaveProfile: MaterialButton
+    private lateinit var avatarUploadStateContainer: View
+    private lateinit var progressAvatarUpload: LinearProgressIndicator
+    private lateinit var txtAvatarUploadState: TextView
 
     private val dateFormatter = SimpleDateFormat(DATE_PATTERN, Locale.forLanguageTag("vi-VN"))
     private var selectedAvatarUri: Uri? = null
@@ -53,7 +67,8 @@ class EditProfileDialogFragment : DialogFragment() {
     private val pickAvatarMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
             selectedAvatarUri = uri
-            imgAvatar.setImageURI(uri)
+            renderLocalAvatarPreview(uri)
+            hideAvatarUploadState()
         }
     }
 
@@ -86,6 +101,8 @@ class EditProfileDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         imgAvatar = view.findViewById(R.id.imgEditProfileAvatar)
+        btnCloseDialog = view.findViewById(R.id.btnCloseDialog)
+        btnAvatarCamera = view.findViewById(R.id.btnAvatarCamera)
         tilFullName = view.findViewById(R.id.tilFullName)
         tilPhone = view.findViewById(R.id.tilPhone)
         tilBirthDate = view.findViewById(R.id.tilBirthDate)
@@ -93,6 +110,9 @@ class EditProfileDialogFragment : DialogFragment() {
         edtPhone = view.findViewById(R.id.edtPhone)
         edtBirthDate = view.findViewById(R.id.edtBirthDate)
         btnSaveProfile = view.findViewById(R.id.btnSaveProfile)
+        avatarUploadStateContainer = view.findViewById(R.id.avatarUploadStateContainer)
+        progressAvatarUpload = view.findViewById(R.id.progressAvatarUpload)
+        txtAvatarUploadState = view.findViewById(R.id.txtAvatarUploadState)
 
         edtFullName.setText(arguments?.getString(ARG_FULL_NAME).orEmpty())
         edtPhone.setText(arguments?.getString(ARG_PHONE_NUMBER).orEmpty())
@@ -100,11 +120,7 @@ class EditProfileDialogFragment : DialogFragment() {
 
         existingAvatarUrl = arguments?.getString(ARG_AVATAR_URL).orEmpty()
         if (existingAvatarUrl.isNotBlank()) {
-            Glide.with(this)
-                .load(existingAvatarUrl)
-                .placeholder(R.drawable.img_home_profile)
-                .error(R.drawable.img_home_profile)
-                .into(imgAvatar)
+            renderRemoteAvatar(existingAvatarUrl)
         }
 
         val firebaseUser = FirebaseAuth.getInstance().currentUser
@@ -112,20 +128,42 @@ class EditProfileDialogFragment : DialogFragment() {
             edtFullName.setText(firebaseUser.displayName)
         }
 
-        view.findViewById<View>(R.id.btnCloseDialog).setOnClickListener { dismiss() }
-        view.findViewById<View>(R.id.btnAvatarCamera).setOnClickListener { openImagePicker() }
+        btnCloseDialog.setOnClickListener { dismiss() }
+        btnAvatarCamera.setOnClickListener { openImagePicker() }
         imgAvatar.setOnClickListener { openImagePicker() }
 
         edtBirthDate.setOnClickListener { showDatePicker() }
         tilBirthDate.setOnClickListener { showDatePicker() }
 
-        view.findViewById<View>(R.id.btnSaveProfile).setOnClickListener { onSaveClicked() }
+        btnSaveProfile.setOnClickListener { onSaveClicked() }
     }
 
     private fun openImagePicker() {
         pickAvatarMedia.launch(
             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
         )
+    }
+
+    private fun renderLocalAvatarPreview(uri: Uri) {
+        Glide.with(this)
+            .load(uri)
+            .placeholder(R.drawable.img_home_profile)
+            .error(R.drawable.img_home_profile)
+            .into(imgAvatar)
+    }
+
+    private fun renderRemoteAvatar(avatarUrl: String) {
+        val optimizedAvatarUrl = AvatarImageUtils.buildOptimizedAvatarUrl(
+            avatarUrl,
+            resources.getDimensionPixelSize(R.dimen.profile_edit_avatar_size)
+        )
+
+        Glide.with(this)
+            .load(optimizedAvatarUrl)
+            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+            .placeholder(R.drawable.img_home_profile)
+            .error(R.drawable.img_home_profile)
+            .into(imgAvatar)
     }
 
     private fun showDatePicker() {
@@ -229,9 +267,37 @@ class EditProfileDialogFragment : DialogFragment() {
     private fun setSavingState(isSaving: Boolean) {
         this.isSaving = isSaving
         btnSaveProfile.isEnabled = !isSaving
+        btnCloseDialog.isEnabled = !isSaving
+        btnAvatarCamera.isEnabled = !isSaving
+        imgAvatar.isEnabled = !isSaving
+        edtFullName.isEnabled = !isSaving
+        edtPhone.isEnabled = !isSaving
+        edtBirthDate.isEnabled = !isSaving
         btnSaveProfile.text = getString(
             if (isSaving) R.string.profile_edit_saving else R.string.profile_edit_save
         )
+
+        if (!isSaving) {
+            hideAvatarUploadState()
+        }
+    }
+
+    private fun showAvatarUploadState(message: String, progress: Int? = null) {
+        avatarUploadStateContainer.visibility = View.VISIBLE
+        txtAvatarUploadState.text = message
+
+        if (progress == null) {
+            progressAvatarUpload.isIndeterminate = true
+        } else {
+            progressAvatarUpload.isIndeterminate = false
+            progressAvatarUpload.setProgressCompat(progress.coerceIn(0, 100), true)
+        }
+    }
+
+    private fun hideAvatarUploadState() {
+        avatarUploadStateContainer.visibility = View.GONE
+        progressAvatarUpload.isIndeterminate = true
+        progressAvatarUpload.progress = 0
     }
 
     private fun uploadAvatarToCloudinary(
@@ -245,54 +311,113 @@ class EditProfileDialogFragment : DialogFragment() {
             return
         }
 
-        // Đọc trực tiếp URI sang mảng byte[] để tránh hoàn toàn các lỗi về quyền truy cập file / URI của WorkManager
-        val bytes = try {
-            requireContext().contentResolver.openInputStream(avatarUri)?.use { it.readBytes() }
-        } catch (e: Exception) {
-            Log.e(TAG, "Lỗi đọc file ảnh", e)
+        showAvatarUploadState(getString(R.string.profile_edit_preparing_image))
+
+        Thread {
+            val preparedBytes = prepareAvatarForUpload(avatarUri)
+            if (preparedBytes == null) {
+                Log.e(TAG, "Unable to prepare avatar before upload")
+                runOnUiThreadSafely { onFailure() }
+                return@Thread
+            }
+
+            val uploadPreset = BuildConfig.CLOUDINARY_UPLOAD_PRESET.trim()
+            val uploadRequest = MediaManager.get().upload(preparedBytes)
+                .option("resource_type", "image")
+
+            if (uploadPreset.isNotBlank()) {
+                uploadRequest.option("upload_preset", uploadPreset)
+            } else {
+                uploadRequest.option("folder", "coolcook/profile")
+            }
+
+            uploadRequest
+                .callback(object : UploadCallback {
+                    override fun onStart(requestId: String?) {
+                        Log.d(TAG, "Cloudinary upload start: $requestId")
+                        runOnUiThreadSafely {
+                            showAvatarUploadState(getString(R.string.profile_edit_uploading_image))
+                        }
+                    }
+
+                    override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {
+                        runOnUiThreadSafely {
+                            if (totalBytes <= 0L) {
+                                showAvatarUploadState(getString(R.string.profile_edit_uploading_image))
+                                return@runOnUiThreadSafely
+                            }
+
+                            val progress = ((bytes * 100L) / totalBytes).toInt().coerceIn(0, 100)
+                            showAvatarUploadState(
+                                getString(R.string.profile_edit_uploading_image_progress, progress),
+                                progress
+                            )
+                        }
+                    }
+
+                    override fun onSuccess(requestId: String?, resultData: MutableMap<Any?, Any?>?) {
+                        runOnUiThreadSafely {
+                            val secureUrl = resultData?.get("secure_url")?.toString().orEmpty()
+                            if (secureUrl.isBlank()) {
+                                Log.e(TAG, "Cloudinary returned an empty secure_url")
+                                onFailure()
+                                return@runOnUiThreadSafely
+                            }
+                            onSuccess(secureUrl)
+                        }
+                    }
+
+                    override fun onError(requestId: String?, error: ErrorInfo?) {
+                        Log.e(TAG, "Cloudinary upload error: ${error?.description}")
+                        runOnUiThreadSafely { onFailure() }
+                    }
+
+                    override fun onReschedule(requestId: String?, error: ErrorInfo?) {
+                        Log.w(TAG, "Cloudinary upload rescheduled: ${error?.description}")
+                    }
+                })
+                .dispatch()
+        }.start()
+    }
+
+    private fun prepareAvatarForUpload(avatarUri: Uri): ByteArray? {
+        return try {
+            val source = ImageDecoder.createSource(requireContext().contentResolver, avatarUri)
+            val bitmap = ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
+                decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                decoder.isMutableRequired = false
+
+                val sourceWidth = info.size.width.coerceAtLeast(1)
+                val sourceHeight = info.size.height.coerceAtLeast(1)
+                val largestSide = max(sourceWidth, sourceHeight)
+
+                if (largestSide > AVATAR_UPLOAD_MAX_DIMENSION_PX) {
+                    val scale = AVATAR_UPLOAD_MAX_DIMENSION_PX.toFloat() / largestSide.toFloat()
+                    decoder.setTargetSize(
+                        (sourceWidth * scale).roundToInt().coerceAtLeast(1),
+                        (sourceHeight * scale).roundToInt().coerceAtLeast(1)
+                    )
+                }
+            }
+
+            ByteArrayOutputStream().use { outputStream ->
+                val didCompress = bitmap.compress(
+                    Bitmap.CompressFormat.JPEG,
+                    AVATAR_UPLOAD_QUALITY,
+                    outputStream
+                )
+                bitmap.recycle()
+
+                if (!didCompress) {
+                    return null
+                }
+
+                outputStream.toByteArray()
+            }
+        } catch (error: Exception) {
+            Log.e(TAG, "Avatar optimization failed", error)
             null
         }
-
-        if (bytes == null) {
-            Log.e(TAG, "Không thể đọc dữ liệu từ URI")
-            onFailure()
-            return
-        }
-
-        MediaManager.get().upload(bytes)
-            .option("resource_type", "image")
-            .option("folder", "coolcook/profile")
-            .callback(object : UploadCallback {
-                override fun onStart(requestId: String?) {
-                    Log.d(TAG, "Cloudinary upload start: $requestId")
-                }
-
-                override fun onProgress(requestId: String?, bytes: Long, totalBytes: Long) {
-                    // No-op
-                }
-
-                override fun onSuccess(requestId: String?, resultData: MutableMap<Any?, Any?>?) {
-                    runOnUiThreadSafely {
-                        val secureUrl = resultData?.get("secure_url")?.toString().orEmpty()
-                        if (secureUrl.isBlank()) {
-                            Log.e(TAG, "Cloudinary trả về secure_url rỗng")
-                            onFailure()
-                            return@runOnUiThreadSafely
-                        }
-                        onSuccess(secureUrl)
-                    }
-                }
-
-                override fun onError(requestId: String?, error: ErrorInfo?) {
-                    Log.e(TAG, "Cloudinary upload error: ${error?.description}")
-                    runOnUiThreadSafely { onFailure() }
-                }
-
-                override fun onReschedule(requestId: String?, error: ErrorInfo?) {
-                    Log.w(TAG, "Cloudinary upload rescheduled: ${error?.description}")
-                }
-            })
-            .dispatch()
     }
 
     private fun runOnUiThreadSafely(action: () -> Unit) {
@@ -305,8 +430,11 @@ class EditProfileDialogFragment : DialogFragment() {
         val cloudName = BuildConfig.CLOUDINARY_CLOUD_NAME.trim()
         val apiKey = BuildConfig.CLOUDINARY_API_KEY.trim()
         val apiSecret = BuildConfig.CLOUDINARY_API_SECRET.trim()
+        val uploadPreset = BuildConfig.CLOUDINARY_UPLOAD_PRESET.trim()
+        val hasSignedCredentials = apiKey.isNotBlank() && apiSecret.isNotBlank()
+        val hasUnsignedPreset = uploadPreset.isNotBlank()
 
-        if (cloudName.isBlank() || apiKey.isBlank() || apiSecret.isBlank()) {
+        if (cloudName.isBlank() || (!hasSignedCredentials && !hasUnsignedPreset)) {
             return false
         }
 
@@ -314,12 +442,16 @@ class EditProfileDialogFragment : DialogFragment() {
             MediaManager.get()
             true
         } catch (_: IllegalStateException) {
-            val config = hashMapOf(
+            val config = hashMapOf<String, Any>(
                 "cloud_name" to cloudName,
-                "api_key" to apiKey,
-                "api_secret" to apiSecret,
                 "secure" to true
             )
+            if (apiKey.isNotBlank()) {
+                config["api_key"] = apiKey
+            }
+            if (apiSecret.isNotBlank()) {
+                config["api_secret"] = apiSecret
+            }
             MediaManager.init(requireContext().applicationContext, config)
             true
         }
@@ -348,6 +480,7 @@ class EditProfileDialogFragment : DialogFragment() {
             .set(payload, SetOptions.merge())
             .addOnSuccessListener {
                 existingAvatarUrl = avatarUrl
+                selectedAvatarUri = null
 
                 parentFragmentManager.setFragmentResult(
                     RESULT_KEY,
@@ -363,7 +496,7 @@ class EditProfileDialogFragment : DialogFragment() {
                 dismissAllowingStateLoss()
             }
             .addOnFailureListener { error ->
-                Log.e(TAG, "Luu profile Firestore that bai", error)
+                Log.e(TAG, "Failed to save profile to Firestore", error)
                 setSavingState(false)
                 Toast.makeText(requireContext(), R.string.profile_edit_save_failed, Toast.LENGTH_SHORT).show()
             }
@@ -384,6 +517,8 @@ class EditProfileDialogFragment : DialogFragment() {
         private const val FIRESTORE_COLLECTION = "users"
         private const val TAG = "EditProfileDialog"
         private const val DATE_PATTERN = "dd/MM/yyyy"
+        private const val AVATAR_UPLOAD_MAX_DIMENSION_PX = 960
+        private const val AVATAR_UPLOAD_QUALITY = 82
 
         @JvmStatic
         fun newInstance(

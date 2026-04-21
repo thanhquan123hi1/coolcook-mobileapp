@@ -5,5 +5,5 @@
         android:startColor="@color/primary"
         android:endColor="@color/primary_container"
         android:type="linear"/>
-    <corners android:radius="16dp"/>
+    <corners android:radius="20dp"/>
 </shape>

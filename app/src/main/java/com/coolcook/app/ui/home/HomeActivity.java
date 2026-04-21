@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -24,8 +25,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.Glide;
 import com.coolcook.app.R;
+import com.coolcook.app.util.AvatarImageUtils;
+import com.coolcook.app.ui.chatbot.ChatBotActivity;
 import com.coolcook.app.ui.main.MainActivity;
 import com.coolcook.app.ui.profile.EditProfileDialogFragment;
 import com.facebook.login.LoginManager;
@@ -58,6 +62,9 @@ public class HomeActivity extends AppCompatActivity {
     private static final float NAV_ICON_BOUNCE_REBOUND_SCALE = 1.05f;
     private static final float NAV_TAP_COMPRESS_FACTOR = 0.9f;
     private static final float NAV_TAP_REBOUND_FACTOR = 1.04f;
+    private static final long QUICK_ACTION_PRESS_DURATION = 80L;
+    private static final long QUICK_ACTION_RELEASE_DURATION = 100L;
+    private static final float QUICK_ACTION_PRESS_SCALE = 0.95f;
 
     private View homeScroll;
     private View profileScroll;
@@ -66,7 +73,15 @@ public class HomeActivity extends AppCompatActivity {
     private AppCompatImageView navIconHistory;
     private AppCompatImageView navIconProfile;
     private AppCompatImageView navIconCamera;
+    private TextView navLabelHome;
+    private TextView navLabelSearch;
+    private TextView navLabelHistory;
+    private TextView navLabelProfile;
     private View navCameraButton;
+    private View homeQuickScanCard;
+    private View homeQuickSuggestCard;
+    private View homeQuickHealthCard;
+    private View homeQuickAiCard;
     private View btnProfileEdit;
     private View btnProfileLogout;
     private TextView txtHomeUserName;
@@ -93,7 +108,15 @@ public class HomeActivity extends AppCompatActivity {
         navIconHistory = findViewById(R.id.homeNavIconHistory);
         navIconProfile = findViewById(R.id.homeNavIconProfile);
         navIconCamera = findViewById(R.id.homeNavIconCamera);
+        navLabelHome = findViewById(R.id.homeNavLabelHome);
+        navLabelSearch = findViewById(R.id.homeNavLabelSearch);
+        navLabelHistory = findViewById(R.id.homeNavLabelHistory);
+        navLabelProfile = findViewById(R.id.homeNavLabelProfile);
         navCameraButton = findViewById(R.id.homeNavCameraButton);
+        homeQuickScanCard = findViewById(R.id.homeQuickScanCard);
+        homeQuickSuggestCard = findViewById(R.id.homeQuickSuggestCard);
+        homeQuickHealthCard = findViewById(R.id.homeQuickHealthCard);
+        homeQuickAiCard = findViewById(R.id.homeQuickAiCard);
         btnProfileEdit = findViewById(R.id.btnProfileEdit);
         btnProfileLogout = findViewById(R.id.btnProfileLogout);
         txtHomeUserName = findViewById(R.id.txtHomeUserName);
@@ -104,6 +127,7 @@ public class HomeActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
 
         setupBottomNavigation();
+        setupQuickActions();
         setupProfileActions();
         observeProfileUpdates();
         displayUserInfo();
@@ -208,20 +232,37 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         if (imgHomeAvatar != null) {
+            String optimizedHomeAvatar = AvatarImageUtils.buildOptimizedAvatarUrl(
+                    avatarUrl,
+                    resolveAvatarTargetSize(imgHomeAvatar, 40));
             Glide.with(this)
-                    .load(avatarUrl)
+                    .load(optimizedHomeAvatar)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .placeholder(R.drawable.img_home_profile)
                     .error(R.drawable.img_home_profile)
                     .into(imgHomeAvatar);
         }
 
         if (imgProfileAvatar != null) {
+            String optimizedProfileAvatar = AvatarImageUtils.buildOptimizedAvatarUrl(
+                    avatarUrl,
+                    resolveAvatarTargetSize(imgProfileAvatar, 88));
             Glide.with(this)
-                    .load(avatarUrl)
+                    .load(optimizedProfileAvatar)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .placeholder(R.drawable.img_home_profile)
                     .error(R.drawable.img_home_profile)
                     .into(imgProfileAvatar);
         }
+    }
+
+    private int resolveAvatarTargetSize(View avatarView, int fallbackDp) {
+        ViewGroup.LayoutParams layoutParams = avatarView.getLayoutParams();
+        if (layoutParams != null && layoutParams.width > 0) {
+            return layoutParams.width;
+        }
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(fallbackDp * density);
     }
 
     private void setupProfileActions() {
@@ -275,13 +316,54 @@ public class HomeActivity extends AppCompatActivity {
                 navCameraButton != null ? navCameraButton : cameraTab);
 
         homeTab.setOnClickListener(v -> showTab(TAB_HOME));
-        searchTab.setOnClickListener(v -> playTapFeedback(navIconSearch));
+        searchTab.setOnClickListener(v -> playTapFeedback(searchTab));
         cameraTab.setOnClickListener(cameraClickListener);
         if (navCameraButton != null) {
             navCameraButton.setOnClickListener(cameraClickListener);
         }
-        historyTab.setOnClickListener(v -> playTapFeedback(navIconHistory));
+        historyTab.setOnClickListener(v -> playTapFeedback(historyTab));
         profileTab.setOnClickListener(v -> showTab(TAB_PROFILE));
+    }
+
+    private void setupQuickActions() {
+        setupQuickActionCard(homeQuickScanCard, null);
+        setupQuickActionCard(homeQuickSuggestCard, null);
+        setupQuickActionCard(homeQuickHealthCard, null);
+        setupQuickActionCard(homeQuickAiCard, () -> startActivity(ChatBotActivity.createIntent(this)));
+    }
+
+    private void setupQuickActionCard(View card, Runnable action) {
+        if (card == null) {
+            return;
+        }
+        card.setOnClickListener(v -> animateQuickActionPress(v, action));
+    }
+
+    private void animateQuickActionPress(View target, Runnable action) {
+        if (target == null || !target.isEnabled()) {
+            return;
+        }
+
+        target.setEnabled(false);
+        target.animate().cancel();
+        target.animate()
+                .scaleX(QUICK_ACTION_PRESS_SCALE)
+                .scaleY(QUICK_ACTION_PRESS_SCALE)
+                .setDuration(QUICK_ACTION_PRESS_DURATION)
+                .setInterpolator(new DecelerateInterpolator())
+                .withEndAction(() -> target.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(QUICK_ACTION_RELEASE_DURATION)
+                        .setInterpolator(new DecelerateInterpolator())
+                        .withEndAction(() -> {
+                            target.setEnabled(true);
+                            if (action != null) {
+                                action.run();
+                            }
+                        })
+                        .start())
+                .start();
     }
 
     private void showTab(int tab) {
@@ -295,14 +377,19 @@ public class HomeActivity extends AppCompatActivity {
         int activeColor = ContextCompat.getColor(this, R.color.primary);
         int inactiveColor = ContextCompat.getColor(this, R.color.home_nav_inactive);
 
-        applyNavIconState(navIconHome, activeTab == TAB_HOME, activeColor, inactiveColor);
-        applyNavIconState(navIconSearch, false, activeColor, inactiveColor);
+        applyNavItemState(navIconHome, navLabelHome, activeTab == TAB_HOME, activeColor, inactiveColor);
+        applyNavItemState(navIconSearch, navLabelSearch, false, activeColor, inactiveColor);
         applyCameraIconState();
-        applyNavIconState(navIconHistory, false, activeColor, inactiveColor);
-        applyNavIconState(navIconProfile, activeTab == TAB_PROFILE, activeColor, inactiveColor);
+        applyNavItemState(navIconHistory, navLabelHistory, false, activeColor, inactiveColor);
+        applyNavItemState(navIconProfile, navLabelProfile, activeTab == TAB_PROFILE, activeColor, inactiveColor);
     }
 
-    private void applyNavIconState(AppCompatImageView icon, boolean active, int activeColor, int inactiveColor) {
+    private void applyNavItemState(
+            AppCompatImageView icon,
+            TextView label,
+            boolean active,
+            int activeColor,
+            int inactiveColor) {
         if (icon == null) {
             return;
         }
@@ -311,6 +398,28 @@ public class HomeActivity extends AppCompatActivity {
         int targetColor = active ? activeColor : inactiveColor;
         animateIconTint(icon, targetColor);
         animateIconTransform(icon, active);
+        animateLabelColor(label, targetColor);
+    }
+
+    private void animateLabelColor(TextView label, int targetColor) {
+        if (label == null) {
+            return;
+        }
+
+        int startColor = label.getCurrentTextColor();
+        if (startColor == targetColor) {
+            label.setTextColor(targetColor);
+            return;
+        }
+
+        ValueAnimator tintAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), startColor, targetColor);
+        tintAnimator.setDuration(NAV_TINT_ANIMATION_DURATION);
+        tintAnimator.setInterpolator(new DecelerateInterpolator());
+        tintAnimator.addUpdateListener(animation -> {
+            int color = (int) animation.getAnimatedValue();
+            label.setTextColor(color);
+        });
+        tintAnimator.start();
     }
 
     private void applyCameraIconState() {
@@ -445,6 +554,10 @@ public class HomeActivity extends AppCompatActivity {
         final int navTop = bottomNav.getPaddingTop();
         final int navRight = bottomNav.getPaddingRight();
         final int navBottom = bottomNav.getPaddingBottom();
+        final ViewGroup.MarginLayoutParams navLayoutParams = (ViewGroup.MarginLayoutParams) bottomNav.getLayoutParams();
+        final int navMarginLeft = navLayoutParams.leftMargin;
+        final int navMarginRight = navLayoutParams.rightMargin;
+        final int navMarginBottom = navLayoutParams.bottomMargin;
 
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -461,11 +574,18 @@ public class HomeActivity extends AppCompatActivity {
                     profileContentRight + systemBars.right,
                     profileContentBottom);
 
+            ViewGroup.MarginLayoutParams updatedLayoutParams = (ViewGroup.MarginLayoutParams) bottomNav
+                    .getLayoutParams();
+            updatedLayoutParams.leftMargin = navMarginLeft + systemBars.left;
+            updatedLayoutParams.rightMargin = navMarginRight + systemBars.right;
+            updatedLayoutParams.bottomMargin = navMarginBottom + systemBars.bottom;
+            bottomNav.setLayoutParams(updatedLayoutParams);
+
             bottomNav.setPadding(
-                    navLeft + systemBars.left,
+                    navLeft,
                     navTop,
-                    navRight + systemBars.right,
-                    navBottom + systemBars.bottom);
+                    navRight,
+                    navBottom);
 
             return insets;
         });

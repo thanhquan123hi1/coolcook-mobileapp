@@ -28,7 +28,10 @@
     <color name="home_quick_icon_bg">#FFF2E5</color>
     <color name="home_nav_inactive">#80443428</color>
     <color name="home_nav_ripple">#1F8F4E00</color>
-    <color name="home_nav_center_ripple">#4DFFFFFF</color>
+    <color name="home_nav_center_ripple">#33FFFFFF</color>
+    <color name="home_ripple_soft">#168F4E00</color>
+    <color name="home_shadow_ambient">#10000000</color>
+    <color name="home_shadow_spot">#12443428</color>
     <color name="home_meta">#EA580C</color>
     <color name="home_avatar_border">#4DFFB77A</color>
     <color name="home_primary_soft_bg">#33FFB77A</color>
@@ -40,4 +43,25 @@
     <color name="home_warm_icon">#B45309</color>
     <color name="home_recipe_chip_bg">#FBF2E9</color>
     <color name="home_card_border_soft">#33DAC2B1</color>
+    <color name="auth_input_hint">#8A6F5B4B</color>
+    <color name="auth_input_error">#C35A4A</color>
+    <color name="auth_checkbox_border">#96C9B2A0</color>
+    <color name="auth_checkbox_fill">#8F4E00</color>
+
+    <color name="chatbot_background">#F2F4F7</color>
+    <color name="chatbot_icon_tint">#A1A1AA</color>
+    <color name="chatbot_title">#09090B</color>
+    <color name="chatbot_subtitle">#71717A</color>
+    <color name="chatbot_hint">#A1A1AA</color>
+    <color name="chatbot_upload_text">#52525B</color>
+    <color name="chatbot_upload_border">#F4F4F5</color>
+    <color name="chatbot_upload_bg">#80FAFAFA</color>
+    <color name="chatbot_input_border">#80FFFFFF</color>
+    <color name="chatbot_bubble_text">#27272A</color>
+    <color name="chatbot_shadow_ambient">#08000000</color>
+    <color name="chatbot_shadow_spot">#12000000</color>
+    <color name="chatbot_soft_shadow_start">#1A000000</color>
+    <color name="chatbot_soft_shadow_mid">#0D000000</color>
+    <color name="chatbot_hero_shadow_start">#24000000</color>
+    <color name="chatbot_hero_shadow_mid">#10000000</color>
 </resources>

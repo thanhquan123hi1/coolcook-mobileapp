@@ -67,10 +67,12 @@
             android:layout_width="@dimen/profile_edit_button_size"
             android:layout_height="@dimen/profile_edit_button_size"
             android:background="@drawable/bg_profile_edit_button"
+            android:clipToOutline="true"
             android:contentDescription="Chỉnh sửa hồ sơ"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:foreground="@drawable/fg_ripple_circle"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:outlineProvider="background">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -501,11 +503,13 @@
         android:layout_height="@dimen/profile_logout_height"
         android:layout_marginTop="@dimen/profile_logout_margin_top"
         android:background="@drawable/bg_profile_logout_button"
+        android:clipToOutline="true"
         android:gravity="center"
         android:orientation="horizontal"
-        android:foreground="?attr/selectableItemBackground"
+        android:foreground="@drawable/fg_ripple_rounded_large"
         android:clickable="true"
-        android:focusable="true">
+        android:focusable="true"
+        android:outlineProvider="background">
 
         <TextView
             android:layout_width="wrap_content"

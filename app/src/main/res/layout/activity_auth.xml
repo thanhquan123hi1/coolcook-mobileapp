@@ -71,11 +71,11 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/authCard"
+        style="@style/Widget.Coolcook.Auth.SheetCard"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="0dp"
+        android:outlineProvider="background"
         app:cardBackgroundColor="@color/surface_container_lowest"
-        app:cardElevation="10dp"
         app:cardUseCompatPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -96,9 +96,9 @@
                 android:id="@+id/authContentContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="32dp"
-                android:paddingTop="32dp"
-                android:paddingEnd="32dp"
+                android:paddingStart="28dp"
+                android:paddingTop="30dp"
+                android:paddingEnd="28dp"
                 android:paddingBottom="24dp">
 
                 <LinearLayout
@@ -108,24 +108,19 @@
                     android:orientation="vertical">
 
                     <TextView
+                        style="@style/TextAppearance.Coolcook.Brand.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/plus_jakarta_sans"
                         android:text="@string/auth_login_title"
-                        android:textColor="@color/primary"
-                        android:textSize="36sp"
-                        android:textStyle="bold" />
+                        android:textColor="@color/primary" />
 
                     <TextView
+                        style="@style/TextAppearance.Coolcook.Brand.Subtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="32dp"
-                        android:paddingBottom="2dp"
-                        android:fontFamily="@font/manrope"
-                        android:text="@string/auth_login_subtitle"
-                        android:textColor="@color/on_surface_variant"
-                        android:textSize="14sp" />
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="28dp"
+                        android:text="@string/auth_login_subtitle" />
 
                     <LinearLayout
                         android:id="@+id/loginFields"
@@ -136,111 +131,81 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="24dp"
+                            android:layout_marginBottom="18dp"
                             android:orientation="vertical">
 
                             <TextView
+                                style="@style/TextAppearance.Coolcook.Auth.Label"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/manrope"
-                                android:text="@string/auth_email"
-                                android:textColor="@color/on_surface_variant"
-                                android:textSize="13sp" />
+                                android:text="@string/auth_email" />
 
-                            <EditText
-                                android:id="@+id/loginEmail"
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/loginEmailLayout"
+                                style="@style/Widget.Coolcook.Auth.TextInputLayout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@android:color/transparent"
-                                android:fontFamily="@font/manrope"
-                                android:hint="@string/auth_email"
-                                android:importantForAutofill="yes"
-                                android:inputType="textEmailAddress"
-                                android:minHeight="48dp"
-                                android:paddingTop="6dp"
-                                android:paddingBottom="8dp"
-                                android:textColor="@color/on_surface"
-                                android:textColorHint="@color/on_surface_variant"
-                                android:textSize="16sp" />
+                                android:layout_marginTop="8dp">
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:background="@color/outline" />
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/loginEmail"
+                                    style="@style/Widget.Coolcook.Auth.TextInputEditText"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:autofillHints="emailAddress"
+                                    android:hint="@string/auth_hint_email"
+                                    android:imeOptions="actionNext"
+                                    android:importantForAutofill="yes"
+                                    android:inputType="textEmailAddress" />
+                            </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp"
                             android:orientation="vertical">
 
                             <TextView
+                                style="@style/TextAppearance.Coolcook.Auth.Label"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/manrope"
-                                android:text="@string/auth_password"
-                                android:textColor="@color/on_surface_variant"
-                                android:textSize="13sp" />
+                                android:text="@string/auth_password" />
 
-                            <LinearLayout
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/loginPasswordLayout"
+                                style="@style/Widget.Coolcook.Auth.TextInputLayout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
+                                android:layout_marginTop="8dp"
+                                app:endIconMode="password_toggle">
 
-                                <EditText
+                                <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/loginPassword"
-                                    android:layout_width="0dp"
+                                    style="@style/Widget.Coolcook.Auth.TextInputEditText"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:background="@android:color/transparent"
-                                    android:fontFamily="@font/manrope"
-                                    android:hint="@string/auth_password"
+                                    android:autofillHints="password"
+                                    android:hint="@string/auth_hint_password"
+                                    android:imeOptions="actionDone"
                                     android:importantForAutofill="yes"
-                                    android:inputType="textPassword"
-                                    android:minHeight="48dp"
-                                    android:paddingTop="6dp"
-                                    android:paddingBottom="8dp"
-                                    android:textColor="@color/on_surface"
-                                    android:textColorHint="@color/on_surface_variant"
-                                    android:textSize="16sp" />
-
-                                <TextView
-                                    android:id="@+id/toggleLoginPassword"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/material_symbols_outlined"
-                                    android:padding="6dp"
-                                    android:text="@string/icon_visibility_off"
-                                    android:textColor="@color/on_surface_variant"
-                                    android:textSize="22sp" />
-                            </LinearLayout>
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:background="@color/outline" />
+                                    android:inputType="textPassword" />
+                            </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="14dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
-                        <CheckBox
+                        <androidx.appcompat.widget.AppCompatCheckBox
                             android:id="@+id/chkRemember"
+                            style="@style/Widget.Coolcook.Auth.Checkbox"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:buttonTint="@color/primary"
-                            android:fontFamily="@font/manrope"
-                            android:minHeight="44dp"
-                            android:text="@string/auth_remember"
-                            android:textColor="@color/on_surface_variant"
-                            android:textSize="14sp" />
+                            android:text="@string/auth_remember" />
 
                         <View
                             android:layout_width="0dp"
@@ -248,34 +213,25 @@
                             android:layout_weight="1" />
 
                         <TextView
+                            style="@style/TextAppearance.Coolcook.Auth.Link"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/manrope"
-                            android:text="@string/auth_forgot"
-                            android:textColor="@color/primary"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:text="@string/auth_forgot" />
                     </LinearLayout>
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnSubmitLogin"
+                        style="@style/Widget.Coolcook.Auth.PrimaryButton"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
-                        android:layout_marginTop="32dp"
-                        android:background="@drawable/bg_btn_login"
-                        android:elevation="8dp"
-                        android:fontFamily="@font/plus_jakarta_sans"
-                        android:text="@string/auth_login_title"
-                        android:textAllCaps="false"
-                        android:textColor="@color/on_primary"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:layout_marginTop="28dp"
+                        android:text="@string/auth_login_title" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="32dp"
-                        android:layout_marginBottom="28dp"
+                        android:layout_marginTop="28dp"
+                        android:layout_marginBottom="20dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -283,26 +239,22 @@
                             android:layout_width="0dp"
                             android:layout_height="1dp"
                             android:layout_weight="1"
-                            android:alpha="0.35"
+                            android:alpha="0.4"
                             android:background="@color/outline_variant" />
 
                         <TextView
+                            style="@style/TextAppearance.Coolcook.Auth.DividerLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
                             android:layout_marginEnd="12dp"
-                            android:fontFamily="@font/manrope"
-                            android:text="@string/auth_or_connect"
-                            android:textAllCaps="true"
-                            android:textColor="@color/on_surface_variant"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
+                            android:text="@string/auth_or_connect" />
 
                         <View
                             android:layout_width="0dp"
                             android:layout_height="1dp"
                             android:layout_weight="1"
-                            android:alpha="0.35"
+                            android:alpha="0.4"
                             android:background="@color/outline_variant" />
                     </LinearLayout>
 
@@ -311,43 +263,83 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <androidx.appcompat.widget.AppCompatButton
+                        <com.google.android.material.card.MaterialCardView
                             android:id="@+id/btnGoogleLogin"
+                            style="@style/Widget.Coolcook.Auth.SocialCard"
                             android:layout_width="0dp"
-                            android:layout_height="48dp"
+                            android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/bg_auth_social_button"
-                            android:drawableStart="@drawable/ic_google"
-                            android:drawablePadding="8dp"
-                            android:fontFamily="@font/manrope"
-                            android:paddingStart="12dp"
-                            android:paddingEnd="12dp"
-                            android:text="@string/auth_google"
-                            android:textAllCaps="false"
-                            android:textColor="@color/on_surface"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="@drawable/fg_ripple_rounded_medium"
+                            android:outlineProvider="background">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:minHeight="52dp"
+                                android:orientation="horizontal"
+                                android:paddingStart="16dp"
+                                android:paddingTop="12dp"
+                                android:paddingEnd="16dp"
+                                android:paddingBottom="12dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:contentDescription="@null"
+                                    android:src="@drawable/ic_google" />
+
+                                <TextView
+                                    style="@style/TextAppearance.Coolcook.Auth.SocialLabel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:text="@string/auth_google" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
 
                         <Space
                             android:layout_width="12dp"
                             android:layout_height="1dp" />
 
-                        <androidx.appcompat.widget.AppCompatButton
+                        <com.google.android.material.card.MaterialCardView
                             android:id="@+id/btnFacebookLogin"
+                            style="@style/Widget.Coolcook.Auth.SocialCard"
                             android:layout_width="0dp"
-                            android:layout_height="48dp"
+                            android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/bg_auth_social_button"
-                            android:drawableStart="@drawable/ic_facebook"
-                            android:drawablePadding="8dp"
-                            android:fontFamily="@font/manrope"
-                            android:paddingStart="12dp"
-                            android:paddingEnd="12dp"
-                            android:text="@string/auth_facebook"
-                            android:textAllCaps="false"
-                            android:textColor="@color/on_surface"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="@drawable/fg_ripple_rounded_medium"
+                            android:outlineProvider="background">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:minHeight="52dp"
+                                android:orientation="horizontal"
+                                android:paddingStart="16dp"
+                                android:paddingTop="12dp"
+                                android:paddingEnd="16dp"
+                                android:paddingBottom="12dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:contentDescription="@null"
+                                    android:src="@drawable/ic_facebook" />
+
+                                <TextView
+                                    style="@style/TextAppearance.Coolcook.Auth.SocialLabel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:text="@string/auth_facebook" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
 
                     <LinearLayout
@@ -359,23 +351,19 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            style="@style/TextAppearance.Coolcook.Brand.Subtitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/manrope"
                             android:text="@string/auth_no_account"
-                            android:textColor="@color/on_surface_variant"
                             android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/txtSwitchToRegister"
+                            style="@style/TextAppearance.Coolcook.Auth.Link"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
-                            android:fontFamily="@font/manrope"
-                            android:text="@string/auth_register_now"
-                            android:textColor="@color/primary"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:text="@string/auth_register_now" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -387,24 +375,19 @@
                     android:visibility="gone">
 
                     <TextView
+                        style="@style/TextAppearance.Coolcook.Brand.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/plus_jakarta_sans"
                         android:text="@string/auth_register_title"
-                        android:textColor="@color/primary"
-                        android:textSize="36sp"
-                        android:textStyle="bold" />
+                        android:textColor="@color/primary" />
 
                     <TextView
+                        style="@style/TextAppearance.Coolcook.Brand.Subtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="32dp"
-                        android:paddingBottom="2dp"
-                        android:fontFamily="@font/manrope"
-                        android:text="@string/auth_register_subtitle"
-                        android:textColor="@color/on_surface_variant"
-                        android:textSize="14sp" />
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="28dp"
+                        android:text="@string/auth_register_subtitle" />
 
                     <LinearLayout
                         android:id="@+id/registerFields"
@@ -415,127 +398,98 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="24dp"
+                            android:layout_marginBottom="18dp"
                             android:orientation="vertical">
 
                             <TextView
+                                style="@style/TextAppearance.Coolcook.Auth.Label"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/manrope"
-                                android:text="@string/auth_full_name"
-                                android:textColor="@color/on_surface_variant"
-                                android:textSize="13sp" />
+                                android:text="@string/auth_full_name" />
 
-                            <EditText
-                                android:id="@+id/registerName"
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/registerNameLayout"
+                                style="@style/Widget.Coolcook.Auth.TextInputLayout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@android:color/transparent"
-                                android:fontFamily="@font/manrope"
-                                android:hint="@string/auth_full_name"
-                                android:importantForAutofill="yes"
-                                android:inputType="textPersonName"
-                                android:minHeight="48dp"
-                                android:paddingTop="6dp"
-                                android:paddingBottom="8dp"
-                                android:textColor="@color/on_surface"
-                                android:textColorHint="@color/on_surface_variant"
-                                android:textSize="16sp" />
+                                android:layout_marginTop="8dp">
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:background="@color/outline" />
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/registerName"
+                                    style="@style/Widget.Coolcook.Auth.TextInputEditText"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:autofillHints="name"
+                                    android:hint="@string/auth_hint_full_name"
+                                    android:imeOptions="actionNext"
+                                    android:importantForAutofill="yes"
+                                    android:inputType="textPersonName|textCapWords" />
+                            </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="24dp"
+                            android:layout_marginBottom="18dp"
                             android:orientation="vertical">
 
                             <TextView
+                                style="@style/TextAppearance.Coolcook.Auth.Label"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/manrope"
-                                android:text="@string/auth_email"
-                                android:textColor="@color/on_surface_variant"
-                                android:textSize="13sp" />
+                                android:text="@string/auth_email" />
 
-                            <EditText
-                                android:id="@+id/registerEmail"
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/registerEmailLayout"
+                                style="@style/Widget.Coolcook.Auth.TextInputLayout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@android:color/transparent"
-                                android:fontFamily="@font/manrope"
-                                android:hint="@string/auth_email"
-                                android:importantForAutofill="yes"
-                                android:inputType="textEmailAddress"
-                                android:minHeight="48dp"
-                                android:paddingTop="6dp"
-                                android:paddingBottom="8dp"
-                                android:textColor="@color/on_surface"
-                                android:textColorHint="@color/on_surface_variant"
-                                android:textSize="16sp" />
+                                android:layout_marginTop="8dp">
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:background="@color/outline" />
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/registerEmail"
+                                    style="@style/Widget.Coolcook.Auth.TextInputEditText"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:autofillHints="emailAddress"
+                                    android:hint="@string/auth_hint_email"
+                                    android:imeOptions="actionNext"
+                                    android:importantForAutofill="yes"
+                                    android:inputType="textEmailAddress" />
+                            </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="24dp"
+                            android:layout_marginBottom="18dp"
                             android:orientation="vertical">
 
                             <TextView
+                                style="@style/TextAppearance.Coolcook.Auth.Label"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/manrope"
-                                android:text="@string/auth_password"
-                                android:textColor="@color/on_surface_variant"
-                                android:textSize="13sp" />
+                                android:text="@string/auth_password" />
 
-                            <LinearLayout
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/registerPasswordLayout"
+                                style="@style/Widget.Coolcook.Auth.TextInputLayout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
+                                android:layout_marginTop="8dp"
+                                app:endIconMode="password_toggle">
 
-                                <EditText
+                                <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/registerPassword"
-                                    android:layout_width="0dp"
+                                    style="@style/Widget.Coolcook.Auth.TextInputEditText"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:background="@android:color/transparent"
-                                    android:fontFamily="@font/manrope"
-                                    android:hint="@string/auth_password"
+                                    android:autofillHints="password"
+                                    android:hint="@string/auth_hint_password"
+                                    android:imeOptions="actionNext"
                                     android:importantForAutofill="yes"
-                                    android:inputType="textPassword"
-                                    android:minHeight="48dp"
-                                    android:paddingTop="6dp"
-                                    android:paddingBottom="8dp"
-                                    android:textColor="@color/on_surface"
-                                    android:textColorHint="@color/on_surface_variant"
-                                    android:textSize="16sp" />
-
-                                <TextView
-                                    android:id="@+id/toggleRegisterPassword"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/material_symbols_outlined"
-                                    android:padding="6dp"
-                                    android:text="@string/icon_visibility_off"
-                                    android:textColor="@color/on_surface_variant"
-                                    android:textSize="22sp" />
-                            </LinearLayout>
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:background="@color/outline" />
+                                    android:inputType="textPassword" />
+                            </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
 
                         <LinearLayout
@@ -544,73 +498,46 @@
                             android:orientation="vertical">
 
                             <TextView
+                                style="@style/TextAppearance.Coolcook.Auth.Label"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:fontFamily="@font/manrope"
-                                android:text="@string/auth_confirm_password"
-                                android:textColor="@color/on_surface_variant"
-                                android:textSize="13sp" />
+                                android:text="@string/auth_confirm_password" />
 
-                            <LinearLayout
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/registerConfirmPasswordLayout"
+                                style="@style/Widget.Coolcook.Auth.TextInputLayout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
+                                android:layout_marginTop="8dp"
+                                app:endIconMode="password_toggle">
 
-                                <EditText
+                                <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/registerConfirmPassword"
-                                    android:layout_width="0dp"
+                                    style="@style/Widget.Coolcook.Auth.TextInputEditText"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:background="@android:color/transparent"
-                                    android:fontFamily="@font/manrope"
-                                    android:hint="@string/auth_confirm_password"
+                                    android:autofillHints="password"
+                                    android:hint="@string/auth_hint_confirm_password"
+                                    android:imeOptions="actionDone"
                                     android:importantForAutofill="yes"
-                                    android:inputType="textPassword"
-                                    android:minHeight="48dp"
-                                    android:paddingTop="6dp"
-                                    android:paddingBottom="8dp"
-                                    android:textColor="@color/on_surface"
-                                    android:textColorHint="@color/on_surface_variant"
-                                    android:textSize="16sp" />
-
-                                <TextView
-                                    android:id="@+id/toggleRegisterConfirmPassword"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/material_symbols_outlined"
-                                    android:padding="6dp"
-                                    android:text="@string/icon_visibility_off"
-                                    android:textColor="@color/on_surface_variant"
-                                    android:textSize="22sp" />
-                            </LinearLayout>
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:background="@color/outline" />
+                                    android:inputType="textPassword" />
+                            </com.google.android.material.textfield.TextInputLayout>
                         </LinearLayout>
                     </LinearLayout>
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnSubmitRegister"
+                        style="@style/Widget.Coolcook.Auth.PrimaryButton"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
-                        android:layout_marginTop="32dp"
-                        android:background="@drawable/bg_btn_login"
-                        android:elevation="8dp"
-                        android:fontFamily="@font/plus_jakarta_sans"
-                        android:text="@string/auth_register_title"
-                        android:textAllCaps="false"
-                        android:textColor="@color/on_primary"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:layout_marginTop="28dp"
+                        android:text="@string/auth_register_title" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
-                        android:layout_marginBottom="24dp"
+                        android:layout_marginBottom="20dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -618,26 +545,22 @@
                             android:layout_width="0dp"
                             android:layout_height="1dp"
                             android:layout_weight="1"
-                            android:alpha="0.35"
+                            android:alpha="0.4"
                             android:background="@color/outline_variant" />
 
                         <TextView
+                            style="@style/TextAppearance.Coolcook.Auth.DividerLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
                             android:layout_marginEnd="12dp"
-                            android:fontFamily="@font/manrope"
-                            android:text="@string/auth_or_connect"
-                            android:textAllCaps="true"
-                            android:textColor="@color/on_surface_variant"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
+                            android:text="@string/auth_or_connect" />
 
                         <View
                             android:layout_width="0dp"
                             android:layout_height="1dp"
                             android:layout_weight="1"
-                            android:alpha="0.35"
+                            android:alpha="0.4"
                             android:background="@color/outline_variant" />
                     </LinearLayout>
 
@@ -646,43 +569,83 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <androidx.appcompat.widget.AppCompatButton
+                        <com.google.android.material.card.MaterialCardView
                             android:id="@+id/btnGoogleRegister"
+                            style="@style/Widget.Coolcook.Auth.SocialCard"
                             android:layout_width="0dp"
-                            android:layout_height="48dp"
+                            android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/bg_auth_social_button"
-                            android:drawableStart="@drawable/ic_google"
-                            android:drawablePadding="8dp"
-                            android:fontFamily="@font/manrope"
-                            android:paddingStart="12dp"
-                            android:paddingEnd="12dp"
-                            android:text="@string/auth_google"
-                            android:textAllCaps="false"
-                            android:textColor="@color/on_surface"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="@drawable/fg_ripple_rounded_medium"
+                            android:outlineProvider="background">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:minHeight="52dp"
+                                android:orientation="horizontal"
+                                android:paddingStart="16dp"
+                                android:paddingTop="12dp"
+                                android:paddingEnd="16dp"
+                                android:paddingBottom="12dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:contentDescription="@null"
+                                    android:src="@drawable/ic_google" />
+
+                                <TextView
+                                    style="@style/TextAppearance.Coolcook.Auth.SocialLabel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:text="@string/auth_google" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
 
                         <Space
                             android:layout_width="12dp"
                             android:layout_height="1dp" />
 
-                        <androidx.appcompat.widget.AppCompatButton
+                        <com.google.android.material.card.MaterialCardView
                             android:id="@+id/btnFacebookRegister"
+                            style="@style/Widget.Coolcook.Auth.SocialCard"
                             android:layout_width="0dp"
-                            android:layout_height="48dp"
+                            android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/bg_auth_social_button"
-                            android:drawableStart="@drawable/ic_facebook"
-                            android:drawablePadding="8dp"
-                            android:fontFamily="@font/manrope"
-                            android:paddingStart="12dp"
-                            android:paddingEnd="12dp"
-                            android:text="@string/auth_facebook"
-                            android:textAllCaps="false"
-                            android:textColor="@color/on_surface"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="@drawable/fg_ripple_rounded_medium"
+                            android:outlineProvider="background">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:minHeight="52dp"
+                                android:orientation="horizontal"
+                                android:paddingStart="16dp"
+                                android:paddingTop="12dp"
+                                android:paddingEnd="16dp"
+                                android:paddingBottom="12dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:contentDescription="@null"
+                                    android:src="@drawable/ic_facebook" />
+
+                                <TextView
+                                    style="@style/TextAppearance.Coolcook.Auth.SocialLabel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:text="@string/auth_facebook" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
 
                     <LinearLayout
@@ -694,23 +657,19 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            style="@style/TextAppearance.Coolcook.Brand.Subtitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/manrope"
                             android:text="@string/auth_has_account"
-                            android:textColor="@color/on_surface_variant"
                             android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/txtSwitchToLogin"
+                            style="@style/TextAppearance.Coolcook.Auth.Link"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
-                            android:fontFamily="@font/manrope"
-                            android:text="@string/auth_login_now"
-                            android:textColor="@color/primary"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:text="@string/auth_login_now" />
                     </LinearLayout>
                 </LinearLayout>
             </FrameLayout>

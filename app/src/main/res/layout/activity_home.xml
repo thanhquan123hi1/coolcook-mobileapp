@@ -130,8 +130,11 @@
                 android:layout_height="@dimen/home_search_height"
                 android:layout_marginTop="@dimen/home_search_margin_top"
                 android:background="@drawable/bg_home_search"
-                android:elevation="2dp"
+                android:elevation="@dimen/home_surface_elevation"
                 android:gravity="center_vertical"
+                android:outlineAmbientShadowColor="@color/home_shadow_ambient"
+                android:outlineProvider="background"
+                android:outlineSpotShadowColor="@color/home_shadow_spot"
                 android:orientation="horizontal"
                 android:paddingStart="@dimen/home_search_padding_horizontal"
                 android:paddingEnd="@dimen/home_search_padding_horizontal">
@@ -174,13 +177,14 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/homeFeatureCard"
+                style="@style/Widget.Coolcook.Home.SurfaceCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/home_feature_margin_top"
                 app:cardBackgroundColor="@color/surface_container_low"
                 app:cardCornerRadius="24dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp"
+                app:cardElevation="@dimen/home_card_elevation"
+                app:strokeWidth="1dp"
                 app:cardUseCompatPadding="false">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -245,7 +249,9 @@
                         android:layout_marginEnd="-16dp"
                         android:layout_marginBottom="-16dp"
                         android:contentDescription="@string/home_feature_image_desc"
-                        android:elevation="2dp"
+                        android:elevation="@dimen/home_feature_image_elevation"
+                        android:outlineAmbientShadowColor="@color/home_shadow_ambient"
+                        android:outlineSpotShadowColor="@color/home_shadow_spot"
                         android:scaleType="fitCenter"
                         android:src="@drawable/img_home_feature_illustration"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -266,12 +272,17 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/homeQuickScanCard"
+                    style="@style/Widget.Coolcook.Home.SurfaceCard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="@drawable/fg_ripple_rounded_large"
                     app:cardBackgroundColor="@color/surface_container_lowest"
                     app:cardCornerRadius="20dp"
-                    app:cardElevation="2dp"
+                    app:cardElevation="@dimen/home_card_elevation"
                     app:strokeColor="@color/home_card_border_soft"
                     app:strokeWidth="1dp">
 
@@ -320,12 +331,17 @@
                     android:layout_height="1dp" />
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/homeQuickSuggestCard"
+                    style="@style/Widget.Coolcook.Home.SurfaceCard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="@drawable/fg_ripple_rounded_large"
                     app:cardBackgroundColor="@color/surface_container_lowest"
                     app:cardCornerRadius="20dp"
-                    app:cardElevation="2dp"
+                    app:cardElevation="@dimen/home_card_elevation"
                     app:strokeColor="@color/home_card_border_soft"
                     app:strokeWidth="1dp">
 
@@ -377,12 +393,17 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/homeQuickHealthCard"
+                    style="@style/Widget.Coolcook.Home.SurfaceCard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="@drawable/fg_ripple_rounded_large"
                     app:cardBackgroundColor="@color/surface_container_lowest"
                     app:cardCornerRadius="20dp"
-                    app:cardElevation="2dp"
+                    app:cardElevation="@dimen/home_card_elevation"
                     app:strokeColor="@color/home_card_border_soft"
                     app:strokeWidth="1dp">
 
@@ -431,12 +452,17 @@
                     android:layout_height="1dp" />
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/homeQuickAiCard"
+                    style="@style/Widget.Coolcook.Home.SurfaceCard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="@drawable/fg_ripple_rounded_large"
                     app:cardBackgroundColor="@color/surface_container_lowest"
                     app:cardCornerRadius="20dp"
-                    app:cardElevation="2dp"
+                    app:cardElevation="@dimen/home_card_elevation"
                     app:strokeColor="@color/home_card_border_soft"
                     app:strokeWidth="1dp">
 
@@ -521,11 +547,12 @@
                     android:orientation="horizontal">
 
                     <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.Coolcook.Home.SurfaceCard"
                         android:layout_width="@dimen/home_recipe_card_width"
                         android:layout_height="wrap_content"
                         app:cardBackgroundColor="@color/surface_container_lowest"
                         app:cardCornerRadius="24dp"
-                        app:cardElevation="2dp"
+                        app:cardElevation="@dimen/home_card_elevation"
                         app:strokeColor="@color/home_card_border_soft"
                         app:strokeWidth="1dp">
 
@@ -662,11 +689,12 @@
                         android:layout_height="1dp" />
 
                     <com.google.android.material.card.MaterialCardView
+                        style="@style/Widget.Coolcook.Home.SurfaceCard"
                         android:layout_width="@dimen/home_recipe_card_width"
                         android:layout_height="wrap_content"
                         app:cardBackgroundColor="@color/surface_container_lowest"
                         app:cardCornerRadius="24dp"
-                        app:cardElevation="2dp"
+                        app:cardElevation="@dimen/home_card_elevation"
                         app:strokeColor="@color/home_card_border_soft"
                         app:strokeWidth="1dp">
 
@@ -1050,6 +1078,9 @@
         android:clipToPadding="false"
         android:elevation="@dimen/home_bottom_nav_elevation"
         android:gravity="center_vertical"
+        android:outlineAmbientShadowColor="@color/home_shadow_ambient"
+        android:outlineProvider="background"
+        android:outlineSpotShadowColor="@color/home_shadow_spot"
         android:orientation="horizontal"
         android:paddingStart="@dimen/home_bottom_nav_padding_horizontal"
         android:paddingTop="@dimen/home_bottom_nav_padding_vertical"
@@ -1083,6 +1114,14 @@
                 android:contentDescription="@string/home_nav_home"
                 app:srcCompat="@drawable/ic_nav_home"
                 app:tint="@color/home_nav_inactive" />
+
+            <TextView
+                android:id="@+id/homeNavLabelHome"
+                style="@style/Widget.Coolcook.Home.NavLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/home_bottom_nav_label_margin_top"
+                android:text="@string/home_nav_home" />
         </LinearLayout>
 
         <LinearLayout
@@ -1106,6 +1145,14 @@
                 android:contentDescription="@string/home_nav_search"
                 app:srcCompat="@drawable/ic_nav_search"
                 app:tint="@color/home_nav_inactive" />
+
+            <TextView
+                android:id="@+id/homeNavLabelSearch"
+                style="@style/Widget.Coolcook.Home.NavLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/home_bottom_nav_label_margin_top"
+                android:text="@string/home_nav_search" />
         </LinearLayout>
 
         <FrameLayout
@@ -1129,7 +1176,9 @@
                 android:clipToOutline="true"
                 android:elevation="@dimen/home_bottom_nav_center_elevation"
                 android:focusable="true"
+                android:outlineAmbientShadowColor="@color/home_shadow_ambient"
                 android:outlineProvider="background"
+                android:outlineSpotShadowColor="@color/home_shadow_spot"
                 android:translationY="@dimen/home_bottom_nav_center_button_offset">
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -1164,6 +1213,14 @@
                 android:contentDescription="@string/home_nav_history"
                 app:srcCompat="@drawable/ic_nav_history"
                 app:tint="@color/home_nav_inactive" />
+
+            <TextView
+                android:id="@+id/homeNavLabelHistory"
+                style="@style/Widget.Coolcook.Home.NavLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/home_bottom_nav_label_margin_top"
+                android:text="@string/home_nav_history" />
         </LinearLayout>
 
         <LinearLayout
@@ -1187,6 +1244,14 @@
                 android:contentDescription="@string/home_nav_profile"
                 app:srcCompat="@drawable/ic_nav_profile"
                 app:tint="@color/home_nav_inactive" />
+
+            <TextView
+                android:id="@+id/homeNavLabelProfile"
+                style="@style/Widget.Coolcook.Home.NavLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/home_bottom_nav_label_margin_top"
+                android:text="@string/home_nav_profile" />
         </LinearLayout>
     </LinearLayout>
 

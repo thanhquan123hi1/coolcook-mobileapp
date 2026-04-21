@@ -16,6 +16,10 @@
     <string name="auth_email">Email</string>
     <string name="auth_password">Mật khẩu</string>
     <string name="auth_confirm_password">Nhập lại mật khẩu</string>
+    <string name="auth_hint_full_name">Ví dụ: Nguyễn An</string>
+    <string name="auth_hint_email">name@example.com</string>
+    <string name="auth_hint_password">Tối thiểu 6 ký tự</string>
+    <string name="auth_hint_confirm_password">Nhập lại để xác nhận</string>
     <string name="auth_remember">Ghi nhớ tôi</string>
     <string name="auth_forgot">Quên mật khẩu?</string>
     <string name="auth_or_connect">HOẶC KẾT NỐI VỚI</string>
@@ -29,6 +33,7 @@
     <string name="icon_visibility_on">visibility</string>
     <string name="auth_loading">Đang xử lý...</string>
     <string name="auth_success_register">Đăng ký thành công.</string>
+    <string name="auth_error_name_required">Vui lòng nhập họ và tên.</string>
     <string name="auth_error_email_required">Vui lòng nhập email.</string>
     <string name="auth_error_email_invalid">Email không đúng định dạng.</string>
     <string name="auth_error_password_required">Vui lòng nhập mật khẩu.</string>
@@ -81,6 +86,19 @@
     <string name="home_notification_desc">Thông báo</string>
     <string name="home_avatar_desc">Ảnh đại diện</string>
 
+    <string name="chatbot_back_desc">Quay lại màn hình trước</string>
+    <string name="chatbot_grid_desc">Mở danh sách chatbot</string>
+    <string name="chatbot_title">Cùng CoolCook vào bếp nấu ăn nhé hehe !</string>
+    <string name="chatbot_subtitle">Hãy nói cho mình biết bạn muốn nấu món gì nèo</string>
+    <string name="chatbot_prompt_hint">Mô tả món ăn...</string>
+    <string name="chatbot_upload">Tải lên</string>
+    <string name="chatbot_upload_desc">Tải ảnh món ăn</string>
+    <string name="chatbot_send_desc">Gửi tin nhắn</string>
+    <string name="chatbot_empty_prompt">Vui lòng nhập mô tả món ăn.</string>
+    <string name="chatbot_sent_toast">Đã gửi mô tả đến trợ lý AI.</string>
+    <string name="chatbot_upload_selected">Đã chọn ảnh, bạn có thể gửi ngay.</string>
+    <string name="chatbot_grid_coming_soon">Danh sách mẫu AI sẽ sớm xuất hiện.</string>
+
     <string name="profile_edit_title">Chỉnh sửa thông tin</string>
     <string name="profile_edit_full_name_label">HỌ VÀ TÊN</string>
     <string name="profile_edit_phone_label">SỐ ĐIỆN THOẠI</string>
@@ -92,6 +110,9 @@
     <string name="profile_edit_error_phone_invalid">Số điện thoại chỉ được nhập chữ số</string>
     <string name="profile_edit_saved_success">Đã lưu thành công</string>
     <string name="profile_edit_saving">Đang lưu...</string>
+    <string name="profile_edit_preparing_image">Đang tối ưu ảnh trước khi tải lên...</string>
+    <string name="profile_edit_uploading_image">Đang tải ảnh lên Cloudinary...</string>
+    <string name="profile_edit_uploading_image_progress">Đang tải ảnh lên Cloudinary... %1$d%%</string>
     <string name="profile_edit_save_failed">Lưu thất bại. Vui lòng thử lại.</string>
     <string name="profile_edit_upload_failed">Tải ảnh lên Cloudinary thất bại.</string>
     <string name="profile_edit_cloudinary_missing">Thiếu cấu hình Cloudinary trong file .env</string>

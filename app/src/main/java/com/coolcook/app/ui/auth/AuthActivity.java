@@ -2,16 +2,15 @@ package com.coolcook.app.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
+import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -20,11 +19,13 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.Guideline;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.widget.NestedScrollView;
 
 import com.coolcook.app.R;
 import com.coolcook.app.ui.home.HomeActivity;
@@ -40,6 +41,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FacebookAuthProvider;
@@ -63,6 +65,7 @@ public class AuthActivity extends AppCompatActivity {
     private CallbackManager facebookCallbackManager;
     private ActivityResultLauncher<Intent> googleSignInLauncher;
 
+    private NestedScrollView authScroll;
     private View loginPanel;
     private View registerPanel;
     private View authLoadingOverlay;
@@ -76,6 +79,15 @@ public class AuthActivity extends AppCompatActivity {
     private View btnFacebookRegister;
     private View txtSwitchToRegister;
     private View txtSwitchToLogin;
+
+    private AppCompatCheckBox chkRemember;
+
+    private TextInputLayout loginEmailLayout;
+    private TextInputLayout loginPasswordLayout;
+    private TextInputLayout registerNameLayout;
+    private TextInputLayout registerEmailLayout;
+    private TextInputLayout registerPasswordLayout;
+    private TextInputLayout registerConfirmPasswordLayout;
 
     private EditText loginEmail;
     private EditText loginPassword;
@@ -103,7 +115,8 @@ public class AuthActivity extends AppCompatActivity {
 
         applyInsets();
         applyResponsiveTweaks();
-        setupPasswordToggles();
+        setupFieldInteractions();
+        setupCheckboxAnimation();
         setupActions();
 
         String initialMode = getIntent().getStringExtra(EXTRA_AUTH_MODE);
@@ -132,6 +145,7 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void bindViews() {
+        authScroll = findViewById(R.id.authScroll);
         loginPanel = findViewById(R.id.loginPanel);
         registerPanel = findViewById(R.id.registerPanel);
         authLoadingOverlay = findViewById(R.id.authLoadingOverlay);
@@ -145,6 +159,15 @@ public class AuthActivity extends AppCompatActivity {
         btnFacebookRegister = findViewById(R.id.btnFacebookRegister);
         txtSwitchToRegister = findViewById(R.id.txtSwitchToRegister);
         txtSwitchToLogin = findViewById(R.id.txtSwitchToLogin);
+
+        chkRemember = findViewById(R.id.chkRemember);
+
+        loginEmailLayout = findViewById(R.id.loginEmailLayout);
+        loginPasswordLayout = findViewById(R.id.loginPasswordLayout);
+        registerNameLayout = findViewById(R.id.registerNameLayout);
+        registerEmailLayout = findViewById(R.id.registerEmailLayout);
+        registerPasswordLayout = findViewById(R.id.registerPasswordLayout);
+        registerConfirmPasswordLayout = findViewById(R.id.registerConfirmPasswordLayout);
 
         loginEmail = findViewById(R.id.loginEmail);
         loginPassword = findViewById(R.id.loginPassword);
@@ -221,6 +244,53 @@ public class AuthActivity extends AppCompatActivity {
         });
     }
 
+    private void setupFieldInteractions() {
+        clearAllErrors();
+        setupClearErrorOnInput(loginEmail, loginEmailLayout);
+        setupClearErrorOnInput(loginPassword, loginPasswordLayout);
+        setupClearErrorOnInput(registerName, registerNameLayout);
+        setupClearErrorOnInput(registerEmail, registerEmailLayout);
+        setupClearErrorOnInput(registerPassword, registerPasswordLayout);
+        setupClearErrorOnInput(registerConfirmPassword, registerConfirmPasswordLayout);
+    }
+
+    private void setupClearErrorOnInput(EditText input, TextInputLayout layout) {
+        input.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // No-op.
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                clearFieldError(layout);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // No-op.
+            }
+        });
+    }
+
+    private void setupCheckboxAnimation() {
+        chkRemember.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            buttonView.animate().cancel();
+            buttonView.setPivotX(buttonView.getWidth() * 0.14f);
+            buttonView.setPivotY(buttonView.getHeight() * 0.5f);
+            buttonView.setScaleX(0.94f);
+            buttonView.setScaleY(0.94f);
+            buttonView.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(isChecked ? 180L : 140L)
+                    .setInterpolator(isChecked
+                            ? new OvershootInterpolator(0.55f)
+                            : new DecelerateInterpolator())
+                    .start();
+        });
+    }
+
     private void setupActions() {
         btnBack.setOnClickListener(v -> {
             finish();
@@ -241,33 +311,29 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private boolean validateLoginForm() {
-        loginEmail.setError(null);
-        loginPassword.setError(null);
+        clearFieldError(loginEmailLayout);
+        clearFieldError(loginPasswordLayout);
 
-        String email = loginEmail.getText().toString().trim();
-        String password = loginPassword.getText().toString();
+        String email = getTrimmedText(loginEmail);
+        String password = getText(loginPassword);
 
         if (TextUtils.isEmpty(email)) {
-            loginEmail.setError(getString(R.string.auth_error_email_required));
-            loginEmail.requestFocus();
+            showFieldError(loginEmailLayout, loginEmail, getString(R.string.auth_error_email_required));
             return false;
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            loginEmail.setError(getString(R.string.auth_error_email_invalid));
-            loginEmail.requestFocus();
+            showFieldError(loginEmailLayout, loginEmail, getString(R.string.auth_error_email_invalid));
             return false;
         }
 
         if (TextUtils.isEmpty(password)) {
-            loginPassword.setError(getString(R.string.auth_error_password_required));
-            loginPassword.requestFocus();
+            showFieldError(loginPasswordLayout, loginPassword, getString(R.string.auth_error_password_required));
             return false;
         }
 
         if (password.length() < 6) {
-            loginPassword.setError(getString(R.string.auth_error_password_min));
-            loginPassword.requestFocus();
+            showFieldError(loginPasswordLayout, loginPassword, getString(R.string.auth_error_password_min));
             return false;
         }
 
@@ -275,55 +341,48 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private boolean validateRegisterForm() {
-        registerName.setError(null);
-        registerEmail.setError(null);
-        registerPassword.setError(null);
-        registerConfirmPassword.setError(null);
+        clearFieldError(registerNameLayout);
+        clearFieldError(registerEmailLayout);
+        clearFieldError(registerPasswordLayout);
+        clearFieldError(registerConfirmPasswordLayout);
 
-        String name = registerName.getText().toString().trim();
-        String email = registerEmail.getText().toString().trim();
-        String password = registerPassword.getText().toString();
-        String confirmPassword = registerConfirmPassword.getText().toString();
+        String name = getTrimmedText(registerName);
+        String email = getTrimmedText(registerEmail);
+        String password = getText(registerPassword);
+        String confirmPassword = getText(registerConfirmPassword);
 
         if (TextUtils.isEmpty(name)) {
-            registerName.setError("Vui lòng nhập họ và tên.");
-            registerName.requestFocus();
+            showFieldError(registerNameLayout, registerName, getString(R.string.auth_error_name_required));
             return false;
         }
 
         if (TextUtils.isEmpty(email)) {
-            registerEmail.setError(getString(R.string.auth_error_email_required));
-            registerEmail.requestFocus();
+            showFieldError(registerEmailLayout, registerEmail, getString(R.string.auth_error_email_required));
             return false;
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            registerEmail.setError(getString(R.string.auth_error_email_invalid));
-            registerEmail.requestFocus();
+            showFieldError(registerEmailLayout, registerEmail, getString(R.string.auth_error_email_invalid));
             return false;
         }
 
         if (TextUtils.isEmpty(password)) {
-            registerPassword.setError(getString(R.string.auth_error_password_required));
-            registerPassword.requestFocus();
+            showFieldError(registerPasswordLayout, registerPassword, getString(R.string.auth_error_password_required));
             return false;
         }
 
         if (password.length() < 6) {
-            registerPassword.setError(getString(R.string.auth_error_password_min));
-            registerPassword.requestFocus();
+            showFieldError(registerPasswordLayout, registerPassword, getString(R.string.auth_error_password_min));
             return false;
         }
 
         if (TextUtils.isEmpty(confirmPassword)) {
-            registerConfirmPassword.setError(getString(R.string.auth_error_confirm_password_required));
-            registerConfirmPassword.requestFocus();
+            showFieldError(registerConfirmPasswordLayout, registerConfirmPassword, getString(R.string.auth_error_confirm_password_required));
             return false;
         }
 
         if (!password.equals(confirmPassword)) {
-            registerConfirmPassword.setError(getString(R.string.auth_error_confirm_password_mismatch));
-            registerConfirmPassword.requestFocus();
+            showFieldError(registerConfirmPasswordLayout, registerConfirmPassword, getString(R.string.auth_error_confirm_password_mismatch));
             return false;
         }
 
@@ -331,24 +390,22 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void registerUser() {
-        if (isLoading) {
-            return;
-        }
-        if (!validateRegisterForm()) {
+        if (isLoading || !validateRegisterForm()) {
             return;
         }
 
-        String name = registerName.getText().toString().trim();
-        String email = registerEmail.getText().toString().trim();
-        String password = registerPassword.getText().toString();
+        String name = getTrimmedText(registerName);
+        String email = getTrimmedText(registerEmail);
+        String password = getText(registerPassword);
 
         setLoading(true);
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful() && firebaseAuth.getCurrentUser() != null) {
-                        com.google.firebase.auth.UserProfileChangeRequest profileUpdates = new com.google.firebase.auth.UserProfileChangeRequest.Builder()
-                                .setDisplayName(name)
-                                .build();
+                        com.google.firebase.auth.UserProfileChangeRequest profileUpdates =
+                                new com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                                        .setDisplayName(name)
+                                        .build();
                         firebaseAuth.getCurrentUser().updateProfile(profileUpdates)
                                 .addOnCompleteListener(profileTask -> {
                                     setLoading(false);
@@ -363,15 +420,12 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void loginUser() {
-        if (isLoading) {
-            return;
-        }
-        if (!validateLoginForm()) {
+        if (isLoading || !validateLoginForm()) {
             return;
         }
 
-        String email = loginEmail.getText().toString().trim();
-        String password = loginPassword.getText().toString();
+        String email = getTrimmedText(loginEmail);
+        String password = getText(loginPassword);
 
         setLoading(true);
         firebaseAuth.signInWithEmailAndPassword(email, password)
@@ -479,6 +533,23 @@ public class AuthActivity extends AppCompatActivity {
         setViewEnabled(btnFacebookRegister, !loading);
         setViewEnabled(txtSwitchToRegister, !loading);
         setViewEnabled(txtSwitchToLogin, !loading);
+        setViewEnabled(chkRemember, !loading);
+
+        setFieldEnabled(loginEmail, !loading);
+        setFieldEnabled(loginPassword, !loading);
+        setFieldEnabled(registerName, !loading);
+        setFieldEnabled(registerEmail, !loading);
+        setFieldEnabled(registerPassword, !loading);
+        setFieldEnabled(registerConfirmPassword, !loading);
+    }
+
+    private void setFieldEnabled(EditText input, boolean enabled) {
+        input.setEnabled(enabled);
+        input.setFocusable(enabled);
+        input.setFocusableInTouchMode(enabled);
+        input.setClickable(enabled);
+        input.setLongClickable(enabled);
+        input.setAlpha(enabled ? 1f : 0.8f);
     }
 
     private void setViewEnabled(View view, boolean enabled) {
@@ -491,12 +562,10 @@ public class AuthActivity extends AppCompatActivity {
         String message = getReadableAuthError(exception, registerFlow);
 
         if (registerFlow && exception instanceof FirebaseAuthUserCollisionException) {
-            registerEmail.setError(message);
-            registerEmail.requestFocus();
+            showFieldError(registerEmailLayout, registerEmail, message);
         } else if (!registerFlow && (exception instanceof FirebaseAuthInvalidCredentialsException
                 || exception instanceof FirebaseAuthInvalidUserException)) {
-            loginPassword.setError(message);
-            loginPassword.requestFocus();
+            showFieldError(loginPasswordLayout, loginPassword, message);
         }
 
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
@@ -518,13 +587,16 @@ public class AuthActivity extends AppCompatActivity {
 
         if (exception != null) {
             android.util.Log.e("AuthActivity", "Auth Error: ", exception);
-            return exception.getMessage() != null ? exception.getMessage() : getString(registerFlow ? R.string.auth_error_register_failed : R.string.auth_error_login_failed);
+            return exception.getMessage() != null
+                    ? exception.getMessage()
+                    : getString(registerFlow
+                            ? R.string.auth_error_register_failed
+                            : R.string.auth_error_login_failed);
         }
 
-        if (registerFlow) {
-            return getString(R.string.auth_error_register_failed);
-        }
-        return getString(R.string.auth_error_login_failed);
+        return getString(registerFlow
+                ? R.string.auth_error_register_failed
+                : R.string.auth_error_login_failed);
     }
 
     private void applyInsets() {
@@ -576,32 +648,38 @@ public class AuthActivity extends AppCompatActivity {
         guideline.setLayoutParams(params);
     }
 
-    private void setupPasswordToggles() {
-        setupPasswordToggle(R.id.loginPassword, R.id.toggleLoginPassword);
-        setupPasswordToggle(R.id.registerPassword, R.id.toggleRegisterPassword);
-        setupPasswordToggle(R.id.registerConfirmPassword, R.id.toggleRegisterConfirmPassword);
+    private void clearAllErrors() {
+        clearFieldError(loginEmailLayout);
+        clearFieldError(loginPasswordLayout);
+        clearFieldError(registerNameLayout);
+        clearFieldError(registerEmailLayout);
+        clearFieldError(registerPasswordLayout);
+        clearFieldError(registerConfirmPasswordLayout);
     }
 
-    private void setupPasswordToggle(@IdRes int inputId, @IdRes int toggleId) {
-        EditText input = findViewById(inputId);
-        TextView toggle = findViewById(toggleId);
-        toggle.setTag(Boolean.FALSE);
+    private void clearFieldError(TextInputLayout layout) {
+        layout.setError(null);
+        layout.setErrorEnabled(false);
+    }
 
-        toggle.setOnClickListener(v -> {
-            boolean isVisible = Boolean.TRUE.equals(toggle.getTag());
-            if (isVisible) {
-                input.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                toggle.setText(R.string.icon_visibility_off);
-            } else {
-                input.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                toggle.setText(R.string.icon_visibility_on);
-            }
-            toggle.setTag(!isVisible);
-            input.setSelection(input.getText().length());
-        });
+    private void showFieldError(TextInputLayout layout, EditText input, String message) {
+        layout.setErrorEnabled(true);
+        layout.setError(message);
+        input.requestFocus();
+        input.setSelection(input.getText() == null ? 0 : input.getText().length());
+    }
+
+    private String getText(EditText input) {
+        return input.getText() == null ? "" : input.getText().toString();
+    }
+
+    private String getTrimmedText(EditText input) {
+        return getText(input).trim();
     }
 
     private void applyInitialState(boolean register) {
+        clearAllErrors();
+        authScroll.scrollTo(0, 0);
         if (register) {
             registerPanel.setVisibility(View.VISIBLE);
             registerPanel.setAlpha(1f);
@@ -618,6 +696,8 @@ public class AuthActivity extends AppCompatActivity {
             return;
         }
 
+        clearAllErrors();
+        authScroll.scrollTo(0, 0);
         isTransitioning = true;
 
         final View outgoing = showingRegister ? registerPanel : loginPanel;

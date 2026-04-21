@@ -50,6 +50,7 @@ android {
         buildConfigField("String", "CLOUDINARY_CLOUD_NAME", "\"${envValue("CLOUDINARY_CLOUD_NAME")}\"")
         buildConfigField("String", "CLOUDINARY_API_KEY", "\"${envValue("CLOUDINARY_API_KEY")}\"")
         buildConfigField("String", "CLOUDINARY_API_SECRET", "\"${envValue("CLOUDINARY_API_SECRET")}\"")
+        buildConfigField("String", "CLOUDINARY_UPLOAD_PRESET", "\"${envValue("CLOUDINARY_UPLOAD_PRESET")}\"")
 
         resValue("string", "facebook_app_id", "\"$facebookAppId\"")
         resValue("string", "facebook_client_token", "\"$facebookClientToken\"")
