@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -63,6 +64,11 @@
 
         <activity
             android:name=".ui.chatbot.ChatBotActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Coolcook" />
+
+        <activity
+            android:name=".ui.scan.ScanFoodActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook" />
 

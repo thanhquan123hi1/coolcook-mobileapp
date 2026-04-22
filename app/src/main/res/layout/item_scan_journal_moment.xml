@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    app:cardBackgroundColor="#1A1A1A"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="0dp"
+    app:strokeColor="#334F4632"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/imgJournalMoment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="Ảnh món ăn trong nhật ký"
+            android:minHeight="128dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img_scan_food_salad" />
+
+        <TextView
+            android:id="@+id/txtJournalMomentTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/be_vietnam_pro_medium"
+            android:text="21:10 - 22/04"
+            android:textColor="#ECECEC"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/txtJournalMomentSource"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Từ Camera sau"
+            android:textColor="#BFAF95"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -32,6 +32,7 @@ import com.coolcook.app.util.AvatarImageUtils;
 import com.coolcook.app.ui.chatbot.ChatBotActivity;
 import com.coolcook.app.ui.main.MainActivity;
 import com.coolcook.app.ui.profile.EditProfileDialogFragment;
+import com.coolcook.app.ui.scan.ScanFoodActivity;
 import com.facebook.login.LoginManager;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -62,9 +63,11 @@ public class HomeActivity extends AppCompatActivity {
     private static final float NAV_ICON_BOUNCE_REBOUND_SCALE = 1.05f;
     private static final float NAV_TAP_COMPRESS_FACTOR = 0.9f;
     private static final float NAV_TAP_REBOUND_FACTOR = 1.04f;
+    private static final long NAV_CAMERA_OPEN_DELAY_MS = 120L;
     private static final long QUICK_ACTION_PRESS_DURATION = 80L;
     private static final long QUICK_ACTION_RELEASE_DURATION = 100L;
     private static final float QUICK_ACTION_PRESS_SCALE = 0.95f;
+    private static final long LOGOUT_NAVIGATION_FALLBACK_DELAY_MS = 1200L;
 
     private View homeScroll;
     private View profileScroll;
@@ -78,6 +81,8 @@ public class HomeActivity extends AppCompatActivity {
     private TextView navLabelHistory;
     private TextView navLabelProfile;
     private View navCameraButton;
+    private View homeSearchCameraButton;
+    private View homeFeatureActionButton;
     private View homeQuickScanCard;
     private View homeQuickSuggestCard;
     private View homeQuickHealthCard;
@@ -94,6 +99,7 @@ public class HomeActivity extends AppCompatActivity {
     private String currentPhoneNumber = "";
     private String currentBirthDate = "";
     private String currentAvatarUrl = "";
+    private boolean isLogoutInProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +119,8 @@ public class HomeActivity extends AppCompatActivity {
         navLabelHistory = findViewById(R.id.homeNavLabelHistory);
         navLabelProfile = findViewById(R.id.homeNavLabelProfile);
         navCameraButton = findViewById(R.id.homeNavCameraButton);
+        homeSearchCameraButton = findViewById(R.id.homeSearchCameraButton);
+        homeFeatureActionButton = findViewById(R.id.homeFeatureActionButton);
         homeQuickScanCard = findViewById(R.id.homeQuickScanCard);
         homeQuickSuggestCard = findViewById(R.id.homeQuickSuggestCard);
         homeQuickHealthCard = findViewById(R.id.homeQuickHealthCard);
@@ -167,7 +175,11 @@ public class HomeActivity extends AppCompatActivity {
         firestore.collection(PROFILE_COLLECTION)
                 .document(user.getUid())
                 .get()
-                .addOnSuccessListener(documentSnapshot -> {
+                .addOnSuccessListener(this, documentSnapshot -> {
+                    if (!isActivityAliveForUi()) {
+                        return;
+                    }
+
                     if (!documentSnapshot.exists()) {
                         return;
                     }
@@ -191,7 +203,7 @@ public class HomeActivity extends AppCompatActivity {
                     currentAvatarUrl = avatarUrl != null ? avatarUrl : "";
                     renderAvatar(currentAvatarUrl);
                 })
-                .addOnFailureListener(error -> Log.w(TAG, "Khong the tai thong tin profile tu Firestore", error));
+                .addOnFailureListener(this, error -> Log.w(TAG, "Khong the tai thong tin profile tu Firestore", error));
     }
 
     private void observeProfileUpdates() {
@@ -221,6 +233,10 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void renderAvatar(String avatarUrl) {
+        if (!isActivityAliveForUi()) {
+            return;
+        }
+
         if (TextUtils.isEmpty(avatarUrl)) {
             if (imgHomeAvatar != null) {
                 imgHomeAvatar.setImageResource(R.drawable.img_home_profile);
@@ -256,6 +272,10 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    private boolean isActivityAliveForUi() {
+        return !isFinishing() && !isDestroyed();
+    }
+
     private int resolveAvatarTargetSize(View avatarView, int fallbackDp) {
         ViewGroup.LayoutParams layoutParams = avatarView.getLayoutParams();
         if (layoutParams != null && layoutParams.width > 0) {
@@ -287,18 +307,50 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void performLogout() {
-        // Sign out from Firebase
+        if (isLogoutInProgress) {
+            return;
+        }
+
+        isLogoutInProgress = true;
+        if (btnProfileLogout != null) {
+            btnProfileLogout.setEnabled(false);
+            btnProfileLogout.setClickable(false);
+            btnProfileLogout.setAlpha(0.6f);
+        }
+
         FirebaseAuth.getInstance().signOut();
+        signOutGoogleAsync();
+        signOutFacebookAsync();
 
-        // Sign out from Google
+        View anchorView = profileScroll != null ? profileScroll : homeScroll;
+        if (anchorView != null) {
+            anchorView.postDelayed(this::finishLogoutIfNeeded, LOGOUT_NAVIGATION_FALLBACK_DELAY_MS);
+        }
+    }
+
+    private void signOutGoogleAsync() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
-        googleSignInClient.signOut();
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(getApplicationContext(), gso);
+        googleSignInClient.signOut().addOnCompleteListener(this, task -> finishLogoutIfNeeded());
+    }
 
-        // Sign out from Facebook
-        LoginManager.getInstance().logOut();
+    private void signOutFacebookAsync() {
+        Thread facebookLogoutThread = new Thread(() -> {
+            try {
+                LoginManager.getInstance().logOut();
+            } catch (Exception error) {
+                Log.w(TAG, "Khong the dang xuat phien Facebook", error);
+            }
+        }, "facebook-logout-worker");
+        facebookLogoutThread.start();
+    }
 
-        // Navigate back to MainActivity
+    private void finishLogoutIfNeeded() {
+        if (!isLogoutInProgress || isFinishing() || isDestroyed()) {
+            return;
+        }
+
+        isLogoutInProgress = false;
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -312,7 +364,7 @@ public class HomeActivity extends AppCompatActivity {
         View cameraTab = findViewById(R.id.homeNavItemCamera);
         View historyTab = findViewById(R.id.homeNavItemHistory);
         View profileTab = findViewById(R.id.homeNavItemProfile);
-        View.OnClickListener cameraClickListener = v -> playTapFeedback(
+        View.OnClickListener cameraClickListener = v -> openScanFromNavigation(
                 navCameraButton != null ? navCameraButton : cameraTab);
 
         homeTab.setOnClickListener(v -> showTab(TAB_HOME));
@@ -326,10 +378,36 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupQuickActions() {
-        setupQuickActionCard(homeQuickScanCard, null);
+        setupCameraEntryAction(homeSearchCameraButton);
+        setupCameraEntryAction(homeFeatureActionButton);
+        setupQuickActionCard(homeQuickScanCard, this::launchScanFoodScreen);
         setupQuickActionCard(homeQuickSuggestCard, null);
         setupQuickActionCard(homeQuickHealthCard, null);
         setupQuickActionCard(homeQuickAiCard, () -> startActivity(ChatBotActivity.createIntent(this)));
+    }
+
+    private void setupCameraEntryAction(View entryView) {
+        if (entryView == null) {
+            return;
+        }
+        entryView.setOnClickListener(v -> animateQuickActionPress(v, this::launchScanFoodScreen));
+    }
+
+    private void openScanFromNavigation(View tapTarget) {
+        if (tapTarget == null) {
+            launchScanFoodScreen();
+            return;
+        }
+        playTapFeedback(tapTarget);
+        tapTarget.postDelayed(this::launchScanFoodScreen, NAV_CAMERA_OPEN_DELAY_MS);
+    }
+
+    private void launchScanFoodScreen() {
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+        startActivity(ScanFoodActivity.createIntent(this));
+        overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
     }
 
     private void setupQuickActionCard(View card, Runnable action) {

@@ -21,15 +21,15 @@
     <dimen name="chatbot_subtitle_text_size">16sp</dimen>
     <dimen name="chatbot_bubble_margin_top">22dp</dimen>
 
-    <dimen name="chatbot_input_margin_horizontal">28dp</dimen>
-    <dimen name="chatbot_input_margin_bottom">36dp</dimen>
-    <dimen name="chatbot_input_corner_radius">42dp</dimen>
-    <dimen name="chatbot_input_elevation">18dp</dimen>
+    <dimen name="chatbot_input_margin_horizontal">0dp</dimen>
+    <dimen name="chatbot_input_margin_bottom">0dp</dimen>
+    <dimen name="chatbot_input_corner_radius">46dp</dimen>
+    <dimen name="chatbot_input_elevation">10dp</dimen>
     <dimen name="chatbot_input_padding_horizontal">18dp</dimen>
-    <dimen name="chatbot_input_padding_top">14dp</dimen>
-    <dimen name="chatbot_input_padding_bottom">18dp</dimen>
+    <dimen name="chatbot_input_padding_top">20dp</dimen>
+    <dimen name="chatbot_input_padding_bottom">20dp</dimen>
     <dimen name="chatbot_prompt_hint_padding_top">8dp</dimen>
-    <dimen name="chatbot_prompt_hint_padding_bottom">34dp</dimen>
+    <dimen name="chatbot_prompt_hint_padding_bottom">10dp</dimen>
 
     <dimen name="chatbot_upload_button_height">50dp</dimen>
     <dimen name="chatbot_upload_button_padding_horizontal">26dp</dimen>

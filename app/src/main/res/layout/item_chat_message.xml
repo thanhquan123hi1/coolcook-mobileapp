@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="14dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layoutAiRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="horizontal"
+        tools:visibility="visible">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="4dp"
+            android:contentDescription="@string/chatbot_ai_avatar_desc"
+            app:cardBackgroundColor="@color/chatbot_ai_avatar_bg"
+            app:cardCornerRadius="999dp"
+            app:cardElevation="0dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:text="smart_toy"
+                android:textColor="@color/chatbot_ai_avatar_icon"
+                android:textSize="16sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="56dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtAiMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chat_message_ai"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:lineSpacingExtra="1dp"
+                android:maxWidth="300dp"
+                android:paddingStart="12dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="10dp"
+                android:textColor="@color/chatbot_bubble_text"
+                android:textSize="14sp"
+                tools:text="Chào bạn nè hehe! Mình gợi ý món cá hồi áp chảo sốt chanh bơ nha." />
+
+            <TextView
+                android:id="@+id/txtAiTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/be_vietnam_pro_medium"
+                android:textColor="@color/chatbot_subtitle"
+                android:textSize="11sp"
+                tools:text="10:35" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutUserRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal"
+        tools:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="56dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtUserMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chat_message_user"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:lineSpacingExtra="1dp"
+                android:maxWidth="300dp"
+                android:paddingStart="12dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="10dp"
+                android:textColor="@color/chatbot_user_bubble_text"
+                android:textSize="14sp"
+                tools:text="Mình muốn món cá hồi dưới 30 phút." />
+
+            <TextView
+                android:id="@+id/txtUserTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/be_vietnam_pro_medium"
+                android:textColor="@color/chatbot_subtitle"
+                android:textSize="11sp"
+                tools:text="10:34" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

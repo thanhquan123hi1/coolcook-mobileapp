@@ -53,7 +53,7 @@
     <string name="auth_error_invalid_credentials">Email hoặc mật khẩu không đúng.</string>
     <string name="auth_error_network">Lỗi kết nối mạng. Vui lòng thử lại.</string>
     <string name="home_greeting">Xin chào,</string>
-    <string name="home_user_name">Đức</string>
+    <string name="home_user_name">Nhạn</string>
     <string name="home_question">Hôm nay bạn muốn nấu gì?</string>
     <string name="home_search_hint">Tìm món ăn, nguyên liệu...</string>
     <string name="home_feature_title">Khám phá món ngon từ nguyên liệu bạn đang có</string>
@@ -88,16 +88,35 @@
 
     <string name="chatbot_back_desc">Quay lại màn hình trước</string>
     <string name="chatbot_grid_desc">Mở danh sách chatbot</string>
-    <string name="chatbot_title">Cùng CoolCook vào bếp nấu ăn nhé hehe !</string>
-    <string name="chatbot_subtitle">Hãy nói cho mình biết bạn muốn nấu món gì nèo</string>
+    <string name="chatbot_title">Cùng CoolCook vào bếp nấu ăn nhé hehe!</string>
+    <string name="chatbot_subtitle">Hãy nói cho mình biết bạn muốn nấu món gì</string>
     <string name="chatbot_prompt_hint">Mô tả món ăn...</string>
     <string name="chatbot_upload">Tải lên</string>
     <string name="chatbot_upload_desc">Tải ảnh món ăn</string>
     <string name="chatbot_send_desc">Gửi tin nhắn</string>
-    <string name="chatbot_empty_prompt">Vui lòng nhập mô tả món ăn.</string>
+    <string name="chatbot_empty_prompt">Nhập tin nhắn hoặc chọn ảnh để mình gợi ý nha.</string>
     <string name="chatbot_sent_toast">Đã gửi mô tả đến trợ lý AI.</string>
     <string name="chatbot_upload_selected">Đã chọn ảnh, bạn có thể gửi ngay.</string>
     <string name="chatbot_grid_coming_soon">Danh sách mẫu AI sẽ sớm xuất hiện.</string>
+    <string name="chatbot_typing">CoolCook AI đang nghĩ món ngon cho bạn</string>
+    <string name="chatbot_image_attached">Đã đính kèm ảnh</string>
+    <string name="chatbot_image_too_large">Ảnh hơi to nè, chọn ảnh dưới 4MB giúp mình nhé.</string>
+    <string name="chatbot_ai_error">Ối hehe, mình hơi lag một chút, thử lại nhé!</string>
+    <string name="chatbot_need_login">Bạn cần đăng nhập để dùng lịch sử ChatBot.</string>
+    <string name="chatbot_load_session_failed">Mình chưa tải lại được cuộc chat này, thử lại nhé.</string>
+    <string name="chatbot_session_title">Lịch sử trò chuyện</string>
+    <string name="chatbot_new_chat">New Chat</string>
+    <string name="chatbot_no_sessions">Chưa có cuộc chat nào, tạo mới nhé hehe.</string>
+    <string name="chatbot_quick_prompt_1">Hôm nay nấu gì hehe?</string>
+    <string name="chatbot_quick_prompt_2">Gợi ý món từ cá hồi nè ❤</string>
+    <string name="chatbot_quick_prompt_3">Nấu nhanh dưới 30 phút nha</string>
+    <string name="chatbot_quick_prompt_4">Phân tích nguyên liệu từ ảnh</string>
+    <string name="chatbot_ai_avatar_desc">Avatar trợ lý CoolCook AI</string>
+    <string name="chatbot_history_card_desc">Mở lại phiên chat cũ</string>
+    <string name="chatbot_delete_session_title">Xóa đoạn chat này?</string>
+    <string name="chatbot_delete_session_message">Bạn có chắc muốn xóa "%1$s" không? Hành động này sẽ xóa luôn trên lịch sử.</string>
+    <string name="chatbot_delete_confirm">Xóa</string>
+    <string name="chatbot_delete_cancel">Giữ lại</string>
 
     <string name="profile_edit_title">Chỉnh sửa thông tin</string>
     <string name="profile_edit_full_name_label">HỌ VÀ TÊN</string>

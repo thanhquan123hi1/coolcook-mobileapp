@@ -20,8 +20,20 @@ val envProperties = Properties().apply {
     }
 }
 
+val localProperties = Properties().apply {
+    val localFile = rootProject.file("local.properties")
+    if (localFile.exists()) {
+        localFile.inputStream().use { load(it) }
+    }
+}
+
 fun envValue(name: String): String =
     (envProperties.getProperty(name) ?: "").replace("\"", "\\\"")
+
+fun secretValue(name: String): String =
+    (envProperties.getProperty(name)
+        ?: localProperties.getProperty(name)
+        ?: "").replace("\"", "\\\"")
 
 fun fbLoginScheme(appId: String): String {
     if (appId.isBlank()) return ""
@@ -51,6 +63,8 @@ android {
         buildConfigField("String", "CLOUDINARY_API_KEY", "\"${envValue("CLOUDINARY_API_KEY")}\"")
         buildConfigField("String", "CLOUDINARY_API_SECRET", "\"${envValue("CLOUDINARY_API_SECRET")}\"")
         buildConfigField("String", "CLOUDINARY_UPLOAD_PRESET", "\"${envValue("CLOUDINARY_UPLOAD_PRESET")}\"")
+        buildConfigField("String", "GEMINI_API_KEY", "\"${secretValue("GEMINI_API_KEY")}\"")
+        buildConfigField("String", "GROQ_API_KEY", "\"${secretValue("GROQ_API_KEY")}\"")
 
         resValue("string", "facebook_app_id", "\"$facebookAppId\"")
         resValue("string", "facebook_client_token", "\"$facebookClientToken\"")
@@ -77,6 +91,17 @@ android {
         buildConfig = true
         resValues = true
     }
+
+    packaging {
+        resources {
+            excludes += "META-INF/INDEX.LIST"
+            excludes += "META-INF/DEPENDENCIES"
+            excludes += "META-INF/LICENSE"
+            excludes += "META-INF/LICENSE.txt"
+            excludes += "META-INF/NOTICE"
+            excludes += "META-INF/NOTICE.txt"
+        }
+    }
 }
 
 dependencies {
@@ -84,6 +109,9 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation("androidx.recyclerview:recyclerview:1.4.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel:2.9.4")
+    implementation("androidx.lifecycle:lifecycle-livedata:2.9.4")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -92,6 +120,12 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("com.facebook.android:facebook-login:18.2.3")
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("androidx.camera:camera-core:1.4.2")
+    implementation("androidx.camera:camera-camera2:1.4.2")
+    implementation("androidx.camera:camera-lifecycle:1.4.2")
+    implementation("androidx.camera:camera-view:1.4.2")
 
     // Thư viện Cloudinary cho Android
     implementation("com.cloudinary:cloudinary-android:3.1.2") // Vui lòng dùng version mới nhất

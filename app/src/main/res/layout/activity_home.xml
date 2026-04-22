@@ -159,8 +159,12 @@
                     android:textSize="14sp" />
 
                 <FrameLayout
+                    android:id="@+id/homeSearchCameraButton"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="@drawable/fg_ripple_circle"
                     android:background="@drawable/bg_home_search_camera_button">
 
                     <TextView
@@ -227,6 +231,7 @@
                             android:textStyle="bold" />
 
                         <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/homeFeatureActionButton"
                             android:layout_width="wrap_content"
                             android:layout_height="@dimen/home_feature_button_height"
                             android:layout_marginTop="@dimen/home_feature_button_margin_top"
