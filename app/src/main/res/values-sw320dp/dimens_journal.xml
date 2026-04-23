@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="journal_screen_padding_horizontal">16dp</dimen>
+    <dimen name="journal_screen_padding_top">14dp</dimen>
+    <dimen name="journal_top_icon_card_size">48dp</dimen>
+    <dimen name="journal_top_icon_size">22sp</dimen>
+
+    <dimen name="journal_title_margin_top">16dp</dimen>
+    <dimen name="journal_title_text_size">22sp</dimen>
+
+    <dimen name="journal_calendar_card_margin_top">14dp</dimen>
+    <dimen name="journal_calendar_card_corner">26dp</dimen>
+    <dimen name="journal_calendar_card_padding_horizontal">12dp</dimen>
+    <dimen name="journal_calendar_card_padding_top">12dp</dimen>
+    <dimen name="journal_calendar_card_padding_bottom">10dp</dimen>
+
+    <dimen name="journal_month_title_text_size">16sp</dimen>
+    <dimen name="journal_month_nav_size">30dp</dimen>
+    <dimen name="journal_weekday_margin_top">8dp</dimen>
+    <dimen name="journal_weekday_text_size">11sp</dimen>
+
+    <dimen name="journal_grid_margin_top">8dp</dimen>
+    <dimen name="journal_grid_bottom_padding">6dp</dimen>
+    <dimen name="journal_empty_text_margin_top">10dp</dimen>
+
+    <dimen name="journal_day_cell_side_padding">1dp</dimen>
+    <dimen name="journal_day_cell_bottom_margin">1dp</dimen>
+    <dimen name="journal_day_stack_height_default">50dp</dimen>
+    <dimen name="journal_day_photo_primary_size">30dp</dimen>
+    <dimen name="journal_day_photo_secondary_size">26dp</dimen>
+    <dimen name="journal_day_photo_corner">12dp</dimen>
+    <dimen name="journal_day_number_margin_top">4dp</dimen>
+    <dimen name="journal_day_number_text_size">13sp</dimen>
+
+    <dimen name="journal_day_extra_text_size">9sp</dimen>
+    <dimen name="journal_day_extra_padding_horizontal">5dp</dimen>
+    <dimen name="journal_day_extra_padding_vertical">1dp</dimen>
+
+    <dimen name="journal_fab_margin">20dp</dimen>
+    <dimen name="journal_fab_size">58dp</dimen>
+
+    <dimen name="journal_detail_title_text_size">22sp</dimen>
+    <dimen name="journal_detail_grid_margin_top">12dp</dimen>
+    <dimen name="journal_detail_photo_height">112dp</dimen>
+    <dimen name="journal_detail_content_bottom_padding">92dp</dimen>
+
+    <dimen name="journal_loading_size">28dp</dimen>
+</resources>

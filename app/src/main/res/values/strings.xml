@@ -80,11 +80,31 @@
     <string name="home_nav_home">Trang chủ</string>
     <string name="home_nav_search">Tìm kiếm</string>
     <string name="home_nav_camera">Quét bằng camera</string>
-    <string name="home_nav_history">Lịch sử</string>
+    <string name="home_nav_history">Nhật ký</string>
     <string name="home_nav_saved">Đã lưu</string>
     <string name="home_nav_profile">Hồ sơ</string>
     <string name="home_notification_desc">Thông báo</string>
     <string name="home_avatar_desc">Ảnh đại diện</string>
+
+    <string name="journal_back">Quay lại</string>
+    <string name="journal_open_tools">Mở công cụ bếp</string>
+    <string name="journal_calendar_title">Nhật ký món ăn của bạn nè</string>
+    <string name="journal_weekday_t2">T2</string>
+    <string name="journal_weekday_t3">T3</string>
+    <string name="journal_weekday_t4">T4</string>
+    <string name="journal_weekday_t5">T5</string>
+    <string name="journal_weekday_t6">T6</string>
+    <string name="journal_weekday_t7">T7</string>
+    <string name="journal_weekday_cn">CN</string>
+    <string name="journal_prev_month">Tháng trước</string>
+    <string name="journal_next_month">Tháng sau</string>
+    <string name="journal_empty_month">Tháng này chưa có món nào, bấm + để thêm nè.</string>
+    <string name="journal_empty_day">Ngày này chưa có ảnh món ăn.</string>
+    <string name="journal_add_photo">Thêm ảnh</string>
+    <string name="journal_add_photo_desc">Thêm ảnh nhật ký món ăn</string>
+    <string name="journal_photo_desc">Ảnh món ăn trong nhật ký</string>
+    <string name="journal_placeholder_desc">Ảnh placeholder nhật ký món ăn</string>
+    <string name="journal_fullscreen_coming_soon">Xem toàn màn hình sẽ có sớm nha.</string>
 
     <string name="chatbot_back_desc">Quay lại màn hình trước</string>
     <string name="chatbot_grid_desc">Mở danh sách chatbot</string>

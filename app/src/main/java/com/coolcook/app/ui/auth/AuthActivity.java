@@ -511,7 +511,6 @@ public class AuthActivity extends AppCompatActivity {
         Intent intent = new Intent(this, HomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
     }
 
     private void checkCurrentUser() {

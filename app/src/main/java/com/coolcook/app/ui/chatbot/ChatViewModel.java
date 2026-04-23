@@ -153,14 +153,13 @@ public class ChatViewModel extends ViewModel {
         ChatMessage aiMessage = new ChatMessage(ChatMessage.ROLE_AI, "");
 
         currentMessages.add(userMessage);
-        currentMessages.add(aiMessage);
         messages.setValue(currentMessages);
         loading.setValue(true);
 
         ensureSession(normalizedPrompt, (sessionId, createError) -> {
             if (createError != null || TextUtils.isEmpty(sessionId)) {
                 loading.postValue(false);
-                updateAiMessage(aiMessage.getId(), "Ối hehe, mình hơi lag một chút, thử lại nhé!");
+                updateAiMessage(aiMessage, "Ối hehe, mình hơi lag một chút, thử lại nhé!");
                 return;
             }
 
@@ -184,12 +183,13 @@ public class ChatViewModel extends ViewModel {
 
                         @Override
                         public void onChunk(@NonNull String accumulatedText) {
-                            updateAiMessage(aiMessage.getId(), accumulatedText);
+                            updateAiMessage(aiMessage, accumulatedText);
+                            loading.postValue(false);
                         }
 
                         @Override
                         public void onCompleted(@NonNull String finalText) {
-                            updateAiMessage(aiMessage.getId(), finalText);
+                            updateAiMessage(aiMessage, finalText);
                             loading.postValue(false);
 
                             ChatMessage finalAiMessage = aiMessage.copyWithContent(finalText);
@@ -204,7 +204,7 @@ public class ChatViewModel extends ViewModel {
 
                         @Override
                         public void onError(@NonNull String friendlyError) {
-                            updateAiMessage(aiMessage.getId(), friendlyError);
+                            updateAiMessage(aiMessage, friendlyError);
                             loading.postValue(false);
 
                             ChatMessage fallback = aiMessage.copyWithContent(friendlyError);
@@ -237,15 +237,20 @@ public class ChatViewModel extends ViewModel {
         return current == null ? new ArrayList<>() : new ArrayList<>(current);
     }
 
-    private void updateAiMessage(@NonNull String messageId, @NonNull String nextText) {
+    private void updateAiMessage(@NonNull ChatMessage baseMessage, @NonNull String nextText) {
         List<ChatMessage> current = copyMessages();
+        boolean found = false;
         for (int i = current.size() - 1; i >= 0; i--) {
             ChatMessage item = current.get(i);
-            if (messageId.equals(item.getId())) {
+            if (baseMessage.getId().equals(item.getId())) {
                 current.set(i, item.copyWithContent(nextText));
-                messages.postValue(current);
-                return;
+                found = true;
+                break;
             }
         }
+        if (!found) {
+            current.add(baseMessage.copyWithContent(nextText));
+        }
+        messages.postValue(current);
     }
 }

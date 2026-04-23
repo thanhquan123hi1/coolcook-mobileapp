@@ -24,6 +24,7 @@
         android:paddingStart="@dimen/chatbot_header_horizontal_padding"
         android:paddingTop="@dimen/chatbot_header_top_padding"
         android:paddingEnd="@dimen/chatbot_header_horizontal_padding"
+        android:translationZ="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -221,9 +222,9 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:overScrollMode="never"
-        android:paddingStart="@dimen/chatbot_content_horizontal_padding"
+        android:paddingStart="8dp"
         android:paddingTop="@dimen/chatbot_chat_list_margin_top"
-        android:paddingEnd="@dimen/chatbot_content_horizontal_padding"
+        android:paddingEnd="8dp"
         android:paddingBottom="@dimen/chatbot_chat_list_padding_bottom"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/typingIndicatorGroup"
@@ -237,10 +238,10 @@
         android:id="@+id/typingIndicatorGroup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/chatbot_content_horizontal_padding"
-        android:layout_marginEnd="@dimen/chatbot_content_horizontal_padding"
-        android:layout_marginBottom="8dp"
-        android:gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="14dp"
+        android:gravity="top|start"
         android:orientation="horizontal"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/chatbotInputCard"
@@ -249,8 +250,10 @@
         tools:visibility="visible">
 
         <com.google.android.material.card.MaterialCardView
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="4dp"
+            android:contentDescription="@string/chatbot_ai_avatar_desc"
             app:cardBackgroundColor="@color/chatbot_ai_avatar_bg"
             app:cardCornerRadius="999dp"
             app:cardElevation="0dp">
@@ -272,17 +275,50 @@
             android:fontFamily="@font/be_vietnam_pro_medium"
             android:text="@string/chatbot_typing"
             android:textColor="@color/chatbot_subtitle"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/txtTypingDots"
+        <LinearLayout
+            android:id="@+id/layoutTypingDots"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:fontFamily="@font/be_vietnam_pro_bold"
-            android:text="• • •"
-            android:textColor="@color/chatbot_typing_dot"
-            android:textSize="14sp" />
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_chat_message_ai"
+            android:paddingStart="16dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/dot1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:text="•"
+                android:textColor="@color/chatbot_typing_dot"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/dot2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="1dp"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:text="•"
+                android:textColor="@color/chatbot_typing_dot"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/dot3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="1dp"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:text="•"
+                android:textColor="@color/chatbot_typing_dot"
+                android:textSize="18sp" />
+        </LinearLayout>
     </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView

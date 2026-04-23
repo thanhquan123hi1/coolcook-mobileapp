@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/journalDayDetailRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <LinearLayout
+        android:id="@+id/journalDayDetailTopRow"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/journal_screen_padding_horizontal"
+        android:layout_marginTop="@dimen/journal_screen_padding_top"
+        android:layout_marginEnd="@dimen/journal_screen_padding_horizontal"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <FrameLayout
+            android:id="@+id/btnJournalDetailBack"
+            android:layout_width="@dimen/journal_top_icon_card_size"
+            android:layout_height="@dimen/journal_top_icon_card_size"
+            android:background="@drawable/bg_journal_top_icon_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="@drawable/fg_ripple_circle"
+            android:contentDescription="@string/journal_back">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:fontVariationSettings="'wght' 600"
+                android:text="arrow_back"
+                android:textColor="@color/outline"
+                android:textSize="@dimen/journal_top_icon_size" />
+        </FrameLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtJournalDayDetailTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/journal_screen_padding_horizontal"
+        android:layout_marginTop="@dimen/journal_title_margin_top"
+        android:layout_marginEnd="@dimen/journal_screen_padding_horizontal"
+        android:fontFamily="@font/be_vietnam_pro_bold"
+        android:text="Ngày 9 tháng 12, 2024"
+        android:textColor="@color/on_surface"
+        android:textSize="@dimen/journal_detail_title_text_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/journalDayDetailTopRow" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvJournalDayDetail"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/journal_screen_padding_horizontal"
+        android:layout_marginTop="@dimen/journal_detail_grid_margin_top"
+        android:layout_marginEnd="@dimen/journal_screen_padding_horizontal"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingBottom="@dimen/journal_detail_content_bottom_padding"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtJournalDayDetailTitle" />
+
+    <TextView
+        android:id="@+id/txtJournalDayDetailEmptyState"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/journal_screen_padding_horizontal"
+        android:layout_marginEnd="@dimen/journal_screen_padding_horizontal"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:gravity="center"
+        android:text="@string/journal_empty_day"
+        android:textColor="@color/on_surface_variant"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/rvJournalDayDetail"
+        app:layout_constraintEnd_toEndOf="@id/rvJournalDayDetail"
+        app:layout_constraintStart_toStartOf="@id/rvJournalDayDetail"
+        app:layout_constraintTop_toTopOf="@id/rvJournalDayDetail" />
+
+    <ProgressBar
+        android:id="@+id/journalDayDetailLoading"
+        android:layout_width="@dimen/journal_loading_size"
+        android:layout_height="@dimen/journal_loading_size"
+        android:indeterminateTint="@color/primary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/rvJournalDayDetail"
+        app:layout_constraintEnd_toEndOf="@id/rvJournalDayDetail"
+        app:layout_constraintStart_toStartOf="@id/rvJournalDayDetail"
+        app:layout_constraintTop_toTopOf="@id/rvJournalDayDetail" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabJournalDayAddPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/journal_fab_margin"
+        android:layout_marginBottom="@dimen/journal_fab_margin"
+        android:contentDescription="@string/journal_add_photo_desc"
+        android:src="@drawable/ic_journal_plus"
+        app:backgroundTint="@color/primary"
+        app:fabCustomSize="@dimen/journal_fab_size"
+        app:maxImageSize="26dp"
+        app:rippleColor="@color/home_nav_center_ripple"
+        app:tint="@color/on_primary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

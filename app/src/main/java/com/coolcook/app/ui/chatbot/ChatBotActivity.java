@@ -57,7 +57,9 @@ public class ChatBotActivity extends AppCompatActivity {
     private EditText edtPrompt;
     private TextView txtAttachedImage;
     private View typingIndicatorGroup;
-    private TextView txtTypingDots;
+    private TextView dot1;
+    private TextView dot2;
+    private TextView dot3;
     private View btnUpload;
     private View btnSend;
 
@@ -69,7 +71,9 @@ public class ChatBotActivity extends AppCompatActivity {
     private TextView txtNoSessions;
     private RecyclerView rvSessions;
 
-    private ObjectAnimator typingDotsAnimator;
+    private ObjectAnimator dot1Anim;
+    private ObjectAnimator dot2Anim;
+    private ObjectAnimator dot3Anim;
     private boolean isChatMode;
     private boolean isLoadingState;
 
@@ -99,9 +103,9 @@ public class ChatBotActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (typingDotsAnimator != null) {
-            typingDotsAnimator.cancel();
-        }
+        if (dot1Anim != null) dot1Anim.cancel();
+        if (dot2Anim != null) dot2Anim.cancel();
+        if (dot3Anim != null) dot3Anim.cancel();
     }
 
     private void bindViews() {
@@ -114,7 +118,9 @@ public class ChatBotActivity extends AppCompatActivity {
         edtPrompt = findViewById(R.id.edtChatbotPrompt);
         txtAttachedImage = findViewById(R.id.txtAttachedImage);
         typingIndicatorGroup = findViewById(R.id.typingIndicatorGroup);
-        txtTypingDots = findViewById(R.id.txtTypingDots);
+        dot1 = findViewById(R.id.dot1);
+        dot2 = findViewById(R.id.dot2);
+        dot3 = findViewById(R.id.dot3);
         txtNoSessions = findViewById(R.id.txtNoSessions);
         rvSessions = findViewById(R.id.rvChatSessions);
     }
@@ -268,20 +274,39 @@ public class ChatBotActivity extends AppCompatActivity {
     }
 
     private void startTypingAnimation() {
-        if (typingDotsAnimator == null) {
-            typingDotsAnimator = ObjectAnimator.ofFloat(txtTypingDots, View.ALPHA, 0.35f, 1f, 0.35f);
-            typingDotsAnimator.setDuration(900L);
-            typingDotsAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        if (dot1Anim == null) {
+            dot1Anim = ObjectAnimator.ofFloat(dot1, View.TRANSLATION_Y, 0f, -15f, 0f);
+            dot1Anim.setDuration(600);
+            dot1Anim.setRepeatCount(ObjectAnimator.INFINITE);
+            dot1Anim.setStartDelay(0);
+
+            dot2Anim = ObjectAnimator.ofFloat(dot2, View.TRANSLATION_Y, 0f, -15f, 0f);
+            dot2Anim.setDuration(600);
+            dot2Anim.setRepeatCount(ObjectAnimator.INFINITE);
+            dot2Anim.setStartDelay(150);
+
+            dot3Anim = ObjectAnimator.ofFloat(dot3, View.TRANSLATION_Y, 0f, -15f, 0f);
+            dot3Anim.setDuration(600);
+            dot3Anim.setRepeatCount(ObjectAnimator.INFINITE);
+            dot3Anim.setStartDelay(300);
         }
-        if (!typingDotsAnimator.isStarted()) {
-            typingDotsAnimator.start();
-        }
+        if (!dot1Anim.isStarted()) dot1Anim.start();
+        if (!dot2Anim.isStarted()) dot2Anim.start();
+        if (!dot3Anim.isStarted()) dot3Anim.start();
     }
 
     private void stopTypingAnimation() {
-        if (typingDotsAnimator != null) {
-            typingDotsAnimator.cancel();
-            txtTypingDots.setAlpha(1f);
+        if (dot1Anim != null) {
+            dot1Anim.cancel();
+            dot1.setTranslationY(0f);
+        }
+        if (dot2Anim != null) {
+            dot2Anim.cancel();
+            dot2.setTranslationY(0f);
+        }
+        if (dot3Anim != null) {
+            dot3Anim.cancel();
+            dot3.setTranslationY(0f);
         }
     }
 

@@ -59,6 +59,7 @@ import com.coolcook.app.ui.home.HomeActivity;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -68,6 +69,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -88,9 +91,13 @@ public class ScanFoodActivity extends AppCompatActivity {
     private static final int JOURNAL_UPLOAD_MAX_DIMENSION_PX = 1440;
     private static final int JOURNAL_UPLOAD_QUALITY = 84;
     private static final int JOURNAL_LIST_LIMIT = 80;
+    private static final boolean SHOW_JOURNAL_FEED_ON_CAMERA = false;
+
+    private static final String EXTRA_START_MODE = "extra_start_mode";
+    private static final String START_MODE_JOURNAL = "journal";
 
     private static final String FIRESTORE_USERS_COLLECTION = "users";
-    private static final String FIRESTORE_JOURNAL_COLLECTION = "journal_entries";
+    private static final String FIRESTORE_JOURNAL_COLLECTION = "journal";
 
     private View root;
     private View topBar;
@@ -139,6 +146,12 @@ public class ScanFoodActivity extends AppCompatActivity {
         return new Intent(context, ScanFoodActivity.class);
     }
 
+    public static Intent createJournalIntent(Context context) {
+        Intent intent = createIntent(context);
+        intent.putExtra(EXTRA_START_MODE, START_MODE_JOURNAL);
+        return intent;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,17 +169,22 @@ public class ScanFoodActivity extends AppCompatActivity {
         setupClickListeners();
 
         geminiRepository = new GeminiRepository();
+        applyInitialModeFromIntent();
 
         updateUiForMode(false);
         updateFlashUi(false);
-        updateScanStatus("Hướng camera vào món ăn rồi bấm nút chụp");
+        updateScanStatus(isRecognitionMode
+            ? "Hướng camera vào món ăn rồi bấm nút chụp"
+            : "Bấm chụp để lưu nhật ký");
         ensureCameraPermissionAndStart();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        startJournalListener();
+        if (SHOW_JOURNAL_FEED_ON_CAMERA) {
+            startJournalListener();
+        }
     }
 
     @Override
@@ -233,6 +251,15 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (rvJournalMoments == null) {
             return;
         }
+
+        if (!SHOW_JOURNAL_FEED_ON_CAMERA) {
+            rvJournalMoments.setVisibility(View.GONE);
+            if (txtJournalEmptyState != null) {
+                txtJournalEmptyState.setVisibility(View.GONE);
+            }
+            return;
+        }
+
         journalMomentAdapter = new JournalMomentAdapter();
         rvJournalMoments.setLayoutManager(new GridLayoutManager(this, 2));
         rvJournalMoments.setAdapter(journalMomentAdapter);
@@ -240,6 +267,10 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void startJournalListener() {
+        if (!SHOW_JOURNAL_FEED_ON_CAMERA) {
+            return;
+        }
+
         stopJournalListener();
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -254,7 +285,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         journalListener = firestore.collection(FIRESTORE_USERS_COLLECTION)
                 .document(user.getUid())
                 .collection(FIRESTORE_JOURNAL_COLLECTION)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
+            .orderBy("capturedAt", Query.Direction.DESCENDING)
                 .limit(JOURNAL_LIST_LIMIT)
                 .addSnapshotListener((snapshot, error) -> {
                     if (error != null) {
@@ -282,6 +313,17 @@ public class ScanFoodActivity extends AppCompatActivity {
                     }
                     updateJournalEmptyState(items.size(), "");
                 });
+    }
+
+    private void applyInitialModeFromIntent() {
+        Intent intent = getIntent();
+        if (intent == null) {
+            isRecognitionMode = true;
+            return;
+        }
+
+        String startMode = intent.getStringExtra(EXTRA_START_MODE);
+        isRecognitionMode = !START_MODE_JOURNAL.equalsIgnoreCase(startMode);
     }
 
     private void stopJournalListener() {
@@ -570,7 +612,8 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
 
         if (journalOverlay != null) {
-            journalOverlay.setVisibility(isRecognitionMode ? View.GONE : View.VISIBLE);
+            boolean showJournalOverlay = !isRecognitionMode && SHOW_JOURNAL_FEED_ON_CAMERA;
+            journalOverlay.setVisibility(showJournalOverlay ? View.VISIBLE : View.GONE);
         }
 
         if (detectionBox != null) {
@@ -595,7 +638,7 @@ public class ScanFoodActivity extends AppCompatActivity {
                         .withEndAction(() -> detectionBox.setVisibility(View.INVISIBLE))
                         .start();
                 if (!isJournalSaveInProgress) {
-                    updateScanStatus("Bấm chụp để lưu món ăn vào nhật ký");
+                    updateScanStatus("Bấm chụp để lưu nhật ký");
                 }
             }
         }
@@ -1013,28 +1056,49 @@ public class ScanFoodActivity extends AppCompatActivity {
             return;
         }
 
+        DocumentReference entryReference = firestore.collection(FIRESTORE_USERS_COLLECTION)
+            .document(user.getUid())
+            .collection(FIRESTORE_JOURNAL_COLLECTION)
+            .document();
+
+        Date capturedAt = new Date();
+        String dateKey = capturedAt.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+            .format(DateTimeFormatter.ISO_LOCAL_DATE);
+        String thumbnailUrl = buildCloudinaryThumbUrl(secureUrl, 480);
+
         Map<String, Object> payload = new HashMap<>();
+        payload.put("id", entryReference.getId());
+        payload.put("userId", user.getUid());
+        payload.put("date", dateKey);
         payload.put("imageUrl", secureUrl);
-        payload.put("thumbUrl", buildCloudinaryThumbUrl(secureUrl, 480));
+        payload.put("thumbnailUrl", thumbnailUrl);
+        payload.put("capturedAt", capturedAt);
+        payload.put("caption", "");
+        payload.put("mealType", "other");
+
+        // Legacy fields kept for compatibility with old local readers.
+        payload.put("thumbUrl", thumbnailUrl);
         payload.put("source", sourceLabel);
         payload.put("cameraFacing", "camera".equals(sourceLabel) ? (isUsingFrontCamera ? "front" : "back") : "none");
         payload.put("width", imageSize.width);
         payload.put("height", imageSize.height);
-        payload.put("createdAt", new Date());
+        payload.put("createdAt", capturedAt);
         payload.put("updatedAt", new Date());
 
-        firestore.collection(FIRESTORE_USERS_COLLECTION)
-                .document(user.getUid())
-                .collection(FIRESTORE_JOURNAL_COLLECTION)
-                .add(payload)
+        entryReference
+            .set(payload)
                 .addOnSuccessListener(ref -> {
                     isJournalSaveInProgress = false;
                     setProcessingUiEnabled(true);
                     updateScanStatus("Đã lưu món ăn vào nhật ký");
                     Toast.makeText(this, "Đã lưu vào nhật ký", Toast.LENGTH_SHORT).show();
-                    updateJournalEmptyState(
-                            journalMomentAdapter == null ? 1 : journalMomentAdapter.getItemCount(),
-                            "");
+                    if (SHOW_JOURNAL_FEED_ON_CAMERA) {
+                        updateJournalEmptyState(
+                                journalMomentAdapter == null ? 1 : journalMomentAdapter.getItemCount(),
+                                "");
+                    }
                 })
                 .addOnFailureListener(error -> finishJournalSaveWithError("Lưu Firestore thất bại. Vui lòng thử lại."));
     }
@@ -1207,8 +1271,13 @@ public class ScanFoodActivity extends AppCompatActivity {
 
     @Nullable
     private byte[] imageProxyToJpeg(@NonNull ImageProxy imageProxy) {
-        if (imageProxy.getFormat() != ImageFormat.YUV_420_888 || imageProxy.getPlanes().length < 3) {
-            return null;
+        ImageProxy.PlaneProxy[] planes = imageProxy.getPlanes();
+        if (imageProxy.getFormat() == ImageFormat.JPEG && planes.length > 0) {
+            return readPlaneBytes(planes[0]);
+        }
+
+        if (imageProxy.getFormat() != ImageFormat.YUV_420_888 || planes.length < 3) {
+            return planes.length > 0 ? readPlaneBytes(planes[0]) : null;
         }
 
         byte[] nv21 = yuv420888ToNv21(imageProxy);
@@ -1234,6 +1303,20 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
 
         return outputStream.toByteArray();
+    }
+
+    @Nullable
+    private byte[] readPlaneBytes(@NonNull ImageProxy.PlaneProxy plane) {
+        ByteBuffer buffer = plane.getBuffer();
+        ByteBuffer copy = buffer.duplicate();
+        copy.rewind();
+        if (!copy.hasRemaining()) {
+            return null;
+        }
+
+        byte[] bytes = new byte[copy.remaining()];
+        copy.get(bytes);
+        return bytes;
     }
 
     @Nullable

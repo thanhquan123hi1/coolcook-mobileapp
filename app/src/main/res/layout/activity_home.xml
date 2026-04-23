@@ -1216,7 +1216,7 @@
                 android:layout_width="@dimen/home_bottom_nav_icon_size"
                 android:layout_height="@dimen/home_bottom_nav_icon_size"
                 android:contentDescription="@string/home_nav_history"
-                app:srcCompat="@drawable/ic_nav_history"
+                app:srcCompat="@drawable/ic_nav_diary"
                 app:tint="@color/home_nav_inactive" />
 
             <TextView

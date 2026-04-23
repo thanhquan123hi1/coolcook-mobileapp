@@ -30,6 +30,7 @@ import com.bumptech.glide.Glide;
 import com.coolcook.app.R;
 import com.coolcook.app.util.AvatarImageUtils;
 import com.coolcook.app.ui.chatbot.ChatBotActivity;
+import com.coolcook.app.ui.journal.JournalCalendarActivity;
 import com.coolcook.app.ui.main.MainActivity;
 import com.coolcook.app.ui.profile.EditProfileDialogFragment;
 import com.coolcook.app.ui.scan.ScanFoodActivity;
@@ -373,7 +374,7 @@ public class HomeActivity extends AppCompatActivity {
         if (navCameraButton != null) {
             navCameraButton.setOnClickListener(cameraClickListener);
         }
-        historyTab.setOnClickListener(v -> playTapFeedback(historyTab));
+        historyTab.setOnClickListener(v -> openJournalFromNavigation(historyTab));
         profileTab.setOnClickListener(v -> showTab(TAB_PROFILE));
     }
 
@@ -402,11 +403,28 @@ public class HomeActivity extends AppCompatActivity {
         tapTarget.postDelayed(this::launchScanFoodScreen, NAV_CAMERA_OPEN_DELAY_MS);
     }
 
+    private void openJournalFromNavigation(View tapTarget) {
+        if (tapTarget != null) {
+            playTapFeedback(tapTarget);
+            tapTarget.postDelayed(this::launchJournalScreen, NAV_CAMERA_OPEN_DELAY_MS);
+            return;
+        }
+        launchJournalScreen();
+    }
+
     private void launchScanFoodScreen() {
         if (isFinishing() || isDestroyed()) {
             return;
         }
         startActivity(ScanFoodActivity.createIntent(this));
+        overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+    }
+
+    private void launchJournalScreen() {
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+        startActivity(new Intent(this, JournalCalendarActivity.class));
         overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
     }
 
