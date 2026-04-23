@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/journalFeedContent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_journal_feed_sheet"
+    android:clipToPadding="false"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/journal_outer_padding"
+    android:paddingTop="@dimen/journal_feed_top_padding"
+    android:paddingEnd="@dimen/journal_outer_padding"
+    android:paddingBottom="@dimen/journal_feed_content_bottom_padding">
+
+    <View
+        android:layout_width="44dp"
+        android:layout_height="5dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_journal_feed_handle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:fontFamily="@font/manrope"
+        android:text="Moi nhat"
+        android:textColor="@color/journal_text_primary"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvJournalMoments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:nestedScrollingEnabled="false"
+        android:overScrollMode="never"
+        android:scrollbars="none" />
+
+    <TextView
+        android:id="@+id/txtJournalEmptyState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_locket_empty_pill"
+        android:drawablePadding="10dp"
+        android:fontFamily="@font/manrope"
+        android:gravity="center"
+        android:minHeight="56dp"
+        android:paddingStart="22dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="22dp"
+        android:paddingBottom="14dp"
+        android:text="Chua co hoat dong nao!"
+        android:textColor="#C9CDD3"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+</LinearLayout>

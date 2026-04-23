@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/btnJournalShutter"
+    android:layout_width="@dimen/journal_shutter_touch_size"
+    android:layout_height="@dimen/journal_shutter_touch_size"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="@drawable/fg_ripple_circle">
+
+    <View
+        android:layout_width="@dimen/journal_shutter_outer_size"
+        android:layout_height="@dimen/journal_shutter_outer_size"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_journal_shutter_outer" />
+
+    <View
+        android:layout_width="@dimen/journal_shutter_inner_size"
+        android:layout_height="@dimen/journal_shutter_inner_size"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_camera_shutter_inner" />
+
+</FrameLayout>

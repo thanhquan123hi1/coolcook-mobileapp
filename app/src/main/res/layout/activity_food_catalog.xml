@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".ui.search.FoodCatalogActivity">
+    tools:context=".feature.search.ui.FoodCatalogActivity">
 
     <LinearLayout
         android:id="@+id/foodCatalogContent"

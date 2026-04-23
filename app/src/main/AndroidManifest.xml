@@ -41,7 +41,7 @@
         </activity>
 
         <activity
-            android:name=".ui.splash.SplashActivity"
+            android:name=".feature.splash.ui.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.Coolcook.Splash">
             <intent-filter>
@@ -52,48 +52,48 @@
         </activity>
         
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".feature.main.ui.MainActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook">
         </activity>
 
         <activity
-            android:name=".ui.home.HomeActivity"
+            android:name=".feature.home.ui.HomeActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook" />
 
         <activity
-            android:name=".ui.search.FoodCatalogActivity"
+            android:name=".feature.search.ui.FoodCatalogActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook" />
 
         <activity
-            android:name=".ui.search.FoodDetailActivity"
+            android:name=".feature.search.ui.FoodDetailActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook" />
 
         <activity
-            android:name=".ui.chatbot.ChatBotActivity"
+            android:name=".feature.chatbot.ui.ChatBotActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook" />
 
         <activity
-            android:name=".ui.journal.JournalCalendarActivity"
+            android:name=".feature.journal.ui.JournalCalendarActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook" />
 
         <activity
-            android:name=".ui.journal.JournalDayDetailActivity"
+            android:name=".feature.journal.ui.JournalDayDetailActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook" />
 
         <activity
-            android:name=".ui.scan.ScanFoodActivity"
+            android:name=".feature.camera.ui.ScanFoodActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook" />
 
         <activity
-            android:name=".ui.scan.FriendInviteActivity"
+            android:name=".feature.social.ui.FriendInviteActivity"
             android:exported="true"
             android:theme="@style/Theme.Coolcook">
             <intent-filter>
@@ -121,7 +121,7 @@
         </activity>
 
         <activity
-            android:name=".ui.auth.AuthActivity"
+            android:name=".feature.auth.ui.AuthActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook" />
     </application>
