@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/foodDetailRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".ui.search.FoodDetailActivity">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/foodDetailContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="28dp">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="320dp">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgFoodHero"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@null"
+                    android:scaleType="centerCrop"
+                    tools:src="@drawable/img_home_recipe_pho" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/bg_food_image_scrim" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="20dp"
+                android:paddingTop="22dp"
+                android:paddingEnd="20dp">
+
+                <TextView
+                    android:id="@+id/txtFoodDetailTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:includeFontPadding="false"
+                    android:lineSpacingExtra="2dp"
+                    android:textColor="@color/on_surface"
+                    android:textSize="29sp"
+                    tools:text="Cơm tấm sườn nướng" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txtFoodDetailCategory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_food_suitable_tag"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:gravity="center"
+                        android:minWidth="64dp"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:textColor="@color/home_accent"
+                        android:textSize="12sp"
+                        tools:text="DRY" />
+
+                    <TextView
+                        android:id="@+id/txtFoodDetailTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_food_suitable_tag"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:gravity="center"
+                        android:minWidth="78dp"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:textColor="@color/on_surface_variant"
+                        android:textSize="12sp"
+                        tools:text="45 MIN" />
+
+                    <TextView
+                        android:id="@+id/txtFoodDetailServing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_food_suitable_tag"
+                        android:ellipsize="end"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:textColor="@color/on_surface_variant"
+                        android:textSize="12sp"
+                        tools:text="2-3 PORTIONS" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text="Phù hợp cho"
+                    android:textColor="@color/on_surface"
+                    android:textSize="17sp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/groupFoodSuitable"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:chipSpacingHorizontal="8dp"
+                    app:chipSpacingVertical="6dp"
+                    app:singleLine="false"
+                    tools:ignore="SpeakableTextPresentCheck" />
+
+                <LinearLayout
+                    android:id="@+id/cardFoodIngredients"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/bg_food_section_card"
+                    android:elevation="1dp"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Nguyên liệu"
+                        android:textColor="@color/on_surface"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:id="@+id/listFoodIngredients"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/cardFoodSteps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_food_section_card"
+                    android:elevation="1dp"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Các bước thực hiện"
+                        android:textColor="@color/on_surface"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:id="@+id/listFoodSteps"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/cardFoodTips"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_food_tip_card"
+                    android:elevation="1dp"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Mẹo tối ưu"
+                        android:textColor="@color/on_surface"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:id="@+id/listFoodTips"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="vertical" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txtFoodRawRecipe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/bg_food_section_card"
+                    android:fontFamily="@font/be_vietnam_pro"
+                    android:lineSpacingExtra="3dp"
+                    android:padding="18dp"
+                    android:textColor="@color/on_surface_variant"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    tools:text="Raw recipe fallback" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/foodDetailTopControls"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="18dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="18dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/btnFoodBack"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_food_icon_circle_light"
+            android:clickable="true"
+            android:contentDescription="Quay lại"
+            android:focusable="true"
+            android:fontFamily="@font/material_symbols_outlined"
+            android:fontVariationSettings="'wght' 600"
+            android:gravity="center"
+            android:text="arrow_back"
+            android:textColor="@color/on_surface"
+            android:textSize="23sp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/btnFoodFavorite"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_food_icon_circle_light"
+            android:clickable="true"
+            android:contentDescription="Yêu thích"
+            android:focusable="true"
+            android:fontFamily="@font/material_symbols_outlined"
+            android:fontVariationSettings="'FILL' 0, 'wght' 600"
+            android:gravity="center"
+            android:text="favorite"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="23sp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

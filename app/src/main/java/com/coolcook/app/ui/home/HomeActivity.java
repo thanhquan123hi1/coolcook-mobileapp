@@ -42,6 +42,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.coolcook.app.ui.search.FoodCatalogActivity;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -386,7 +387,7 @@ public class HomeActivity extends AppCompatActivity {
                 navCameraButton != null ? navCameraButton : cameraTab);
 
         homeTab.setOnClickListener(v -> showTab(TAB_HOME));
-        searchTab.setOnClickListener(v -> playTapFeedback(searchTab));
+        searchTab.setOnClickListener(v -> openFoodCatalogFromNavigation(searchTab));
         cameraTab.setOnClickListener(cameraClickListener);
         if (navCameraButton != null) {
             navCameraButton.setOnClickListener(cameraClickListener);
@@ -399,7 +400,7 @@ public class HomeActivity extends AppCompatActivity {
         setupCameraEntryAction(homeSearchCameraButton);
         setupCameraEntryAction(homeFeatureActionButton);
         setupQuickActionCard(homeQuickScanCard, this::launchScanFoodScreen);
-        setupQuickActionCard(homeQuickSuggestCard, null);
+        setupQuickActionCard(homeQuickSuggestCard, this::launchFoodCatalogScreen);
         setupQuickActionCard(homeQuickHealthCard, null);
         setupQuickActionCard(homeQuickAiCard, () -> startActivity(ChatBotActivity.createIntent(this)));
     }
@@ -429,6 +430,15 @@ public class HomeActivity extends AppCompatActivity {
         launchJournalScreen();
     }
 
+    private void openFoodCatalogFromNavigation(View tapTarget) {
+        if (tapTarget != null) {
+            playTapFeedback(tapTarget);
+            tapTarget.postDelayed(this::launchFoodCatalogScreen, NAV_CAMERA_OPEN_DELAY_MS);
+            return;
+        }
+        launchFoodCatalogScreen();
+    }
+
     private void launchScanFoodScreen() {
         if (isFinishing() || isDestroyed()) {
             return;
@@ -443,6 +453,14 @@ public class HomeActivity extends AppCompatActivity {
         }
         startActivity(new Intent(this, JournalCalendarActivity.class));
         overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+    }
+
+    private void launchFoodCatalogScreen() {
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+        startActivity(FoodCatalogActivity.createIntent(this));
+        overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
     }
 
     private void setupQuickActionCard(View card, Runnable action) {
