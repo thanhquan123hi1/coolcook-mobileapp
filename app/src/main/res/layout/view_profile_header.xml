@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgProfileAvatar"
+            android:layout_width="@dimen/profile_avatar_size"
+            android:layout_height="@dimen/profile_avatar_size"
+            android:contentDescription="@string/profile_avatar_desc"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img_home_profile"
+            app:shapeAppearanceOverlay="@style/CircleImageView"
+            app:strokeColor="@color/home_avatar_border"
+            app:strokeWidth="2dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtProfileName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="@string/profile_default_name"
+                android:textColor="@color/on_surface"
+                android:textSize="@dimen/profile_header_name_text_size"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtProfileEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="email@example.com"
+                android:textColor="@color/on_surface_variant"
+                android:textSize="@dimen/profile_header_email_text_size" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/btnProfileEdit"
+        android:layout_width="@dimen/profile_edit_button_size"
+        android:layout_height="@dimen/profile_edit_button_size"
+        android:background="@drawable/bg_profile_edit_button"
+        android:clickable="true"
+        android:clipToOutline="true"
+        android:contentDescription="@string/profile_edit_desc"
+        android:focusable="true"
+        android:foreground="@drawable/fg_ripple_circle"
+        android:outlineProvider="background">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/material_symbols_outlined"
+            android:fontVariationSettings="'wght' 600"
+            android:text="edit"
+            android:textColor="@color/primary"
+            android:textSize="26sp" />
+    </FrameLayout>
+</LinearLayout>

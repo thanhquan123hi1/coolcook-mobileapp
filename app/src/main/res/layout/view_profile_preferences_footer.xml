@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/profile_footer_section_margin_top"
+        android:background="@drawable/bg_profile_action_item"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/profile_action_item_min_height"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/profile_action_item_padding_horizontal"
+        android:paddingEnd="@dimen/profile_action_item_padding_horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:fontVariationSettings="'wght' 500"
+                android:text="dark_mode"
+                android:textColor="@color/on_surface_variant"
+                android:textSize="@dimen/profile_action_icon_size" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/profile_action_text_margin_start"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:text="@string/profile_footer_dark_mode"
+                android:textColor="@color/on_surface"
+                android:textSize="@dimen/profile_action_text_size"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="@dimen/profile_toggle_track_width"
+            android:layout_height="@dimen/profile_toggle_track_height"
+            android:background="@drawable/bg_profile_dark_mode_track"
+            android:contentDescription="@string/profile_footer_dark_mode_desc">
+
+            <View
+                android:layout_width="@dimen/profile_toggle_thumb_size"
+                android:layout_height="@dimen/profile_toggle_thumb_size"
+                android:layout_gravity="center_vertical|end"
+                android:layout_marginEnd="3dp"
+                android:background="@drawable/bg_profile_dark_mode_thumb" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btnProfileLogout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/profile_logout_height"
+        android:layout_marginTop="@dimen/profile_logout_margin_top"
+        android:background="@drawable/bg_profile_logout_button"
+        android:clickable="true"
+        android:clipToOutline="true"
+        android:focusable="true"
+        android:foreground="@drawable/fg_ripple_rounded_large"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:outlineProvider="background">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/material_symbols_outlined"
+            android:fontVariationSettings="'wght' 600"
+            android:text="logout"
+            android:textColor="@color/primary"
+            android:textSize="28sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="@string/profile_footer_logout"
+            android:textColor="@color/primary"
+            android:textSize="@dimen/profile_action_text_size"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

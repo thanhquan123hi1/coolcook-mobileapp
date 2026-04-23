@@ -157,4 +157,21 @@
     <string name="profile_edit_upload_failed">Tải ảnh lên Cloudinary thất bại.</string>
     <string name="profile_edit_cloudinary_missing">Thiếu cấu hình Cloudinary trong file .env</string>
     <string name="profile_edit_user_missing">Không tìm thấy người dùng đăng nhập.</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_avatar_desc">Ảnh đại diện hồ sơ</string>
+    <string name="profile_default_name">Người dùng</string>
+    <string name="profile_edit_desc">Chỉnh sửa hồ sơ</string>
+    <string name="profile_stats_cooked">Món đã nấu</string>
+    <string name="profile_stats_saved">Đã lưu</string>
+    <string name="profile_stats_posts">Bài viết</string>
+    <string name="profile_section_activity">Hoạt động</string>
+    <string name="profile_action_saved">Món ăn đã lưu</string>
+    <string name="profile_action_journal">Nhật ký món ăn</string>
+    <string name="profile_action_favorites">Món yêu thích</string>
+    <string name="profile_action_health">Gợi ý theo sức khỏe</string>
+    <string name="profile_action_settings">Cài đặt</string>
+    <string name="profile_footer_dark_mode">Chế độ tối</string>
+    <string name="profile_footer_dark_mode_desc">Trạng thái chế độ tối</string>
+    <string name="profile_footer_logout">Đăng xuất</string>
 </resources>

@@ -3,21 +3,14 @@ package com.coolcook.app.feature.camera.ui;
 import android.Manifest;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.ImageFormat;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -53,7 +46,6 @@ import androidx.core.view.GestureDetectorCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.NestedScrollView;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coolcook.app.R;
@@ -62,23 +54,14 @@ import com.coolcook.app.feature.chatbot.model.ChatMessage;
 import com.coolcook.app.feature.social.data.FriendInviteRepository;
 import com.coolcook.app.feature.social.data.JournalFeedRepository;
 import com.coolcook.app.feature.social.data.MediaUploadRepository;
-import com.coolcook.app.feature.social.model.FriendInvite;
 import com.coolcook.app.feature.social.model.JournalFeedItem;
-import com.coolcook.app.feature.social.model.MediaUploadResult;
-import com.coolcook.app.feature.social.ui.adapter.JournalFeedAdapter;
-import com.coolcook.app.feature.auth.ui.AuthActivity;
 import com.coolcook.app.feature.home.ui.HomeActivity;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.ListenerRegistration;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,8 +76,6 @@ public class ScanFoodActivity extends AppCompatActivity {
 
     private static final int MAX_RECOGNITION_IMAGE_BYTES = 4 * 1024 * 1024;
     private static final int MAX_JOURNAL_IMAGE_BYTES = 8 * 1024 * 1024;
-    private static final int JOURNAL_LIST_LIMIT = 30;
-
     private static final String EXTRA_START_MODE = "extra_start_mode";
     private static final String START_MODE_JOURNAL = "journal";
 
@@ -156,7 +137,6 @@ public class ScanFoodActivity extends AppCompatActivity {
     private boolean isUsingFrontCamera;
     private boolean isCameraReady;
     private boolean isRecognitionInProgress;
-    private boolean isJournalSaveInProgress;
     private boolean isJournalFeedOpen;
     private boolean isJournalFeedDragging;
 
@@ -170,12 +150,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private FriendInviteRepository friendInviteRepository;
     private final List<ChatMessage> recognitionHistory = new ArrayList<>();
     private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-    private ListenerRegistration journalFeedListener;
-    private ListenerRegistration journalProfileListener;
-    private JournalFeedAdapter journalFeedAdapter;
-
-    private byte[] pendingJournalImageBytes;
-    private String pendingJournalSourceLabel = "camera";
+    private ScanFoodJournalManager journalManager;
     private GestureDetectorCompat journalGestureDetector;
     private int journalTouchSlop;
     private float journalFeedClosedTranslation;
@@ -214,6 +189,33 @@ public class ScanFoodActivity extends AppCompatActivity {
         mediaUploadRepository = new MediaUploadRepository(getApplicationContext());
         journalFeedRepository = new JournalFeedRepository(firestore);
         friendInviteRepository = new FriendInviteRepository(firestore);
+        journalManager = new ScanFoodJournalManager(
+                this,
+                new ScanFoodJournalManager.Host() {
+                    @Override
+                    public void setProcessingUiEnabled(boolean enabled) {
+                        ScanFoodActivity.this.setProcessingUiEnabled(enabled);
+                    }
+
+                    @Override
+                    public void updateJournalStatus(@NonNull String status) {
+                        ScanFoodActivity.this.updateJournalStatus(status);
+                    }
+                },
+                rvJournalMoments,
+                txtJournalEmptyState,
+                txtJournalFriendCount,
+                txtJournalUploadProgress,
+                txtJournalPostError,
+                edtJournalCaption,
+                imgJournalCapturedPreview,
+                journalCaptureOverlay,
+                btnJournalPostCancel,
+                btnJournalPostPublish,
+                journalPostLoading,
+                mediaUploadRepository,
+                journalFeedRepository,
+                friendInviteRepository);
 
         applyInitialModeFromIntent();
         updateUiForMode(false);
@@ -267,8 +269,8 @@ public class ScanFoodActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (journalCaptureOverlay != null && journalCaptureOverlay.getVisibility() == View.VISIBLE) {
-            hideJournalCapturePreview(true);
+        if (journalManager != null && journalManager.isCapturePreviewVisible()) {
+            journalManager.hideJournalCapturePreview(true);
             return;
         }
         if (!isRecognitionMode && isJournalFeedOpen) {
@@ -334,11 +336,9 @@ public class ScanFoodActivity extends AppCompatActivity {
             return;
         }
 
-        journalFeedAdapter = new JournalFeedAdapter();
-        rvJournalMoments.setLayoutManager(new LinearLayoutManager(this));
-        rvJournalMoments.setAdapter(journalFeedAdapter);
-        rvJournalMoments.setNestedScrollingEnabled(false);
-        updateJournalEmptyState(0, "Chưa có hoạt động nào!");
+        if (journalManager != null) {
+            journalManager.setupJournalList();
+        }
     }
 
     private void setupJournalFeedSheet() {
@@ -524,69 +524,14 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void startJournalRealtimeListeners() {
-        stopJournalRealtimeListeners();
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            if (journalFeedAdapter != null) {
-                journalFeedAdapter.submitItems(new ArrayList<>());
-            }
-            updateJournalEmptyState(0, "Đăng nhập để xem feed của bạn bè.");
-            updateJournalStatus("Vui lòng đăng nhập để đăng moment.");
-            if (txtJournalFriendCount != null) {
-                txtJournalFriendCount.setText("Tất cả bạn bè");
-            }
-            return;
+        if (journalManager != null) {
+            journalManager.startRealtimeListeners();
         }
-
-        journalFeedListener = journalFeedRepository.listenToFeed(user.getUid(), JOURNAL_LIST_LIMIT,
-                new JournalFeedRepository.FeedCallback() {
-                    @Override
-                    public void onItems(@NonNull List<JournalFeedItem> items) {
-                        if (journalFeedAdapter != null) {
-                            journalFeedAdapter.submitItems(items);
-                        }
-                        updateJournalEmptyState(items.size(), "Chưa có hoạt động nào!");
-                    }
-
-                    @Override
-                    public void onError(@NonNull Exception error) {
-                        updateJournalEmptyState(0, "Không tải được feed. Vui lòng thử lại.");
-                        updateJournalStatus("Không tải được feed.");
-                    }
-                });
-
-        journalProfileListener = journalFeedRepository.listenToUserProfile(user,
-                new JournalFeedRepository.UserProfileCallback() {
-                    @Override
-                    public void onProfile(@NonNull JournalFeedRepository.UserProfile profile) {
-                        if (txtJournalFriendCount == null) {
-                            return;
-                        }
-                        if (profile.friendCount <= 0L) {
-                            txtJournalFriendCount.setText("Tất cả bạn bè");
-                        } else {
-                            txtJournalFriendCount.setText(profile.friendCount + " Bạn bè");
-                        }
-                    }
-
-                    @Override
-                    public void onError(@NonNull Exception error) {
-                        if (txtJournalFriendCount != null) {
-                            txtJournalFriendCount.setText("Bạn bè");
-                        }
-                    }
-                });
     }
 
     private void stopJournalRealtimeListeners() {
-        if (journalFeedListener != null) {
-            journalFeedListener.remove();
-            journalFeedListener = null;
-        }
-        if (journalProfileListener != null) {
-            journalProfileListener.remove();
-            journalProfileListener = null;
+        if (journalManager != null) {
+            journalManager.stopRealtimeListeners();
         }
     }
 
@@ -599,17 +544,6 @@ public class ScanFoodActivity extends AppCompatActivity {
 
         String startMode = intent.getStringExtra(EXTRA_START_MODE);
         isRecognitionMode = !START_MODE_JOURNAL.equalsIgnoreCase(startMode);
-    }
-
-    private void updateJournalEmptyState(int count, @NonNull String emptyText) {
-        if (txtJournalEmptyState == null) {
-            return;
-        }
-        boolean showEmpty = count <= 0;
-        txtJournalEmptyState.setVisibility(showEmpty ? View.VISIBLE : View.GONE);
-        if (showEmpty) {
-            txtJournalEmptyState.setText(emptyText);
-        }
     }
 
     private void applyInsets() {
@@ -977,15 +911,15 @@ public class ScanFoodActivity extends AppCompatActivity {
                 if (journalCameraShell != null) {
                     journalCameraShell.bringToFront();
                 }
-                if (!isJournalSaveInProgress) {
+                if (!isBusyProcessing()) {
                     updateJournalStatus("Chụp nhanh rồi kéo xuống để xem feed.");
                 }
                 startJournalRealtimeListeners();
             }
         }
 
-        if (isRecognitionMode && journalCaptureOverlay != null && journalCaptureOverlay.getVisibility() == View.VISIBLE) {
-            hideJournalCapturePreview(true);
+        if (isRecognitionMode && journalManager != null && journalManager.isCapturePreviewVisible()) {
+            journalManager.hideJournalCapturePreview(true);
         }
     }
 
@@ -1118,7 +1052,11 @@ public class ScanFoodActivity extends AppCompatActivity {
             txtJournalModeLabel.setOnClickListener(v -> switchMode(true));
         }
         if (btnJournalPostCancel != null) {
-            btnJournalPostCancel.setOnClickListener(v -> hideJournalCapturePreview(true));
+            btnJournalPostCancel.setOnClickListener(v -> {
+                if (journalManager != null) {
+                    journalManager.hideJournalCapturePreview(true);
+                }
+            });
         }
         if (btnJournalPostPublish != null) {
             btnJournalPostPublish.setOnClickListener(v -> publishPendingJournalMoment());
@@ -1170,7 +1108,7 @@ public class ScanFoodActivity extends AppCompatActivity {
                     @Override
                     public void onCaptureSuccess(@NonNull ImageProxy image) {
                         super.onCaptureSuccess(image);
-                        byte[] bytes = imageProxyToJpeg(image);
+                        byte[] bytes = ScanFoodImageUtils.imageProxyToJpeg(image);
                         image.close();
                         if (bytes == null || bytes.length == 0) {
                             updateScanStatus("Không đọc được ảnh chụp, vui lòng thử lại");
@@ -1226,7 +1164,10 @@ public class ScanFoodActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 String mimeType = GeminiRepository.detectMimeType(getContentResolver(), uri);
-                byte[] raw = readImageBytes(uri, MAX_RECOGNITION_IMAGE_BYTES);
+                byte[] raw = ScanFoodImageUtils.readImageBytes(
+                        getContentResolver(),
+                        uri,
+                        MAX_RECOGNITION_IMAGE_BYTES);
                 runOnUiThread(() -> {
                     if (raw.length > MAX_RECOGNITION_IMAGE_BYTES) {
                         updateScanStatus("Ảnh quá lớn, vui lòng chọn ảnh dưới 4MB");
@@ -1247,7 +1188,10 @@ public class ScanFoodActivity extends AppCompatActivity {
     private void processImageUriForJournal(@NonNull Uri uri, @NonNull String sourceLabel) {
         new Thread(() -> {
             try {
-                byte[] raw = readImageBytes(uri, MAX_JOURNAL_IMAGE_BYTES);
+                byte[] raw = ScanFoodImageUtils.readImageBytes(
+                        getContentResolver(),
+                        uri,
+                        MAX_JOURNAL_IMAGE_BYTES);
                 runOnUiThread(() -> {
                     if (raw.length > MAX_JOURNAL_IMAGE_BYTES) {
                         updateJournalStatus("Ảnh quá lớn, vui lòng chọn ảnh nhỏ hơn.");
@@ -1269,7 +1213,7 @@ public class ScanFoodActivity extends AppCompatActivity {
             @NonNull byte[] imageBytes,
             @Nullable String mimeType,
             @NonNull String sourceLabel) {
-        if (isRecognitionInProgress || isJournalSaveInProgress) {
+        if (isBusyProcessing()) {
             return;
         }
         if (imageBytes.length > MAX_RECOGNITION_IMAGE_BYTES) {
@@ -1349,266 +1293,21 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void processImageBytesForJournal(@NonNull byte[] imageBytes, @NonNull String sourceLabel) {
-        if (isRecognitionInProgress || isJournalSaveInProgress) {
-            return;
-        }
-        showJournalCapturePreview(imageBytes, sourceLabel);
-    }
-
-    private void showJournalCapturePreview(@NonNull byte[] imageBytes, @NonNull String sourceLabel) {
-        if (imgJournalCapturedPreview == null || journalCaptureOverlay == null) {
-            return;
-        }
-
-        Bitmap bitmap = decodePreviewBitmap(imageBytes);
-        if (bitmap == null) {
-            updateJournalStatus("Không mở được ảnh vừa chụp.");
-            Toast.makeText(this, "Không hiển thị được ảnh", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        pendingJournalImageBytes = imageBytes;
-        pendingJournalSourceLabel = sourceLabel;
-        imgJournalCapturedPreview.setImageBitmap(bitmap);
-        if (edtJournalCaption != null) {
-            edtJournalCaption.setText("");
-        }
-        setJournalPostLoading(false, "");
-        showJournalPostError("");
-        journalCaptureOverlay.setVisibility(View.VISIBLE);
-        updateJournalStatus("Thêm caption rồi bấm Đăng.");
-    }
-
-    private void hideJournalCapturePreview(boolean clearPendingState) {
-        if (journalCaptureOverlay != null) {
-            journalCaptureOverlay.setVisibility(View.GONE);
-        }
-        if (imgJournalCapturedPreview != null) {
-            imgJournalCapturedPreview.setImageDrawable(null);
-        }
-        if (edtJournalCaption != null) {
-            edtJournalCaption.setText("");
-        }
-        setJournalPostLoading(false, "");
-        showJournalPostError("");
-        if (clearPendingState) {
-            pendingJournalImageBytes = null;
-            pendingJournalSourceLabel = "camera";
-        }
-        updateJournalStatus("Sẵn sàng chụp moment mới.");
-    }
-
-    @Nullable
-    private Bitmap decodePreviewBitmap(@NonNull byte[] imageBytes) {
-        try {
-            BitmapFactory.Options bounds = new BitmapFactory.Options();
-            bounds.inJustDecodeBounds = true;
-            BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, bounds);
-
-            int maxSide = Math.max(bounds.outWidth, bounds.outHeight);
-            int inSampleSize = 1;
-            while (maxSide / inSampleSize > 1600) {
-                inSampleSize *= 2;
-            }
-
-            BitmapFactory.Options decode = new BitmapFactory.Options();
-            decode.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            decode.inSampleSize = Math.max(1, inSampleSize);
-            return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, decode);
-        } catch (Exception ignored) {
-            return null;
+        if (journalManager != null) {
+            journalManager.processImageBytesForJournal(imageBytes, sourceLabel, isBusyProcessing());
         }
     }
 
     private void publishPendingJournalMoment() {
-        if (pendingJournalImageBytes == null || pendingJournalImageBytes.length == 0) {
-            showJournalPostError("Không có ảnh để đăng.");
-            return;
+        if (journalManager != null) {
+            journalManager.publishPendingJournalMoment(isUsingFrontCamera);
         }
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            Toast.makeText(this, "Vui lòng đăng nhập để đăng nhật ký", Toast.LENGTH_SHORT).show();
-            startActivity(AuthActivity.createIntent(this, AuthActivity.MODE_LOGIN));
-            return;
-        }
-
-        String caption = edtJournalCaption == null ? "" : String.valueOf(edtJournalCaption.getText()).trim();
-        String cameraFacing = "camera".equals(pendingJournalSourceLabel)
-                ? (isUsingFrontCamera ? "front" : "back")
-                : "none";
-
-        isJournalSaveInProgress = true;
-        setProcessingUiEnabled(false);
-        setJournalPostLoading(true, "Đang tối ưu ảnh...");
-        showJournalPostError("");
-        updateJournalStatus("Đang đăng moment...");
-
-        mediaUploadRepository.uploadJournalImage(pendingJournalImageBytes,
-                new MediaUploadRepository.UploadCallbackListener() {
-                    @Override
-                    public void onPreparing() {
-                        runOnUiThread(() -> setJournalPostLoading(true, "Đang tối ưu ảnh..."));
-                    }
-
-                    @Override
-                    public void onProgress(int progress) {
-                        runOnUiThread(() -> setJournalPostLoading(
-                                true,
-                                progress <= 0
-                                        ? "Đang tải ảnh lên Cloudinary..."
-                                        : "Đang tải ảnh lên Cloudinary... " + progress + "%"));
-                    }
-
-                    @Override
-                    public void onSuccess(@NonNull MediaUploadResult result) {
-                        runOnUiThread(() -> setJournalPostLoading(true, "Đang cập nhật Firestore..."));
-                        journalFeedRepository.publishMoment(
-                                user,
-                                result,
-                                caption,
-                                pendingJournalSourceLabel,
-                                cameraFacing,
-                                new JournalFeedRepository.PublishCallback() {
-                                    @Override
-                                    public void onSuccess(@NonNull JournalFeedItem item) {
-                                        runOnUiThread(() -> {
-                                            isJournalSaveInProgress = false;
-                                            setProcessingUiEnabled(true);
-                                            if (journalFeedAdapter != null) {
-                                                journalFeedAdapter.prependIfMissing(item);
-                                                updateJournalEmptyState(journalFeedAdapter.getItemCount(), "Chưa có hoạt động nào!");
-                                            }
-                                            hideJournalCapturePreview(true);
-                                            updateJournalStatus("Đã đăng moment mới.");
-                                            Toast.makeText(
-                                                    ScanFoodActivity.this,
-                                                    "Đã đăng moment thành công",
-                                                    Toast.LENGTH_SHORT).show();
-                                        });
-                                    }
-
-                                    @Override
-                                    public void onError(@NonNull Exception error) {
-                                        runOnUiThread(() -> finishJournalSaveWithError(
-                                                "Lưu Firestore thất bại. Vui lòng thử lại."));
-                                    }
-                                });
-                    }
-
-                    @Override
-                    public void onError(@NonNull String message) {
-                        runOnUiThread(() -> finishJournalSaveWithError(message));
-                    }
-                });
-    }
-
-    private void setJournalPostLoading(boolean loading, @NonNull String statusText) {
-        if (journalPostLoading != null) {
-            journalPostLoading.setVisibility(loading ? View.VISIBLE : View.GONE);
-        }
-        if (txtJournalUploadProgress != null) {
-            txtJournalUploadProgress.setText(statusText);
-            txtJournalUploadProgress.setVisibility(TextUtils.isEmpty(statusText) ? View.GONE : View.VISIBLE);
-        }
-        if (btnJournalPostCancel != null) {
-            btnJournalPostCancel.setEnabled(!loading);
-            btnJournalPostCancel.setAlpha(loading ? 0.65f : 1f);
-        }
-        if (btnJournalPostPublish != null) {
-            btnJournalPostPublish.setEnabled(!loading);
-            btnJournalPostPublish.setAlpha(loading ? 0.65f : 1f);
-        }
-    }
-
-    private void showJournalPostError(@NonNull String message) {
-        if (txtJournalPostError == null) {
-            return;
-        }
-        if (TextUtils.isEmpty(message)) {
-            txtJournalPostError.setVisibility(View.GONE);
-            txtJournalPostError.setText("");
-            return;
-        }
-        txtJournalPostError.setVisibility(View.VISIBLE);
-        txtJournalPostError.setText(message);
-    }
-
-    private void finishJournalSaveWithError(@NonNull String errorMessage) {
-        isJournalSaveInProgress = false;
-        setProcessingUiEnabled(true);
-        setJournalPostLoading(false, "");
-        showJournalPostError(errorMessage);
-        updateJournalStatus(errorMessage);
-        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
     private void openFriendInviteSheet() {
-        BottomSheetDialog dialog = new BottomSheetDialog(this);
-        View sheet = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_friend_invite, null, false);
-        dialog.setContentView(sheet);
-
-        TextView txtTitle = sheet.findViewById(R.id.txtFriendSheetTitle);
-        TextView txtSubtitle = sheet.findViewById(R.id.txtFriendSheetSubtitle);
-        View btnCreateInviteLink = sheet.findViewById(R.id.btnCreateInviteLink);
-        View btnClose = sheet.findViewById(R.id.btnFriendSheetClose);
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (txtTitle != null) {
-            txtTitle.setText(txtJournalFriendCount == null ? "Bạn bè" : txtJournalFriendCount.getText());
+        if (journalManager != null) {
+            journalManager.openFriendInviteSheet();
         }
-        if (txtSubtitle != null && user == null) {
-            txtSubtitle.setText("Đăng nhập để tạo link mời bạn vào journal feed.");
-        }
-
-        if (btnCreateInviteLink != null) {
-            btnCreateInviteLink.setOnClickListener(v -> {
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                if (currentUser == null) {
-                    dialog.dismiss();
-                    startActivity(AuthActivity.createIntent(this, AuthActivity.MODE_LOGIN));
-                    return;
-                }
-
-                v.setEnabled(false);
-                v.setAlpha(0.7f);
-                friendInviteRepository.createInvite(currentUser, new FriendInviteRepository.CreateInviteCallback() {
-                    @Override
-                    public void onSuccess(@NonNull FriendInvite invite) {
-                        runOnUiThread(() -> {
-                            dialog.dismiss();
-                            shareInvite(invite);
-                        });
-                    }
-
-                    @Override
-                    public void onError(@NonNull String message) {
-                        runOnUiThread(() -> {
-                            v.setEnabled(true);
-                            v.setAlpha(1f);
-                            Toast.makeText(ScanFoodActivity.this, message, Toast.LENGTH_SHORT).show();
-                        });
-                    }
-                });
-            });
-        }
-
-        if (btnClose != null) {
-            btnClose.setOnClickListener(v -> dialog.dismiss());
-        }
-
-        dialog.show();
-    }
-
-    private void shareInvite(@NonNull FriendInvite invite) {
-        String shareText = "Kết bạn với mình trên CoolCook nhé.\n"
-                + invite.buildDeepLink()
-                + "\nNếu app link web đã được cấu hình trên domain, bạn cũng có thể thử:\n"
-                + invite.buildWebLink();
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, shareText);
-        startActivity(Intent.createChooser(intent, "Chia sẻ lời mời"));
     }
 
     private void setProcessingUiEnabled(boolean enabled) {
@@ -1632,7 +1331,8 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private boolean isBusyProcessing() {
-        return isRecognitionInProgress || isJournalSaveInProgress;
+        return isRecognitionInProgress
+                || (journalManager != null && journalManager.isJournalSaveInProgress());
     }
 
     private void updateScanStatus(@NonNull String status) {
@@ -1645,121 +1345,6 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (txtJournalStatus != null) {
             txtJournalStatus.setText(status);
         }
-    }
-
-    @NonNull
-    private byte[] readImageBytes(@NonNull Uri uri, int maxBytes) throws IOException {
-        ContentResolver resolver = getContentResolver();
-        try (InputStream inputStream = resolver.openInputStream(uri);
-             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            if (inputStream == null) {
-                throw new IOException("Cannot open selected image");
-            }
-            byte[] buffer = new byte[8 * 1024];
-            int read;
-            int total = 0;
-            while ((read = inputStream.read(buffer)) != -1) {
-                total += read;
-                if (total > maxBytes) {
-                    return new byte[maxBytes + 1];
-                }
-                outputStream.write(buffer, 0, read);
-            }
-            return outputStream.toByteArray();
-        }
-    }
-
-    @Nullable
-    private byte[] imageProxyToJpeg(@NonNull ImageProxy imageProxy) {
-        ImageProxy.PlaneProxy[] planes = imageProxy.getPlanes();
-        if (imageProxy.getFormat() == ImageFormat.JPEG && planes.length > 0) {
-            return readPlaneBytes(planes[0]);
-        }
-
-        if (imageProxy.getFormat() != ImageFormat.YUV_420_888 || planes.length < 3) {
-            return planes.length > 0 ? readPlaneBytes(planes[0]) : null;
-        }
-
-        byte[] nv21 = yuv420888ToNv21(imageProxy);
-        if (nv21 == null) {
-            return null;
-        }
-
-        YuvImage yuvImage = new YuvImage(
-                nv21,
-                ImageFormat.NV21,
-                imageProxy.getWidth(),
-                imageProxy.getHeight(),
-                null);
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        boolean compressed = yuvImage.compressToJpeg(
-                new Rect(0, 0, imageProxy.getWidth(), imageProxy.getHeight()),
-                88,
-                outputStream);
-
-        if (!compressed) {
-            return null;
-        }
-
-        return outputStream.toByteArray();
-    }
-
-    @Nullable
-    private byte[] readPlaneBytes(@NonNull ImageProxy.PlaneProxy plane) {
-        ByteBuffer buffer = plane.getBuffer();
-        ByteBuffer copy = buffer.duplicate();
-        copy.rewind();
-        if (!copy.hasRemaining()) {
-            return null;
-        }
-
-        byte[] bytes = new byte[copy.remaining()];
-        copy.get(bytes);
-        return bytes;
-    }
-
-    @Nullable
-    private byte[] yuv420888ToNv21(@NonNull ImageProxy image) {
-        ImageProxy.PlaneProxy[] planes = image.getPlanes();
-        ByteBuffer yBuffer = planes[0].getBuffer();
-        ByteBuffer uBuffer = planes[1].getBuffer();
-        ByteBuffer vBuffer = planes[2].getBuffer();
-
-        int ySize = yBuffer.remaining();
-        int uSize = uBuffer.remaining();
-        int vSize = vBuffer.remaining();
-
-        byte[] nv21 = new byte[ySize + uSize + vSize];
-        yBuffer.get(nv21, 0, ySize);
-
-        int chromaRowStride = planes[2].getRowStride();
-        int chromaPixelStride = planes[2].getPixelStride();
-        int width = image.getWidth();
-        int height = image.getHeight();
-        int offset = ySize;
-
-        byte[] vBytes = new byte[vBuffer.remaining()];
-        vBuffer.get(vBytes);
-        byte[] uBytes = new byte[uBuffer.remaining()];
-        uBuffer.get(uBytes);
-
-        int chromaHeight = height / 2;
-        int chromaWidth = width / 2;
-
-        for (int row = 0; row < chromaHeight; row++) {
-            int rowStart = row * chromaRowStride;
-            for (int col = 0; col < chromaWidth; col++) {
-                int index = rowStart + col * chromaPixelStride;
-                if (index >= vBytes.length || index >= uBytes.length || offset + 1 >= nv21.length) {
-                    break;
-                }
-                nv21[offset++] = vBytes[index];
-                nv21[offset++] = uBytes[index];
-            }
-        }
-
-        return nv21;
     }
 
     private void navigateBackHome() {

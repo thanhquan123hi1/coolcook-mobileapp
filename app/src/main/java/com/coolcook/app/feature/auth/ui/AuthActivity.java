@@ -5,9 +5,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Patterns;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
@@ -101,6 +99,8 @@ public class AuthActivity extends AppCompatActivity {
     private boolean isLoading;
 
     private String googleWebClientId;
+    private AuthFormValidator formValidator;
+    private AuthModeSwitcher modeSwitcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,6 +175,22 @@ public class AuthActivity extends AppCompatActivity {
         registerEmail = findViewById(R.id.registerEmail);
         registerPassword = findViewById(R.id.registerPassword);
         registerConfirmPassword = findViewById(R.id.registerConfirmPassword);
+
+        formValidator = new AuthFormValidator(
+                this,
+                loginEmailLayout,
+                loginPasswordLayout,
+                registerNameLayout,
+                registerEmailLayout,
+                registerPasswordLayout,
+                registerConfirmPasswordLayout,
+                loginEmail,
+                loginPassword,
+                registerName,
+                registerEmail,
+                registerPassword,
+                registerConfirmPassword);
+        modeSwitcher = new AuthModeSwitcher(this, authScroll, loginPanel, registerPanel);
     }
 
     private void setupFirebaseAuth() {
@@ -245,7 +261,7 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void setupFieldInteractions() {
-        clearAllErrors();
+        formValidator.clearAllErrors();
         setupClearErrorOnInput(loginEmail, loginEmailLayout);
         setupClearErrorOnInput(loginPassword, loginPasswordLayout);
         setupClearErrorOnInput(registerName, registerNameLayout);
@@ -263,7 +279,7 @@ public class AuthActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                clearFieldError(layout);
+                formValidator.clearFieldError(layout);
             }
 
             @Override
@@ -311,82 +327,11 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private boolean validateLoginForm() {
-        clearFieldError(loginEmailLayout);
-        clearFieldError(loginPasswordLayout);
-
-        String email = getTrimmedText(loginEmail);
-        String password = getText(loginPassword);
-
-        if (TextUtils.isEmpty(email)) {
-            showFieldError(loginEmailLayout, loginEmail, getString(R.string.auth_error_email_required));
-            return false;
-        }
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            showFieldError(loginEmailLayout, loginEmail, getString(R.string.auth_error_email_invalid));
-            return false;
-        }
-
-        if (TextUtils.isEmpty(password)) {
-            showFieldError(loginPasswordLayout, loginPassword, getString(R.string.auth_error_password_required));
-            return false;
-        }
-
-        if (password.length() < 6) {
-            showFieldError(loginPasswordLayout, loginPassword, getString(R.string.auth_error_password_min));
-            return false;
-        }
-
-        return true;
+        return formValidator.validateLoginForm();
     }
 
     private boolean validateRegisterForm() {
-        clearFieldError(registerNameLayout);
-        clearFieldError(registerEmailLayout);
-        clearFieldError(registerPasswordLayout);
-        clearFieldError(registerConfirmPasswordLayout);
-
-        String name = getTrimmedText(registerName);
-        String email = getTrimmedText(registerEmail);
-        String password = getText(registerPassword);
-        String confirmPassword = getText(registerConfirmPassword);
-
-        if (TextUtils.isEmpty(name)) {
-            showFieldError(registerNameLayout, registerName, getString(R.string.auth_error_name_required));
-            return false;
-        }
-
-        if (TextUtils.isEmpty(email)) {
-            showFieldError(registerEmailLayout, registerEmail, getString(R.string.auth_error_email_required));
-            return false;
-        }
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            showFieldError(registerEmailLayout, registerEmail, getString(R.string.auth_error_email_invalid));
-            return false;
-        }
-
-        if (TextUtils.isEmpty(password)) {
-            showFieldError(registerPasswordLayout, registerPassword, getString(R.string.auth_error_password_required));
-            return false;
-        }
-
-        if (password.length() < 6) {
-            showFieldError(registerPasswordLayout, registerPassword, getString(R.string.auth_error_password_min));
-            return false;
-        }
-
-        if (TextUtils.isEmpty(confirmPassword)) {
-            showFieldError(registerConfirmPasswordLayout, registerConfirmPassword, getString(R.string.auth_error_confirm_password_required));
-            return false;
-        }
-
-        if (!password.equals(confirmPassword)) {
-            showFieldError(registerConfirmPasswordLayout, registerConfirmPassword, getString(R.string.auth_error_confirm_password_mismatch));
-            return false;
-        }
-
-        return true;
+        return formValidator.validateRegisterForm();
     }
 
     private void registerUser() {
@@ -394,9 +339,9 @@ public class AuthActivity extends AppCompatActivity {
             return;
         }
 
-        String name = getTrimmedText(registerName);
-        String email = getTrimmedText(registerEmail);
-        String password = getText(registerPassword);
+        String name = formValidator.getTrimmedText(registerName);
+        String email = formValidator.getTrimmedText(registerEmail);
+        String password = formValidator.getText(registerPassword);
 
         setLoading(true);
         firebaseAuth.createUserWithEmailAndPassword(email, password)
@@ -424,8 +369,8 @@ public class AuthActivity extends AppCompatActivity {
             return;
         }
 
-        String email = getTrimmedText(loginEmail);
-        String password = getText(loginPassword);
+        String email = formValidator.getTrimmedText(loginEmail);
+        String password = formValidator.getText(loginPassword);
 
         setLoading(true);
         firebaseAuth.signInWithEmailAndPassword(email, password)
@@ -561,10 +506,10 @@ public class AuthActivity extends AppCompatActivity {
         String message = getReadableAuthError(exception, registerFlow);
 
         if (registerFlow && exception instanceof FirebaseAuthUserCollisionException) {
-            showFieldError(registerEmailLayout, registerEmail, message);
+            formValidator.showFieldError(registerEmailLayout, registerEmail, message);
         } else if (!registerFlow && (exception instanceof FirebaseAuthInvalidCredentialsException
                 || exception instanceof FirebaseAuthInvalidUserException)) {
-            showFieldError(loginPasswordLayout, loginPassword, message);
+            formValidator.showFieldError(loginPasswordLayout, loginPassword, message);
         }
 
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
@@ -647,47 +592,9 @@ public class AuthActivity extends AppCompatActivity {
         guideline.setLayoutParams(params);
     }
 
-    private void clearAllErrors() {
-        clearFieldError(loginEmailLayout);
-        clearFieldError(loginPasswordLayout);
-        clearFieldError(registerNameLayout);
-        clearFieldError(registerEmailLayout);
-        clearFieldError(registerPasswordLayout);
-        clearFieldError(registerConfirmPasswordLayout);
-    }
-
-    private void clearFieldError(TextInputLayout layout) {
-        layout.setError(null);
-        layout.setErrorEnabled(false);
-    }
-
-    private void showFieldError(TextInputLayout layout, EditText input, String message) {
-        layout.setErrorEnabled(true);
-        layout.setError(message);
-        input.requestFocus();
-        input.setSelection(input.getText() == null ? 0 : input.getText().length());
-    }
-
-    private String getText(EditText input) {
-        return input.getText() == null ? "" : input.getText().toString();
-    }
-
-    private String getTrimmedText(EditText input) {
-        return getText(input).trim();
-    }
-
     private void applyInitialState(boolean register) {
-        clearAllErrors();
-        authScroll.scrollTo(0, 0);
-        if (register) {
-            registerPanel.setVisibility(View.VISIBLE);
-            registerPanel.setAlpha(1f);
-            loginPanel.setVisibility(View.GONE);
-        } else {
-            loginPanel.setVisibility(View.VISIBLE);
-            loginPanel.setAlpha(1f);
-            registerPanel.setVisibility(View.GONE);
-        }
+        formValidator.clearAllErrors();
+        modeSwitcher.applyInitialState(register);
     }
 
     private void switchMode(boolean targetRegister) {
@@ -695,56 +602,13 @@ public class AuthActivity extends AppCompatActivity {
             return;
         }
 
-        clearAllErrors();
-        authScroll.scrollTo(0, 0);
+        formValidator.clearAllErrors();
         isTransitioning = true;
 
-        final View outgoing = showingRegister ? registerPanel : loginPanel;
-        final View incoming = targetRegister ? registerPanel : loginPanel;
-
-        outgoing.animate().cancel();
-        incoming.animate().cancel();
-
-        outgoing.animate()
-                .alpha(0f)
-                .scaleX(0.97f)
-                .scaleY(0.97f)
-                .translationY(dp(12))
-                .setDuration(140)
-                .setInterpolator(new AccelerateDecelerateInterpolator())
-                .withEndAction(() -> {
-                    outgoing.setVisibility(View.GONE);
-                    outgoing.setAlpha(1f);
-                    outgoing.setScaleX(1f);
-                    outgoing.setScaleY(1f);
-                    outgoing.setTranslationY(0f);
-
-                    incoming.setVisibility(View.VISIBLE);
-                    incoming.setAlpha(0f);
-                    incoming.setScaleX(0.98f);
-                    incoming.setScaleY(0.98f);
-                    incoming.setTranslationY(dp(18));
-
-                    incoming.animate()
-                            .alpha(1f)
-                            .translationY(0f)
-                            .scaleX(1.01f)
-                            .scaleY(1.01f)
-                            .setDuration(180)
-                            .setInterpolator(new OvershootInterpolator(0.45f))
-                            .withEndAction(() -> incoming.animate()
-                                    .scaleX(1f)
-                                    .scaleY(1f)
-                                    .setDuration(70)
-                                    .setInterpolator(new DecelerateInterpolator())
-                                    .withEndAction(() -> {
-                                        showingRegister = targetRegister;
-                                        isTransitioning = false;
-                                    })
-                                    .start())
-                            .start();
-                })
-                .start();
+        modeSwitcher.switchMode(showingRegister, targetRegister, () -> {
+            showingRegister = targetRegister;
+            isTransitioning = false;
+        });
     }
 
     private int dp(int value) {

@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
@@ -29,19 +28,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.Glide;
 import com.coolcook.app.R;
 import com.coolcook.app.core.navigation.HomeBottomNavigation;
-import com.coolcook.app.core.util.AvatarImageUtils;
 import com.coolcook.app.feature.chatbot.ui.ChatBotActivity;
 import com.coolcook.app.feature.journal.ui.JournalCalendarFragment;
-import com.coolcook.app.feature.main.ui.MainActivity;
-import com.coolcook.app.feature.profile.ui.EditProfileDialogFragment;
 import com.coolcook.app.feature.camera.ui.ScanFoodActivity;
 import com.coolcook.app.feature.social.ui.FriendInviteActivity;
 import com.coolcook.app.feature.search.ui.FoodCatalogFragment;
-import com.facebook.login.LoginManager;
 import com.google.android.material.imageview.ShapeableImageView;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -56,13 +48,6 @@ public class HomeActivity extends AppCompatActivity {
     private static final String JOURNAL_FRAGMENT_TAG = "HomeActivity.JournalFragment";
     public static final String EXTRA_OPEN_TAB = "com.coolcook.app.EXTRA_OPEN_TAB";
     public static final String EXTRA_TAB_PROFILE = "profile";
-    private static final String TAG = "HomeActivity";
-    private static final String PROFILE_COLLECTION = "users";
-    private static final String PROFILE_RESULT_KEY = "edit_profile_result";
-    private static final String PROFILE_RESULT_FULL_NAME = "result_full_name";
-    private static final String PROFILE_RESULT_PHONE_NUMBER = "result_phone_number";
-    private static final String PROFILE_RESULT_BIRTH_DATE = "result_birth_date";
-    private static final String PROFILE_RESULT_AVATAR_URL = "result_avatar_url";
     private static final long NAV_TINT_ANIMATION_DURATION = 200L;
     private static final long NAV_ICON_ANIMATION_DURATION = 260L;
     private static final long NAV_TAP_ANIMATION_DURATION = 190L;
@@ -107,11 +92,7 @@ public class HomeActivity extends AppCompatActivity {
     private ShapeableImageView imgHomeAvatar;
     private ShapeableImageView imgProfileAvatar;
     private FirebaseFirestore firestore;
-
-    private String currentPhoneNumber = "";
-    private String currentBirthDate = "";
-    private String currentAvatarUrl = "";
-    private boolean isLogoutInProgress;
+    private HomeProfileController profileController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,12 +128,23 @@ public class HomeActivity extends AppCompatActivity {
         imgHomeAvatar = findViewById(R.id.imgHomeAvatar);
         imgProfileAvatar = findViewById(R.id.imgProfileAvatar);
         firestore = FirebaseFirestore.getInstance();
+        profileController = new HomeProfileController(
+                this,
+                homeScroll,
+                profileScroll,
+                btnProfileEdit,
+                btnProfileLogout,
+                imgHomeAvatar,
+                imgProfileAvatar,
+                txtHomeUserName,
+                txtProfileName,
+                txtProfileEmail);
 
         setupQuickActions();
-        setupProfileActions();
-        observeProfileUpdates();
-        displayUserInfo();
-        loadProfileFromFirestore();
+        profileController.setupProfileActions();
+        profileController.observeProfileUpdates();
+        profileController.displayUserInfo();
+        profileController.loadProfileFromFirestore(firestore);
         showInitialTab(getIntent());
         applyInsets();
         openPendingInviteIfNeeded();
@@ -172,220 +164,6 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
         showTab(TAB_HOME);
-    }
-
-    private void displayUserInfo() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            String name = user.getDisplayName();
-            String email = user.getEmail();
-
-            if (name == null || name.trim().isEmpty()) {
-                name = getString(R.string.home_user_name);
-            }
-
-            if (txtHomeUserName != null) {
-                txtHomeUserName.setText(name);
-            }
-            if (txtProfileName != null) {
-                txtProfileName.setText(name);
-            }
-            if (txtProfileEmail != null && email != null) {
-                txtProfileEmail.setText(email);
-            }
-        }
-    }
-
-    private void loadProfileFromFirestore() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            return;
-        }
-
-        firestore.collection(PROFILE_COLLECTION)
-                .document(user.getUid())
-                .get()
-                .addOnSuccessListener(this, documentSnapshot -> {
-                    if (!isActivityAliveForUi()) {
-                        return;
-                    }
-
-                    if (!documentSnapshot.exists()) {
-                        return;
-                    }
-
-                    String fullName = documentSnapshot.getString("fullName");
-                    String phoneNumber = documentSnapshot.getString("phoneNumber");
-                    String birthDate = documentSnapshot.getString("birthDate");
-                    String avatarUrl = documentSnapshot.getString("avatarUrl");
-
-                    if (!TextUtils.isEmpty(fullName)) {
-                        if (txtHomeUserName != null) {
-                            txtHomeUserName.setText(fullName);
-                        }
-                        if (txtProfileName != null) {
-                            txtProfileName.setText(fullName);
-                        }
-                    }
-
-                    currentPhoneNumber = phoneNumber != null ? phoneNumber : "";
-                    currentBirthDate = birthDate != null ? birthDate : "";
-                    currentAvatarUrl = avatarUrl != null ? avatarUrl : "";
-                    renderAvatar(currentAvatarUrl);
-                })
-                .addOnFailureListener(this, error -> Log.w(TAG, "Khong the tai thong tin profile tu Firestore", error));
-    }
-
-    private void observeProfileUpdates() {
-        getSupportFragmentManager().setFragmentResultListener(
-                PROFILE_RESULT_KEY,
-                this,
-                (requestKey, result) -> {
-                    String fullName = result.getString(PROFILE_RESULT_FULL_NAME, "");
-                    String phoneNumber = result.getString(PROFILE_RESULT_PHONE_NUMBER, "");
-                    String birthDate = result.getString(PROFILE_RESULT_BIRTH_DATE, "");
-                    String avatarUrl = result.getString(PROFILE_RESULT_AVATAR_URL, "");
-
-                    if (!TextUtils.isEmpty(fullName)) {
-                        if (txtHomeUserName != null) {
-                            txtHomeUserName.setText(fullName);
-                        }
-                        if (txtProfileName != null) {
-                            txtProfileName.setText(fullName);
-                        }
-                    }
-
-                    currentPhoneNumber = phoneNumber;
-                    currentBirthDate = birthDate;
-                    currentAvatarUrl = avatarUrl;
-                    renderAvatar(currentAvatarUrl);
-                });
-    }
-
-    private void renderAvatar(String avatarUrl) {
-        if (!isActivityAliveForUi()) {
-            return;
-        }
-
-        if (TextUtils.isEmpty(avatarUrl)) {
-            if (imgHomeAvatar != null) {
-                imgHomeAvatar.setImageResource(R.drawable.img_home_profile);
-            }
-            if (imgProfileAvatar != null) {
-                imgProfileAvatar.setImageResource(R.drawable.img_home_profile);
-            }
-            return;
-        }
-
-        if (imgHomeAvatar != null) {
-            String optimizedHomeAvatar = AvatarImageUtils.buildOptimizedAvatarUrl(
-                    avatarUrl,
-                    resolveAvatarTargetSize(imgHomeAvatar, 40));
-            Glide.with(this)
-                    .load(optimizedHomeAvatar)
-                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .placeholder(R.drawable.img_home_profile)
-                    .error(R.drawable.img_home_profile)
-                    .into(imgHomeAvatar);
-        }
-
-        if (imgProfileAvatar != null) {
-            String optimizedProfileAvatar = AvatarImageUtils.buildOptimizedAvatarUrl(
-                    avatarUrl,
-                    resolveAvatarTargetSize(imgProfileAvatar, 88));
-            Glide.with(this)
-                    .load(optimizedProfileAvatar)
-                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .placeholder(R.drawable.img_home_profile)
-                    .error(R.drawable.img_home_profile)
-                    .into(imgProfileAvatar);
-        }
-    }
-
-    private boolean isActivityAliveForUi() {
-        return !isFinishing() && !isDestroyed();
-    }
-
-    private int resolveAvatarTargetSize(View avatarView, int fallbackDp) {
-        ViewGroup.LayoutParams layoutParams = avatarView.getLayoutParams();
-        if (layoutParams != null && layoutParams.width > 0) {
-            return layoutParams.width;
-        }
-        float density = getResources().getDisplayMetrics().density;
-        return Math.round(fallbackDp * density);
-    }
-
-    private void setupProfileActions() {
-        if (btnProfileEdit != null) {
-            btnProfileEdit.setOnClickListener(v -> showEditProfileDialog());
-        }
-
-        if (btnProfileLogout != null) {
-            btnProfileLogout.setOnClickListener(v -> performLogout());
-        }
-    }
-
-    private void showEditProfileDialog() {
-        if (!getSupportFragmentManager().isStateSaved()) {
-            String fullName = txtProfileName != null ? txtProfileName.getText().toString() : "";
-            EditProfileDialogFragment.newInstance(
-                    fullName,
-                    currentPhoneNumber,
-                    currentBirthDate,
-                    currentAvatarUrl).show(getSupportFragmentManager(), "EditProfileDialog");
-        }
-    }
-
-    private void performLogout() {
-        if (isLogoutInProgress) {
-            return;
-        }
-
-        isLogoutInProgress = true;
-        if (btnProfileLogout != null) {
-            btnProfileLogout.setEnabled(false);
-            btnProfileLogout.setClickable(false);
-            btnProfileLogout.setAlpha(0.6f);
-        }
-
-        FirebaseAuth.getInstance().signOut();
-        signOutGoogleAsync();
-        signOutFacebookAsync();
-
-        View anchorView = profileScroll != null ? profileScroll : homeScroll;
-        if (anchorView != null) {
-            anchorView.postDelayed(this::finishLogoutIfNeeded, LOGOUT_NAVIGATION_FALLBACK_DELAY_MS);
-        }
-    }
-
-    private void signOutGoogleAsync() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(getApplicationContext(), gso);
-        googleSignInClient.signOut().addOnCompleteListener(this, task -> finishLogoutIfNeeded());
-    }
-
-    private void signOutFacebookAsync() {
-        Thread facebookLogoutThread = new Thread(() -> {
-            try {
-                LoginManager.getInstance().logOut();
-            } catch (Exception error) {
-                Log.w(TAG, "Khong the dang xuat phien Facebook", error);
-            }
-        }, "facebook-logout-worker");
-        facebookLogoutThread.start();
-    }
-
-    private void finishLogoutIfNeeded() {
-        if (!isLogoutInProgress || isFinishing() || isDestroyed()) {
-            return;
-        }
-
-        isLogoutInProgress = false;
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
-        finish();
     }
 
     private void setupBottomNavigation() {

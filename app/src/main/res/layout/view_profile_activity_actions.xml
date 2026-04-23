@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/profile_section_title_margin_top"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:text="@string/profile_section_activity"
+        android:textColor="@color/on_surface"
+        android:textSize="@dimen/profile_section_title_text_size"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/profile_action_item_margin_top"
+        android:background="@drawable/bg_profile_action_item"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/profile_action_item_min_height"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/profile_action_item_padding_horizontal"
+        android:paddingEnd="@dimen/profile_action_item_padding_horizontal">
+
+        <FrameLayout
+            android:layout_width="@dimen/profile_action_icon_container_size"
+            android:layout_height="@dimen/profile_action_icon_container_size"
+            android:background="@drawable/bg_profile_menu_icon_circle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:fontVariationSettings="'wght' 600"
+                android:text="bookmark"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/profile_action_icon_size" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/profile_action_text_margin_start"
+            android:layout_weight="1"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="@string/profile_action_saved"
+            android:textColor="@color/on_surface"
+            android:textSize="@dimen/profile_action_text_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/material_symbols_outlined"
+            android:text="chevron_right"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/profile_action_item_margin_top"
+        android:background="@drawable/bg_profile_action_item"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/profile_action_item_min_height"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/profile_action_item_padding_horizontal"
+        android:paddingEnd="@dimen/profile_action_item_padding_horizontal">
+
+        <FrameLayout
+            android:layout_width="@dimen/profile_action_icon_container_size"
+            android:layout_height="@dimen/profile_action_icon_container_size"
+            android:background="@drawable/bg_profile_menu_icon_circle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:fontVariationSettings="'wght' 600"
+                android:text="auto_stories"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/profile_action_icon_size" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/profile_action_text_margin_start"
+            android:layout_weight="1"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="@string/profile_action_journal"
+            android:textColor="@color/on_surface"
+            android:textSize="@dimen/profile_action_text_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/material_symbols_outlined"
+            android:text="chevron_right"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/profile_action_item_margin_top"
+        android:background="@drawable/bg_profile_action_item"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/profile_action_item_min_height"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/profile_action_item_padding_horizontal"
+        android:paddingEnd="@dimen/profile_action_item_padding_horizontal">
+
+        <FrameLayout
+            android:layout_width="@dimen/profile_action_icon_container_size"
+            android:layout_height="@dimen/profile_action_icon_container_size"
+            android:background="@drawable/bg_profile_menu_icon_circle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:fontVariationSettings="'FILL' 1, 'wght' 600"
+                android:text="favorite"
+                android:textColor="@color/error"
+                android:textSize="@dimen/profile_action_icon_size" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/profile_action_text_margin_start"
+            android:layout_weight="1"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="@string/profile_action_favorites"
+            android:textColor="@color/on_surface"
+            android:textSize="@dimen/profile_action_text_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/material_symbols_outlined"
+            android:text="chevron_right"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/profile_action_item_margin_top"
+        android:background="@drawable/bg_profile_action_item"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/profile_action_item_min_height"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/profile_action_item_padding_horizontal"
+        android:paddingEnd="@dimen/profile_action_item_padding_horizontal">
+
+        <FrameLayout
+            android:layout_width="@dimen/profile_action_icon_container_size"
+            android:layout_height="@dimen/profile_action_icon_container_size"
+            android:background="@drawable/bg_profile_menu_icon_circle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:fontVariationSettings="'wght' 600"
+                android:text="monitor_heart"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/profile_action_icon_size" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/profile_action_text_margin_start"
+            android:layout_weight="1"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="@string/profile_action_health"
+            android:textColor="@color/on_surface"
+            android:textSize="@dimen/profile_action_text_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/material_symbols_outlined"
+            android:text="chevron_right"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/profile_action_item_margin_top"
+        android:background="@drawable/bg_profile_action_item"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/profile_action_item_min_height"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/profile_action_item_padding_horizontal"
+        android:paddingEnd="@dimen/profile_action_item_padding_horizontal">
+
+        <FrameLayout
+            android:layout_width="@dimen/profile_action_icon_container_size"
+            android:layout_height="@dimen/profile_action_icon_container_size"
+            android:background="@drawable/bg_profile_menu_icon_circle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:fontVariationSettings="'wght' 600"
+                android:text="settings"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/profile_action_icon_size" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/profile_action_text_margin_start"
+            android:layout_weight="1"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="@string/profile_action_settings"
+            android:textColor="@color/on_surface"
+            android:textSize="@dimen/profile_action_text_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/material_symbols_outlined"
+            android:text="chevron_right"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="22sp" />
+    </LinearLayout>
+</LinearLayout>

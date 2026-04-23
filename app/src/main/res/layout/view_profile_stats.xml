@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/profile_stats_card_margin_top"
+    android:background="@drawable/bg_profile_stats_card"
+    android:baselineAligned="false"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/profile_stats_card_padding_horizontal"
+    android:paddingTop="@dimen/profile_stats_card_padding_vertical"
+    android:paddingEnd="@dimen/profile_stats_card_padding_horizontal"
+    android:paddingBottom="@dimen/profile_stats_card_padding_vertical"
+    android:weightSum="3">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="24"
+            android:textColor="@color/primary"
+            android:textSize="@dimen/profile_stats_value_text_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="@string/profile_stats_cooked"
+            android:textAllCaps="true"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="@dimen/profile_stats_label_text_size"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:background="@color/outline_variant" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="12"
+            android:textColor="@color/primary"
+            android:textSize="@dimen/profile_stats_value_text_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="@string/profile_stats_saved"
+            android:textAllCaps="true"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="@dimen/profile_stats_label_text_size"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
+        android:background="@color/outline_variant" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="8"
+            android:textColor="@color/primary"
+            android:textSize="@dimen/profile_stats_value_text_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="@string/profile_stats_posts"
+            android:textAllCaps="true"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="@dimen/profile_stats_label_text_size"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>
