@@ -93,6 +93,34 @@
             android:theme="@style/Theme.Coolcook" />
 
         <activity
+            android:name=".ui.scan.FriendInviteActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Coolcook">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="friend-invite"
+                    android:scheme="coolcook" />
+            </intent-filter>
+
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="coolcook.app"
+                    android:pathPrefix="/invite"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".ui.auth.AuthActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook" />

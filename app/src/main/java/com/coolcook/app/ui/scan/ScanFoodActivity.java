@@ -17,11 +17,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,38 +48,34 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.cloudinary.android.MediaManager;
-import com.cloudinary.android.UploadRequest;
-import com.cloudinary.android.callback.ErrorInfo;
-import com.cloudinary.android.callback.UploadCallback;
-import com.coolcook.app.BuildConfig;
 import com.coolcook.app.R;
+import com.coolcook.app.ui.auth.AuthActivity;
 import com.coolcook.app.ui.chatbot.data.GeminiRepository;
 import com.coolcook.app.ui.chatbot.model.ChatMessage;
 import com.coolcook.app.ui.home.HomeActivity;
+import com.coolcook.app.ui.scan.data.FriendInviteRepository;
+import com.coolcook.app.ui.scan.data.JournalFeedRepository;
+import com.coolcook.app.ui.scan.data.MediaUploadRepository;
+import com.coolcook.app.ui.scan.model.FriendInvite;
+import com.coolcook.app.ui.scan.model.JournalFeedItem;
+import com.coolcook.app.ui.scan.model.MediaUploadResult;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ScanFoodActivity extends AppCompatActivity {
 
@@ -88,35 +88,54 @@ public class ScanFoodActivity extends AppCompatActivity {
 
     private static final int MAX_RECOGNITION_IMAGE_BYTES = 4 * 1024 * 1024;
     private static final int MAX_JOURNAL_IMAGE_BYTES = 8 * 1024 * 1024;
-    private static final int JOURNAL_UPLOAD_MAX_DIMENSION_PX = 1440;
-    private static final int JOURNAL_UPLOAD_QUALITY = 84;
-    private static final int JOURNAL_LIST_LIMIT = 80;
-    private static final boolean SHOW_JOURNAL_FEED_ON_CAMERA = false;
+    private static final int JOURNAL_LIST_LIMIT = 30;
 
     private static final String EXTRA_START_MODE = "extra_start_mode";
     private static final String START_MODE_JOURNAL = "journal";
 
-    private static final String FIRESTORE_USERS_COLLECTION = "users";
-    private static final String FIRESTORE_JOURNAL_COLLECTION = "journal";
-
     private View root;
+    private View recognitionSurface;
+    private NestedScrollView journalSurface;
     private View topBar;
     private View footerContainer;
     private View cameraPreviewCard;
     private View previewInnerFrame;
     private View detectionBox;
     private View tabIndicator;
-    private View journalOverlay;
-    private TextView txtScanStatus;
-    private TextView txtJournalEmptyState;
-    private TextView tabNhanDien;
-    private TextView tabNhatKy;
-    private TextView iconFlash;
+    private View journalTopBar;
+    private View journalFooterContainer;
+    private View journalCameraPreviewCard;
+    private View journalCaptureOverlay;
     private View btnBack;
     private View btnFlash;
     private View btnGallery;
     private View btnShutter;
     private View btnFlipCamera;
+    private View btnJournalProfile;
+    private View btnJournalFriends;
+    private View btnJournalChat;
+    private View btnJournalFlash;
+    private View btnJournalGallery;
+    private View btnJournalShutter;
+    private View btnJournalFlipCamera;
+    private View btnJournalPostCancel;
+    private View btnJournalPostPublish;
+    private ProgressBar journalPostLoading;
+    private TextView txtScanStatus;
+    private TextView txtJournalStatus;
+    private TextView txtJournalEmptyState;
+    private TextView txtJournalFriendCount;
+    private TextView txtJournalUploadProgress;
+    private TextView txtJournalPostError;
+    private TextView txtJournalModeLabel;
+    private TextView tabNhanDien;
+    private TextView tabNhatKy;
+    private TextView iconFlash;
+    private TextView iconJournalFlash;
+    private EditText edtJournalCaption;
+    private ImageView imgJournalCapturedPreview;
+    private PreviewView recognitionPreviewView;
+    private PreviewView journalPreviewView;
     private PreviewView previewView;
     private RecyclerView rvJournalMoments;
 
@@ -136,11 +155,17 @@ public class ScanFoodActivity extends AppCompatActivity {
     private Camera camera;
 
     private GeminiRepository geminiRepository;
+    private MediaUploadRepository mediaUploadRepository;
+    private JournalFeedRepository journalFeedRepository;
+    private FriendInviteRepository friendInviteRepository;
     private final List<ChatMessage> recognitionHistory = new ArrayList<>();
-
     private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-    private ListenerRegistration journalListener;
-    private JournalMomentAdapter journalMomentAdapter;
+    private ListenerRegistration journalFeedListener;
+    private ListenerRegistration journalProfileListener;
+    private JournalFeedAdapter journalFeedAdapter;
+
+    private byte[] pendingJournalImageBytes;
+    private String pendingJournalSourceLabel = "camera";
 
     public static Intent createIntent(Context context) {
         return new Intent(context, ScanFoodActivity.class);
@@ -169,21 +194,25 @@ public class ScanFoodActivity extends AppCompatActivity {
         setupClickListeners();
 
         geminiRepository = new GeminiRepository();
-        applyInitialModeFromIntent();
+        mediaUploadRepository = new MediaUploadRepository(getApplicationContext());
+        journalFeedRepository = new JournalFeedRepository(firestore);
+        friendInviteRepository = new FriendInviteRepository(firestore);
 
+        applyInitialModeFromIntent();
         updateUiForMode(false);
         updateFlashUi(false);
         updateScanStatus(isRecognitionMode
-            ? "Hướng camera vào món ăn rồi bấm nút chụp"
-            : "Bấm chụp để lưu nhật ký");
+                ? "Hướng camera vào món ăn rồi bấm nút chụp"
+                : "Chụp nhanh một khoảnh khắc để đăng.");
+        updateJournalStatus("Vuốt xuống để xem feed của bạn và bạn bè.");
         ensureCameraPermissionAndStart();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (SHOW_JOURNAL_FEED_ON_CAMERA) {
-            startJournalListener();
+        if (!isRecognitionMode) {
+            startJournalRealtimeListeners();
         }
     }
 
@@ -206,14 +235,14 @@ public class ScanFoodActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        stopJournalListener();
+        stopJournalRealtimeListeners();
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopJournalListener();
+        stopJournalRealtimeListeners();
         if (cameraProvider != null) {
             cameraProvider.unbindAll();
         }
@@ -221,30 +250,59 @@ public class ScanFoodActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        if (journalCaptureOverlay != null && journalCaptureOverlay.getVisibility() == View.VISIBLE) {
+            hideJournalCapturePreview(true);
+            return;
+        }
         navigateBackHome();
     }
 
     private void initViews() {
         root = findViewById(R.id.scanRoot);
+        recognitionSurface = findViewById(R.id.recognitionSurface);
+        journalSurface = findViewById(R.id.journalSurface);
         topBar = findViewById(R.id.topBar);
         footerContainer = findViewById(R.id.footerContainer);
         cameraPreviewCard = findViewById(R.id.cameraPreviewCard);
         previewInnerFrame = findViewById(R.id.previewInnerFrame);
         detectionBox = findViewById(R.id.detectionBox);
         tabIndicator = findViewById(R.id.tabIndicator);
-        journalOverlay = findViewById(R.id.journalOverlay);
+        journalTopBar = findViewById(R.id.journalTopBar);
+        journalFooterContainer = findViewById(R.id.journalFooterContainer);
+        journalCameraPreviewCard = findViewById(R.id.journalCameraPreviewCard);
+        journalCaptureOverlay = findViewById(R.id.journalCaptureOverlay);
         txtScanStatus = findViewById(R.id.txtScanStatus);
+        txtJournalStatus = findViewById(R.id.txtJournalStatus);
         txtJournalEmptyState = findViewById(R.id.txtJournalEmptyState);
+        txtJournalFriendCount = findViewById(R.id.txtJournalFriendCount);
+        txtJournalUploadProgress = findViewById(R.id.txtJournalUploadProgress);
+        txtJournalPostError = findViewById(R.id.txtJournalPostError);
+        txtJournalModeLabel = findViewById(R.id.txtJournalModeLabel);
         tabNhanDien = findViewById(R.id.tabNhanDien);
         tabNhatKy = findViewById(R.id.tabNhatKy);
         iconFlash = findViewById(R.id.iconFlash);
+        iconJournalFlash = findViewById(R.id.iconJournalFlash);
         btnBack = findViewById(R.id.btnBack);
         btnFlash = findViewById(R.id.btnFlash);
         btnGallery = findViewById(R.id.btnGallery);
         btnShutter = findViewById(R.id.btnShutter);
         btnFlipCamera = findViewById(R.id.btnFlipCamera);
-        previewView = findViewById(R.id.previewView);
+        btnJournalProfile = findViewById(R.id.btnJournalProfile);
+        btnJournalFriends = findViewById(R.id.btnJournalFriends);
+        btnJournalChat = findViewById(R.id.btnJournalChat);
+        btnJournalFlash = findViewById(R.id.btnJournalFlash);
+        btnJournalGallery = findViewById(R.id.btnJournalGallery);
+        btnJournalShutter = findViewById(R.id.btnJournalShutter);
+        btnJournalFlipCamera = findViewById(R.id.btnJournalFlipCamera);
+        btnJournalPostCancel = findViewById(R.id.btnJournalPostCancel);
+        btnJournalPostPublish = findViewById(R.id.btnJournalPostPublish);
+        journalPostLoading = findViewById(R.id.journalPostLoading);
+        edtJournalCaption = findViewById(R.id.edtJournalCaption);
+        imgJournalCapturedPreview = findViewById(R.id.imgJournalCapturedPreview);
+        recognitionPreviewView = findViewById(R.id.previewView);
+        journalPreviewView = findViewById(R.id.journalPreviewView);
         rvJournalMoments = findViewById(R.id.rvJournalMoments);
+        previewView = recognitionPreviewView;
     }
 
     private void setupJournalList() {
@@ -252,67 +310,78 @@ public class ScanFoodActivity extends AppCompatActivity {
             return;
         }
 
-        if (!SHOW_JOURNAL_FEED_ON_CAMERA) {
-            rvJournalMoments.setVisibility(View.GONE);
-            if (txtJournalEmptyState != null) {
-                txtJournalEmptyState.setVisibility(View.GONE);
-            }
-            return;
-        }
-
-        journalMomentAdapter = new JournalMomentAdapter();
-        rvJournalMoments.setLayoutManager(new GridLayoutManager(this, 2));
-        rvJournalMoments.setAdapter(journalMomentAdapter);
-        updateJournalEmptyState(0, "Đang tải nhật ký món ăn...");
+        journalFeedAdapter = new JournalFeedAdapter();
+        rvJournalMoments.setLayoutManager(new LinearLayoutManager(this));
+        rvJournalMoments.setAdapter(journalFeedAdapter);
+        rvJournalMoments.setNestedScrollingEnabled(false);
+        updateJournalEmptyState(0, "Chưa có hoạt động nào!");
     }
 
-    private void startJournalListener() {
-        if (!SHOW_JOURNAL_FEED_ON_CAMERA) {
-            return;
-        }
-
-        stopJournalListener();
+    private void startJournalRealtimeListeners() {
+        stopJournalRealtimeListeners();
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            if (journalMomentAdapter != null) {
-                journalMomentAdapter.submitMoments(new ArrayList<>());
+            if (journalFeedAdapter != null) {
+                journalFeedAdapter.submitItems(new ArrayList<>());
             }
-            updateJournalEmptyState(0, "Đăng nhập để lưu và xem nhật ký món ăn.");
+            updateJournalEmptyState(0, "Đăng nhập để xem feed của bạn bè.");
+            updateJournalStatus("Vui lòng đăng nhập để đăng moment.");
+            if (txtJournalFriendCount != null) {
+                txtJournalFriendCount.setText("Tất cả bạn bè");
+            }
             return;
         }
 
-        journalListener = firestore.collection(FIRESTORE_USERS_COLLECTION)
-                .document(user.getUid())
-                .collection(FIRESTORE_JOURNAL_COLLECTION)
-            .orderBy("capturedAt", Query.Direction.DESCENDING)
-                .limit(JOURNAL_LIST_LIMIT)
-                .addSnapshotListener((snapshot, error) -> {
-                    if (error != null) {
-                        updateJournalEmptyState(0, "Không tải được nhật ký. Vui lòng thử lại.");
-                        return;
-                    }
-                    if (snapshot == null || snapshot.isEmpty()) {
-                        if (journalMomentAdapter != null) {
-                            journalMomentAdapter.submitMoments(new ArrayList<>());
+        journalFeedListener = journalFeedRepository.listenToFeed(user.getUid(), JOURNAL_LIST_LIMIT,
+                new JournalFeedRepository.FeedCallback() {
+                    @Override
+                    public void onItems(@NonNull List<JournalFeedItem> items) {
+                        if (journalFeedAdapter != null) {
+                            journalFeedAdapter.submitItems(items);
                         }
-                        updateJournalEmptyState(0,
-                                "Chưa có khoảnh khắc nào. Bấm chụp để lưu món ăn đầu tiên.");
-                        return;
+                        updateJournalEmptyState(items.size(), "Chưa có hoạt động nào!");
                     }
 
-                    List<JournalMoment> items = new ArrayList<>();
-                    for (DocumentSnapshot doc : snapshot.getDocuments()) {
-                        JournalMoment moment = JournalMoment.fromSnapshot(doc);
-                        if (!TextUtils.isEmpty(moment.getImageUrl())) {
-                            items.add(moment);
+                    @Override
+                    public void onError(@NonNull Exception error) {
+                        updateJournalEmptyState(0, "Không tải được feed. Vui lòng thử lại.");
+                        updateJournalStatus("Không tải được feed.");
+                    }
+                });
+
+        journalProfileListener = journalFeedRepository.listenToUserProfile(user,
+                new JournalFeedRepository.UserProfileCallback() {
+                    @Override
+                    public void onProfile(@NonNull JournalFeedRepository.UserProfile profile) {
+                        if (txtJournalFriendCount == null) {
+                            return;
+                        }
+                        if (profile.friendCount <= 0L) {
+                            txtJournalFriendCount.setText("Tất cả bạn bè");
+                        } else {
+                            txtJournalFriendCount.setText(profile.friendCount + " Bạn bè");
                         }
                     }
-                    if (journalMomentAdapter != null) {
-                        journalMomentAdapter.submitMoments(items);
+
+                    @Override
+                    public void onError(@NonNull Exception error) {
+                        if (txtJournalFriendCount != null) {
+                            txtJournalFriendCount.setText("Bạn bè");
+                        }
                     }
-                    updateJournalEmptyState(items.size(), "");
                 });
+    }
+
+    private void stopJournalRealtimeListeners() {
+        if (journalFeedListener != null) {
+            journalFeedListener.remove();
+            journalFeedListener = null;
+        }
+        if (journalProfileListener != null) {
+            journalProfileListener.remove();
+            journalProfileListener = null;
+        }
     }
 
     private void applyInitialModeFromIntent() {
@@ -326,53 +395,85 @@ public class ScanFoodActivity extends AppCompatActivity {
         isRecognitionMode = !START_MODE_JOURNAL.equalsIgnoreCase(startMode);
     }
 
-    private void stopJournalListener() {
-        if (journalListener != null) {
-            journalListener.remove();
-            journalListener = null;
-        }
-    }
-
     private void updateJournalEmptyState(int count, @NonNull String emptyText) {
         if (txtJournalEmptyState == null) {
             return;
         }
         boolean showEmpty = count <= 0;
         txtJournalEmptyState.setVisibility(showEmpty ? View.VISIBLE : View.GONE);
-        if (showEmpty && !TextUtils.isEmpty(emptyText)) {
+        if (showEmpty) {
             txtJournalEmptyState.setText(emptyText);
         }
     }
 
     private void applyInsets() {
-        if (root == null || topBar == null || footerContainer == null) {
-            return;
-        }
+        final int topBarStart = topBar == null ? 0 : topBar.getPaddingStart();
+        final int topBarTop = topBar == null ? 0 : topBar.getPaddingTop();
+        final int topBarEnd = topBar == null ? 0 : topBar.getPaddingEnd();
+        final int topBarBottom = topBar == null ? 0 : topBar.getPaddingBottom();
 
-        final int topBarStart = topBar.getPaddingStart();
-        final int topBarTop = topBar.getPaddingTop();
-        final int topBarEnd = topBar.getPaddingEnd();
-        final int topBarBottom = topBar.getPaddingBottom();
+        final int footerStart = footerContainer == null ? 0 : footerContainer.getPaddingStart();
+        final int footerTop = footerContainer == null ? 0 : footerContainer.getPaddingTop();
+        final int footerEnd = footerContainer == null ? 0 : footerContainer.getPaddingEnd();
+        final int footerBottom = footerContainer == null ? 0 : footerContainer.getPaddingBottom();
 
-        final int footerStart = footerContainer.getPaddingStart();
-        final int footerTop = footerContainer.getPaddingTop();
-        final int footerEnd = footerContainer.getPaddingEnd();
-        final int footerBottom = footerContainer.getPaddingBottom();
+        final int journalTopStart = journalTopBar == null ? 0 : journalTopBar.getPaddingStart();
+        final int journalTopTop = journalTopBar == null ? 0 : journalTopBar.getPaddingTop();
+        final int journalTopEnd = journalTopBar == null ? 0 : journalTopBar.getPaddingEnd();
+        final int journalTopBottom = journalTopBar == null ? 0 : journalTopBar.getPaddingBottom();
+
+        final int journalFooterStart = journalFooterContainer == null ? 0 : journalFooterContainer.getPaddingStart();
+        final int journalFooterTop = journalFooterContainer == null ? 0 : journalFooterContainer.getPaddingTop();
+        final int journalFooterEnd = journalFooterContainer == null ? 0 : journalFooterContainer.getPaddingEnd();
+        final int journalFooterBottom = journalFooterContainer == null ? 0 : journalFooterContainer.getPaddingBottom();
+
+        final int overlayStart = journalCaptureOverlay == null ? 0 : journalCaptureOverlay.getPaddingStart();
+        final int overlayTop = journalCaptureOverlay == null ? 0 : journalCaptureOverlay.getPaddingTop();
+        final int overlayEnd = journalCaptureOverlay == null ? 0 : journalCaptureOverlay.getPaddingEnd();
+        final int overlayBottom = journalCaptureOverlay == null ? 0 : journalCaptureOverlay.getPaddingBottom();
 
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
 
-            topBar.setPaddingRelative(
-                    topBarStart + systemBars.left,
-                    topBarTop + systemBars.top,
-                    topBarEnd + systemBars.right,
-                    topBarBottom);
+            if (topBar != null) {
+                topBar.setPaddingRelative(
+                        topBarStart + systemBars.left,
+                        topBarTop + systemBars.top,
+                        topBarEnd + systemBars.right,
+                        topBarBottom);
+            }
 
-            footerContainer.setPaddingRelative(
-                    footerStart + systemBars.left,
-                    footerTop,
-                    footerEnd + systemBars.right,
-                    footerBottom + systemBars.bottom);
+            if (footerContainer != null) {
+                footerContainer.setPaddingRelative(
+                        footerStart + systemBars.left,
+                        footerTop,
+                        footerEnd + systemBars.right,
+                        footerBottom + systemBars.bottom);
+            }
+
+            if (journalTopBar != null) {
+                journalTopBar.setPaddingRelative(
+                        journalTopStart + systemBars.left,
+                        journalTopTop + systemBars.top,
+                        journalTopEnd + systemBars.right,
+                        journalTopBottom);
+            }
+
+            if (journalFooterContainer != null) {
+                journalFooterContainer.setPaddingRelative(
+                        journalFooterStart + systemBars.left,
+                        journalFooterTop,
+                        journalFooterEnd + systemBars.right,
+                        journalFooterBottom + systemBars.bottom);
+            }
+
+            if (journalCaptureOverlay != null) {
+                journalCaptureOverlay.setPaddingRelative(
+                        overlayStart + systemBars.left,
+                        overlayTop + systemBars.top,
+                        overlayEnd + systemBars.right,
+                        overlayBottom + systemBars.bottom);
+            }
 
             return insets;
         });
@@ -407,11 +508,13 @@ public class ScanFoodActivity extends AppCompatActivity {
                     if (isGranted) {
                         updateScanStatus(isRecognitionMode
                                 ? "Camera sẵn sàng, bạn có thể quét món ăn"
-                                : "Camera sẵn sàng, bạn có thể lưu khoảnh khắc");
+                                : "Camera sẵn sàng, bạn có thể đăng moment");
+                        updateJournalStatus("Camera sẵn sàng. Chụp rồi kéo xuống để xem feed.");
                         startCameraIfNeeded();
                     } else {
                         isCameraReady = false;
                         updateScanStatus("Bạn cần cấp quyền Camera để dùng tính năng này");
+                        updateJournalStatus("Bạn cần cấp quyền Camera để đăng moment.");
                         Toast.makeText(this, "Vui lòng cấp quyền camera", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -423,16 +526,19 @@ public class ScanFoodActivity extends AppCompatActivity {
             return;
         }
         updateScanStatus("Đang xin quyền camera...");
+        updateJournalStatus("Đang xin quyền camera...");
         if (cameraPermissionLauncher != null) {
             cameraPermissionLauncher.launch(Manifest.permission.CAMERA);
         }
     }
 
     private boolean hasCameraPermission() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     private void startCameraIfNeeded() {
+        updateActivePreviewView();
         if (previewView == null || !hasCameraPermission()) {
             return;
         }
@@ -445,9 +551,14 @@ public class ScanFoodActivity extends AppCompatActivity {
             } catch (Exception exception) {
                 isCameraReady = false;
                 updateScanStatus("Không thể khởi tạo camera, vui lòng thử lại");
+                updateJournalStatus("Không thể khởi tạo camera.");
                 Toast.makeText(this, "Không mở được camera", Toast.LENGTH_SHORT).show();
             }
         }, ContextCompat.getMainExecutor(this));
+    }
+
+    private void updateActivePreviewView() {
+        previewView = isRecognitionMode ? recognitionPreviewView : journalPreviewView;
     }
 
     private void bindCameraUseCases() {
@@ -476,10 +587,12 @@ public class ScanFoodActivity extends AppCompatActivity {
             applyTorchState();
             updateScanStatus(isRecognitionMode
                     ? "Camera sẵn sàng, bạn có thể quét món ăn"
-                    : "Camera sẵn sàng, bấm chụp để lưu nhật ký");
+                    : "Camera sẵn sàng, bấm chụp để đăng.");
+            updateJournalStatus("Camera sẵn sàng. Vuốt xuống để xem feed.");
         } catch (Exception bindError) {
             isCameraReady = false;
             updateScanStatus("Không bind được camera, đang thử camera khác...");
+            updateJournalStatus("Không bind được camera.");
             if (!isUsingFrontCamera) {
                 isUsingFrontCamera = true;
                 bindCameraUseCases();
@@ -498,8 +611,7 @@ public class ScanFoodActivity extends AppCompatActivity {
             return;
         }
 
-        final boolean routeRecognition = isRecognitionMode;
-        if (routeRecognition) {
+        if (isRecognitionMode) {
             processImageUriForRecognition(imageUri, "gallery");
         } else {
             processImageUriForJournal(imageUri, "gallery");
@@ -507,7 +619,24 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void setupPressScaleFeedback() {
-        applyPressScale(btnBack, btnFlash, btnGallery, btnShutter, btnFlipCamera, tabNhanDien, tabNhatKy);
+        applyPressScale(
+                btnBack,
+                btnFlash,
+                btnGallery,
+                btnShutter,
+                btnFlipCamera,
+                tabNhanDien,
+                tabNhatKy,
+                btnJournalProfile,
+                btnJournalFriends,
+                btnJournalChat,
+                btnJournalFlash,
+                btnJournalGallery,
+                btnJournalShutter,
+                btnJournalFlipCamera,
+                btnJournalPostCancel,
+                btnJournalPostPublish,
+                txtJournalModeLabel);
     }
 
     private void applyPressScale(View... targets) {
@@ -570,6 +699,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
         isRecognitionMode = recognitionMode;
         updateUiForMode(true);
+        startCameraIfNeeded();
     }
 
     private void updateUiForMode(boolean animated) {
@@ -592,28 +722,26 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
 
         moveIndicatorTo(isRecognitionMode ? tabNhanDien : tabNhatKy, animated);
+        updateActivePreviewView();
+
+        if (recognitionSurface != null) {
+            recognitionSurface.setVisibility(isRecognitionMode ? View.VISIBLE : View.GONE);
+        }
+        if (journalSurface != null) {
+            journalSurface.setVisibility(isRecognitionMode ? View.GONE : View.VISIBLE);
+        }
+        if (journalFooterContainer != null) {
+            journalFooterContainer.setVisibility(isRecognitionMode ? View.GONE : View.VISIBLE);
+        }
 
         if (cameraPreviewCard != null) {
-            cameraPreviewCard.animate().cancel();
-            cameraPreviewCard.animate()
-                    .alpha(isRecognitionMode ? 1f : 0.94f)
-                    .setDuration(animated ? MODE_TRANSITION_DURATION : 0L)
-                    .setInterpolator(new DecelerateInterpolator())
-                    .start();
+            cameraPreviewCard.setAlpha(isRecognitionMode ? 1f : 0.94f);
         }
-
         if (previewInnerFrame != null) {
-            previewInnerFrame.animate().cancel();
-            previewInnerFrame.animate()
-                    .alpha(isRecognitionMode ? 1f : 0.62f)
-                    .setDuration(animated ? MODE_TRANSITION_DURATION : 0L)
-                    .setInterpolator(new DecelerateInterpolator())
-                    .start();
+            previewInnerFrame.setAlpha(isRecognitionMode ? 1f : 0.62f);
         }
-
-        if (journalOverlay != null) {
-            boolean showJournalOverlay = !isRecognitionMode && SHOW_JOURNAL_FEED_ON_CAMERA;
-            journalOverlay.setVisibility(showJournalOverlay ? View.VISIBLE : View.GONE);
+        if (journalCameraPreviewCard != null) {
+            journalCameraPreviewCard.setAlpha(isRecognitionMode ? 0f : 1f);
         }
 
         if (detectionBox != null) {
@@ -629,18 +757,19 @@ public class ScanFoodActivity extends AppCompatActivity {
                 if (!isRecognitionInProgress) {
                     updateScanStatus("Hướng camera vào món ăn rồi bấm nút chụp");
                 }
+                stopJournalRealtimeListeners();
             } else {
                 stopDetectionPulse();
-                detectionBox.animate()
-                        .alpha(0f)
-                        .setDuration(animated ? MODE_TRANSITION_DURATION : 0L)
-                        .setInterpolator(new DecelerateInterpolator())
-                        .withEndAction(() -> detectionBox.setVisibility(View.INVISIBLE))
-                        .start();
+                detectionBox.setVisibility(View.INVISIBLE);
                 if (!isJournalSaveInProgress) {
-                    updateScanStatus("Bấm chụp để lưu nhật ký");
+                    updateJournalStatus("Chụp nhanh rồi kéo xuống để xem feed.");
                 }
+                startJournalRealtimeListeners();
             }
+        }
+
+        if (isRecognitionMode && journalCaptureOverlay != null && journalCaptureOverlay.getVisibility() == View.VISIBLE) {
+            hideJournalCapturePreview(true);
         }
     }
 
@@ -693,71 +822,112 @@ public class ScanFoodActivity extends AppCompatActivity {
             iconFlash.setTextColor(isFlashOn ? TAB_ACTIVE_COLOR : TAB_INACTIVE_COLOR);
         }
 
+        if (iconJournalFlash != null) {
+            iconJournalFlash.setText(isFlashOn ? "flash_on" : "flash_off");
+            iconJournalFlash.setTextColor(isFlashOn ? TAB_ACTIVE_COLOR : Color.WHITE);
+        }
+
         if (showToast) {
             Toast.makeText(this, isFlashOn ? "Flash: Bật" : "Flash: Tắt", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void applyTorchState() {
-        if (camera == null || camera.getCameraInfo() == null || camera.getCameraControl() == null) {
-            return;
-        }
-        boolean hasTorch = camera.getCameraInfo().hasFlashUnit();
+        boolean hasTorch = camera != null
+                && camera.getCameraInfo() != null
+                && camera.getCameraControl() != null
+                && camera.getCameraInfo().hasFlashUnit();
+
         if (!hasTorch) {
             isFlashOn = false;
             updateFlashUi(false);
-            if (btnFlash != null) {
-                btnFlash.setEnabled(false);
-                btnFlash.setAlpha(0.5f);
-            }
+            setTorchButtonsEnabled(false);
             return;
         }
 
-        if (btnFlash != null) {
-            btnFlash.setEnabled(true);
-            btnFlash.setAlpha(1f);
-        }
+        setTorchButtonsEnabled(true);
         camera.getCameraControl().enableTorch(isFlashOn);
         updateFlashUi(false);
+    }
+
+    private void setTorchButtonsEnabled(boolean enabled) {
+        if (btnFlash != null) {
+            btnFlash.setEnabled(enabled);
+            btnFlash.setAlpha(enabled ? 1f : 0.5f);
+        }
+        if (btnJournalFlash != null) {
+            btnJournalFlash.setEnabled(enabled);
+            btnJournalFlash.setAlpha(enabled ? 1f : 0.5f);
+        }
     }
 
     private void setupClickListeners() {
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> navigateBackHome());
         }
-
-        if (btnFlash != null) {
-            btnFlash.setOnClickListener(v -> {
-                if (!isCameraReady || camera == null) {
-                    Toast.makeText(this, "Camera chưa sẵn sàng", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                isFlashOn = !isFlashOn;
-                camera.getCameraControl().enableTorch(isFlashOn);
-                updateFlashUi(true);
-            });
+        if (btnJournalProfile != null) {
+            btnJournalProfile.setOnClickListener(v -> navigateBackHome());
         }
-
+        if (btnFlash != null) {
+            btnFlash.setOnClickListener(v -> toggleFlash());
+        }
+        if (btnJournalFlash != null) {
+            btnJournalFlash.setOnClickListener(v -> toggleFlash());
+        }
         if (btnGallery != null) {
             btnGallery.setOnClickListener(v -> openGalleryPicker());
         }
-
+        if (btnJournalGallery != null) {
+            btnJournalGallery.setOnClickListener(v -> openGalleryPicker());
+        }
         if (btnShutter != null) {
             btnShutter.setOnClickListener(v -> performShutterAction());
         }
-
-        if (btnFlipCamera != null) {
-            btnFlipCamera.setOnClickListener(v -> {
-                if (isBusyProcessing()) {
-                    Toast.makeText(this, "Đang xử lý ảnh, vui lòng chờ", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                isUsingFrontCamera = !isUsingFrontCamera;
-                startCameraIfNeeded();
-                String cameraLabel = isUsingFrontCamera ? "Camera trước" : "Camera sau";
-                Toast.makeText(this, "Đã chuyển sang " + cameraLabel, Toast.LENGTH_SHORT).show();
-            });
+        if (btnJournalShutter != null) {
+            btnJournalShutter.setOnClickListener(v -> performShutterAction());
         }
+        if (btnFlipCamera != null) {
+            btnFlipCamera.setOnClickListener(v -> toggleCameraLens());
+        }
+        if (btnJournalFlipCamera != null) {
+            btnJournalFlipCamera.setOnClickListener(v -> toggleCameraLens());
+        }
+        if (btnJournalFriends != null) {
+            btnJournalFriends.setOnClickListener(v -> openFriendInviteSheet());
+        }
+        if (btnJournalChat != null) {
+            btnJournalChat.setOnClickListener(v -> openFriendInviteSheet());
+        }
+        if (txtJournalModeLabel != null) {
+            txtJournalModeLabel.setOnClickListener(v -> switchMode(true));
+        }
+        if (btnJournalPostCancel != null) {
+            btnJournalPostCancel.setOnClickListener(v -> hideJournalCapturePreview(true));
+        }
+        if (btnJournalPostPublish != null) {
+            btnJournalPostPublish.setOnClickListener(v -> publishPendingJournalMoment());
+        }
+    }
+
+    private void toggleFlash() {
+        if (!isCameraReady || camera == null) {
+            Toast.makeText(this, "Camera chưa sẵn sàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        isFlashOn = !isFlashOn;
+        camera.getCameraControl().enableTorch(isFlashOn);
+        updateFlashUi(true);
+    }
+
+    private void toggleCameraLens() {
+        if (isBusyProcessing()) {
+            Toast.makeText(this, "Đang xử lý ảnh, vui lòng chờ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        isUsingFrontCamera = !isUsingFrontCamera;
+        startCameraIfNeeded();
+        String cameraLabel = isUsingFrontCamera ? "Camera trước" : "Camera sau";
+        Toast.makeText(this, "Đã chuyển sang " + cameraLabel, Toast.LENGTH_SHORT).show();
     }
 
     private void performShutterAction() {
@@ -772,10 +942,12 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
 
         animateShutterFeedback();
+        updateScanStatus(isRecognitionMode
+                ? "Đang chụp để nhận diện..."
+                : "Đang chụp để đăng nhật ký...");
+        updateJournalStatus("Đang chụp...");
 
         final boolean routeRecognition = isRecognitionMode;
-        updateScanStatus(routeRecognition ? "Đang chụp để nhận diện..." : "Đang chụp để lưu nhật ký...");
-
         imageCapture.takePicture(
                 ContextCompat.getMainExecutor(this),
                 new ImageCapture.OnImageCapturedCallback() {
@@ -786,6 +958,7 @@ public class ScanFoodActivity extends AppCompatActivity {
                         image.close();
                         if (bytes == null || bytes.length == 0) {
                             updateScanStatus("Không đọc được ảnh chụp, vui lòng thử lại");
+                            updateJournalStatus("Không đọc được ảnh vừa chụp.");
                             return;
                         }
 
@@ -800,22 +973,24 @@ public class ScanFoodActivity extends AppCompatActivity {
                     public void onError(@NonNull ImageCaptureException exception) {
                         super.onError(exception);
                         updateScanStatus("Chụp thất bại, vui lòng thử lại");
+                        updateJournalStatus("Chụp thất bại, vui lòng thử lại.");
                         Toast.makeText(ScanFoodActivity.this, "Không chụp được ảnh", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void animateShutterFeedback() {
-        if (btnShutter == null) {
+        View activeShutter = isRecognitionMode ? btnShutter : btnJournalShutter;
+        if (activeShutter == null) {
             return;
         }
-        btnShutter.animate().cancel();
-        btnShutter.animate()
+        activeShutter.animate().cancel();
+        activeShutter.animate()
                 .scaleX(0.92f)
                 .scaleY(0.92f)
                 .setDuration(180L)
                 .setInterpolator(new DecelerateInterpolator())
-                .withEndAction(() -> btnShutter.animate()
+                .withEndAction(() -> activeShutter.animate()
                         .scaleX(1f)
                         .scaleY(1f)
                         .setDuration(200L)
@@ -859,7 +1034,7 @@ public class ScanFoodActivity extends AppCompatActivity {
                 byte[] raw = readImageBytes(uri, MAX_JOURNAL_IMAGE_BYTES);
                 runOnUiThread(() -> {
                     if (raw.length > MAX_JOURNAL_IMAGE_BYTES) {
-                        updateScanStatus("Ảnh quá lớn, vui lòng chọn ảnh nhỏ hơn");
+                        updateJournalStatus("Ảnh quá lớn, vui lòng chọn ảnh nhỏ hơn.");
                         Toast.makeText(this, "Ảnh vượt quá 8MB", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -867,14 +1042,16 @@ public class ScanFoodActivity extends AppCompatActivity {
                 });
             } catch (IOException ioException) {
                 runOnUiThread(() -> {
-                    updateScanStatus("Không đọc được ảnh, vui lòng thử lại");
+                    updateJournalStatus("Không đọc được ảnh, vui lòng thử lại.");
                     Toast.makeText(this, "Không thể đọc ảnh đã chọn", Toast.LENGTH_SHORT).show();
                 });
             }
         }).start();
     }
 
-    private void processImageBytesForRecognition(@NonNull byte[] imageBytes, @Nullable String mimeType,
+    private void processImageBytesForRecognition(
+            @NonNull byte[] imageBytes,
+            @Nullable String mimeType,
             @NonNull String sourceLabel) {
         if (isRecognitionInProgress || isJournalSaveInProgress) {
             return;
@@ -946,7 +1123,8 @@ public class ScanFoodActivity extends AppCompatActivity {
 
     private void appendRecognitionHistory(@NonNull String sourceLabel, @NonNull String resultText) {
         String compactResult = resultText.length() > 360 ? resultText.substring(0, 360) : resultText;
-        recognitionHistory.add(new ChatMessage(ChatMessage.ROLE_USER,
+        recognitionHistory.add(new ChatMessage(
+                ChatMessage.ROLE_USER,
                 "Ảnh từ " + sourceLabel + ". Hãy nhận diện và hướng dẫn nấu."));
         recognitionHistory.add(new ChatMessage(ChatMessage.ROLE_AI, compactResult));
         while (recognitionHistory.size() > 10) {
@@ -955,286 +1133,286 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void processImageBytesForJournal(@NonNull byte[] imageBytes, @NonNull String sourceLabel) {
-        if (isJournalSaveInProgress || isRecognitionInProgress) {
+        if (isRecognitionInProgress || isJournalSaveInProgress) {
+            return;
+        }
+        showJournalCapturePreview(imageBytes, sourceLabel);
+    }
+
+    private void showJournalCapturePreview(@NonNull byte[] imageBytes, @NonNull String sourceLabel) {
+        if (imgJournalCapturedPreview == null || journalCaptureOverlay == null) {
+            return;
+        }
+
+        Bitmap bitmap = decodePreviewBitmap(imageBytes);
+        if (bitmap == null) {
+            updateJournalStatus("Không mở được ảnh vừa chụp.");
+            Toast.makeText(this, "Không hiển thị được ảnh", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        pendingJournalImageBytes = imageBytes;
+        pendingJournalSourceLabel = sourceLabel;
+        imgJournalCapturedPreview.setImageBitmap(bitmap);
+        if (edtJournalCaption != null) {
+            edtJournalCaption.setText("");
+        }
+        setJournalPostLoading(false, "");
+        showJournalPostError("");
+        journalCaptureOverlay.setVisibility(View.VISIBLE);
+        updateJournalStatus("Thêm caption rồi bấm Đăng.");
+    }
+
+    private void hideJournalCapturePreview(boolean clearPendingState) {
+        if (journalCaptureOverlay != null) {
+            journalCaptureOverlay.setVisibility(View.GONE);
+        }
+        if (imgJournalCapturedPreview != null) {
+            imgJournalCapturedPreview.setImageDrawable(null);
+        }
+        if (edtJournalCaption != null) {
+            edtJournalCaption.setText("");
+        }
+        setJournalPostLoading(false, "");
+        showJournalPostError("");
+        if (clearPendingState) {
+            pendingJournalImageBytes = null;
+            pendingJournalSourceLabel = "camera";
+        }
+        updateJournalStatus("Sẵn sàng chụp moment mới.");
+    }
+
+    @Nullable
+    private Bitmap decodePreviewBitmap(@NonNull byte[] imageBytes) {
+        try {
+            BitmapFactory.Options bounds = new BitmapFactory.Options();
+            bounds.inJustDecodeBounds = true;
+            BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, bounds);
+
+            int maxSide = Math.max(bounds.outWidth, bounds.outHeight);
+            int inSampleSize = 1;
+            while (maxSide / inSampleSize > 1600) {
+                inSampleSize *= 2;
+            }
+
+            BitmapFactory.Options decode = new BitmapFactory.Options();
+            decode.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            decode.inSampleSize = Math.max(1, inSampleSize);
+            return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, decode);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private void publishPendingJournalMoment() {
+        if (pendingJournalImageBytes == null || pendingJournalImageBytes.length == 0) {
+            showJournalPostError("Không có ảnh để đăng.");
             return;
         }
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            updateScanStatus("Bạn cần đăng nhập để lưu nhật ký món ăn");
-            Toast.makeText(this, "Vui lòng đăng nhập để lưu nhật ký", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng đăng nhập để đăng nhật ký", Toast.LENGTH_SHORT).show();
+            startActivity(AuthActivity.createIntent(this, AuthActivity.MODE_LOGIN));
             return;
         }
+
+        String caption = edtJournalCaption == null ? "" : String.valueOf(edtJournalCaption.getText()).trim();
+        String cameraFacing = "camera".equals(pendingJournalSourceLabel)
+                ? (isUsingFrontCamera ? "front" : "back")
+                : "none";
 
         isJournalSaveInProgress = true;
         setProcessingUiEnabled(false);
-        updateScanStatus("Đang tối ưu ảnh để lưu nhật ký...");
+        setJournalPostLoading(true, "Đang tối ưu ảnh...");
+        showJournalPostError("");
+        updateJournalStatus("Đang đăng moment...");
 
-        new Thread(() -> {
-            byte[] preparedBytes = prepareJournalImageForUpload(imageBytes);
-            if (preparedBytes == null || preparedBytes.length == 0) {
-                runOnUiThread(() -> finishJournalSaveWithError("Không chuẩn bị được ảnh để lưu."));
-                return;
-            }
-            ImageSize imageSize = resolveImageSize(preparedBytes);
-            runOnUiThread(() -> uploadJournalToCloudinary(preparedBytes, sourceLabel, imageSize));
-        }).start();
+        mediaUploadRepository.uploadJournalImage(pendingJournalImageBytes,
+                new MediaUploadRepository.UploadCallbackListener() {
+                    @Override
+                    public void onPreparing() {
+                        runOnUiThread(() -> setJournalPostLoading(true, "Đang tối ưu ảnh..."));
+                    }
+
+                    @Override
+                    public void onProgress(int progress) {
+                        runOnUiThread(() -> setJournalPostLoading(
+                                true,
+                                progress <= 0
+                                        ? "Đang tải ảnh lên Cloudinary..."
+                                        : "Đang tải ảnh lên Cloudinary... " + progress + "%"));
+                    }
+
+                    @Override
+                    public void onSuccess(@NonNull MediaUploadResult result) {
+                        runOnUiThread(() -> setJournalPostLoading(true, "Đang cập nhật Firestore..."));
+                        journalFeedRepository.publishMoment(
+                                user,
+                                result,
+                                caption,
+                                pendingJournalSourceLabel,
+                                cameraFacing,
+                                new JournalFeedRepository.PublishCallback() {
+                                    @Override
+                                    public void onSuccess(@NonNull JournalFeedItem item) {
+                                        runOnUiThread(() -> {
+                                            isJournalSaveInProgress = false;
+                                            setProcessingUiEnabled(true);
+                                            if (journalFeedAdapter != null) {
+                                                journalFeedAdapter.prependIfMissing(item);
+                                                updateJournalEmptyState(journalFeedAdapter.getItemCount(), "Chưa có hoạt động nào!");
+                                            }
+                                            hideJournalCapturePreview(true);
+                                            updateJournalStatus("Đã đăng moment mới.");
+                                            Toast.makeText(
+                                                    ScanFoodActivity.this,
+                                                    "Đã đăng moment thành công",
+                                                    Toast.LENGTH_SHORT).show();
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onError(@NonNull Exception error) {
+                                        runOnUiThread(() -> finishJournalSaveWithError(
+                                                "Lưu Firestore thất bại. Vui lòng thử lại."));
+                                    }
+                                });
+                    }
+
+                    @Override
+                    public void onError(@NonNull String message) {
+                        runOnUiThread(() -> finishJournalSaveWithError(message));
+                    }
+                });
     }
 
-    private void uploadJournalToCloudinary(@NonNull byte[] imageBytes, @NonNull String sourceLabel,
-            @NonNull ImageSize imageSize) {
-        if (!ensureCloudinaryConfigured()) {
-            finishJournalSaveWithError("Thiếu cấu hình Cloudinary để lưu nhật ký.");
-            return;
+    private void setJournalPostLoading(boolean loading, @NonNull String statusText) {
+        if (journalPostLoading != null) {
+            journalPostLoading.setVisibility(loading ? View.VISIBLE : View.GONE);
         }
-
-        updateScanStatus("Đang tải ảnh nhật ký lên cloud...");
-
-        String uploadPreset = BuildConfig.CLOUDINARY_UPLOAD_PRESET.trim();
-        UploadRequest uploadRequest = MediaManager.get().upload(imageBytes)
-                .option("resource_type", "image");
-
-        if (!TextUtils.isEmpty(uploadPreset)) {
-            uploadRequest.option("upload_preset", uploadPreset);
-        } else {
-            uploadRequest.option("folder", "coolcook/journal");
+        if (txtJournalUploadProgress != null) {
+            txtJournalUploadProgress.setText(statusText);
+            txtJournalUploadProgress.setVisibility(TextUtils.isEmpty(statusText) ? View.GONE : View.VISIBLE);
         }
-
-        uploadRequest.callback(new UploadCallback() {
-            @Override
-            public void onStart(String requestId) {
-                runOnUiThread(() -> updateScanStatus("Đang bắt đầu lưu nhật ký..."));
-            }
-
-            @Override
-            public void onProgress(String requestId, long bytes, long totalBytes) {
-                runOnUiThread(() -> {
-                    if (totalBytes <= 0L) {
-                        updateScanStatus("Đang tải ảnh nhật ký lên cloud...");
-                        return;
-                    }
-                    int progress = (int) ((bytes * 100L) / totalBytes);
-                    progress = Math.max(0, Math.min(progress, 100));
-                    updateScanStatus("Đang lưu nhật ký... " + progress + "%");
-                });
-            }
-
-            @Override
-            public void onSuccess(String requestId, Map resultData) {
-                String secureUrl = resultData == null ? "" : String.valueOf(resultData.get("secure_url"));
-                runOnUiThread(() -> {
-                    if (TextUtils.isEmpty(secureUrl)) {
-                        finishJournalSaveWithError("Cloud không trả về URL ảnh hợp lệ.");
-                        return;
-                    }
-                    saveJournalEntryToFirestore(secureUrl, sourceLabel, imageSize);
-                });
-            }
-
-            @Override
-            public void onError(String requestId, ErrorInfo error) {
-                runOnUiThread(() -> {
-                    String message = error == null || TextUtils.isEmpty(error.getDescription())
-                            ? "Tải ảnh nhật ký thất bại"
-                            : error.getDescription();
-                    finishJournalSaveWithError(message);
-                });
-            }
-
-            @Override
-            public void onReschedule(String requestId, ErrorInfo error) {
-                runOnUiThread(() -> updateScanStatus("Đang lên lịch tải lại nhật ký..."));
-            }
-        }).dispatch();
+        if (btnJournalPostCancel != null) {
+            btnJournalPostCancel.setEnabled(!loading);
+            btnJournalPostCancel.setAlpha(loading ? 0.65f : 1f);
+        }
+        if (btnJournalPostPublish != null) {
+            btnJournalPostPublish.setEnabled(!loading);
+            btnJournalPostPublish.setAlpha(loading ? 0.65f : 1f);
+        }
     }
 
-    private void saveJournalEntryToFirestore(@NonNull String secureUrl, @NonNull String sourceLabel,
-            @NonNull ImageSize imageSize) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            finishJournalSaveWithError("Bạn cần đăng nhập để lưu nhật ký.");
+    private void showJournalPostError(@NonNull String message) {
+        if (txtJournalPostError == null) {
             return;
         }
-
-        DocumentReference entryReference = firestore.collection(FIRESTORE_USERS_COLLECTION)
-            .document(user.getUid())
-            .collection(FIRESTORE_JOURNAL_COLLECTION)
-            .document();
-
-        Date capturedAt = new Date();
-        String dateKey = capturedAt.toInstant()
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate()
-            .format(DateTimeFormatter.ISO_LOCAL_DATE);
-        String thumbnailUrl = buildCloudinaryThumbUrl(secureUrl, 480);
-
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("id", entryReference.getId());
-        payload.put("userId", user.getUid());
-        payload.put("date", dateKey);
-        payload.put("imageUrl", secureUrl);
-        payload.put("thumbnailUrl", thumbnailUrl);
-        payload.put("capturedAt", capturedAt);
-        payload.put("caption", "");
-        payload.put("mealType", "other");
-
-        // Legacy fields kept for compatibility with old local readers.
-        payload.put("thumbUrl", thumbnailUrl);
-        payload.put("source", sourceLabel);
-        payload.put("cameraFacing", "camera".equals(sourceLabel) ? (isUsingFrontCamera ? "front" : "back") : "none");
-        payload.put("width", imageSize.width);
-        payload.put("height", imageSize.height);
-        payload.put("createdAt", capturedAt);
-        payload.put("updatedAt", new Date());
-
-        entryReference
-            .set(payload)
-                .addOnSuccessListener(ref -> {
-                    isJournalSaveInProgress = false;
-                    setProcessingUiEnabled(true);
-                    updateScanStatus("Đã lưu món ăn vào nhật ký");
-                    Toast.makeText(this, "Đã lưu vào nhật ký", Toast.LENGTH_SHORT).show();
-                    if (SHOW_JOURNAL_FEED_ON_CAMERA) {
-                        updateJournalEmptyState(
-                                journalMomentAdapter == null ? 1 : journalMomentAdapter.getItemCount(),
-                                "");
-                    }
-                })
-                .addOnFailureListener(error -> finishJournalSaveWithError("Lưu Firestore thất bại. Vui lòng thử lại."));
+        if (TextUtils.isEmpty(message)) {
+            txtJournalPostError.setVisibility(View.GONE);
+            txtJournalPostError.setText("");
+            return;
+        }
+        txtJournalPostError.setVisibility(View.VISIBLE);
+        txtJournalPostError.setText(message);
     }
 
     private void finishJournalSaveWithError(@NonNull String errorMessage) {
         isJournalSaveInProgress = false;
         setProcessingUiEnabled(true);
-        updateScanStatus(errorMessage);
+        setJournalPostLoading(false, "");
+        showJournalPostError(errorMessage);
+        updateJournalStatus(errorMessage);
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
-    private boolean ensureCloudinaryConfigured() {
-        String cloudName = BuildConfig.CLOUDINARY_CLOUD_NAME.trim();
-        String apiKey = BuildConfig.CLOUDINARY_API_KEY.trim();
-        String apiSecret = BuildConfig.CLOUDINARY_API_SECRET.trim();
-        String uploadPreset = BuildConfig.CLOUDINARY_UPLOAD_PRESET.trim();
+    private void openFriendInviteSheet() {
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        View sheet = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_friend_invite, null, false);
+        dialog.setContentView(sheet);
 
-        boolean hasSignedCredentials = !TextUtils.isEmpty(apiKey) && !TextUtils.isEmpty(apiSecret);
-        boolean hasUnsignedPreset = !TextUtils.isEmpty(uploadPreset);
-        if (TextUtils.isEmpty(cloudName) || (!hasSignedCredentials && !hasUnsignedPreset)) {
-            return false;
+        TextView txtTitle = sheet.findViewById(R.id.txtFriendSheetTitle);
+        TextView txtSubtitle = sheet.findViewById(R.id.txtFriendSheetSubtitle);
+        View btnCreateInviteLink = sheet.findViewById(R.id.btnCreateInviteLink);
+        View btnClose = sheet.findViewById(R.id.btnFriendSheetClose);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (txtTitle != null) {
+            txtTitle.setText(txtJournalFriendCount == null ? "Bạn bè" : txtJournalFriendCount.getText());
+        }
+        if (txtSubtitle != null && user == null) {
+            txtSubtitle.setText("Đăng nhập để tạo link mời bạn vào journal feed.");
         }
 
-        try {
-            MediaManager.get();
-            return true;
-        } catch (IllegalStateException error) {
-            HashMap<String, Object> config = new HashMap<>();
-            config.put("cloud_name", cloudName);
-            config.put("secure", true);
-            if (!TextUtils.isEmpty(apiKey)) {
-                config.put("api_key", apiKey);
-            }
-            if (!TextUtils.isEmpty(apiSecret)) {
-                config.put("api_secret", apiSecret);
-            }
-            MediaManager.init(getApplicationContext(), config);
-            return true;
-        }
-    }
-
-    @Nullable
-    private byte[] prepareJournalImageForUpload(@NonNull byte[] sourceBytes) {
-        try {
-            BitmapFactory.Options bounds = new BitmapFactory.Options();
-            bounds.inJustDecodeBounds = true;
-            BitmapFactory.decodeByteArray(sourceBytes, 0, sourceBytes.length, bounds);
-
-            int sourceWidth = Math.max(1, bounds.outWidth);
-            int sourceHeight = Math.max(1, bounds.outHeight);
-            int maxSide = Math.max(sourceWidth, sourceHeight);
-
-            int inSampleSize = 1;
-            while (maxSide / inSampleSize > JOURNAL_UPLOAD_MAX_DIMENSION_PX * 2) {
-                inSampleSize *= 2;
-            }
-
-            BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
-            decodeOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            decodeOptions.inSampleSize = Math.max(1, inSampleSize);
-
-            Bitmap decoded = BitmapFactory.decodeByteArray(sourceBytes, 0, sourceBytes.length, decodeOptions);
-            if (decoded == null) {
-                return sourceBytes;
-            }
-
-            Bitmap scaled = decoded;
-            int currentWidth = decoded.getWidth();
-            int currentHeight = decoded.getHeight();
-            int currentMax = Math.max(currentWidth, currentHeight);
-
-            if (currentMax > JOURNAL_UPLOAD_MAX_DIMENSION_PX) {
-                float ratio = JOURNAL_UPLOAD_MAX_DIMENSION_PX / (float) currentMax;
-                int targetWidth = Math.max(1, Math.round(currentWidth * ratio));
-                int targetHeight = Math.max(1, Math.round(currentHeight * ratio));
-                scaled = Bitmap.createScaledBitmap(decoded, targetWidth, targetHeight, true);
-                if (scaled != decoded) {
-                    decoded.recycle();
+        if (btnCreateInviteLink != null) {
+            btnCreateInviteLink.setOnClickListener(v -> {
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (currentUser == null) {
+                    dialog.dismiss();
+                    startActivity(AuthActivity.createIntent(this, AuthActivity.MODE_LOGIN));
+                    return;
                 }
-            }
 
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            boolean compressed = scaled.compress(Bitmap.CompressFormat.JPEG, JOURNAL_UPLOAD_QUALITY, outputStream);
-            scaled.recycle();
-            if (!compressed) {
-                return null;
-            }
-            return outputStream.toByteArray();
-        } catch (Exception error) {
-            return null;
+                v.setEnabled(false);
+                v.setAlpha(0.7f);
+                friendInviteRepository.createInvite(currentUser, new FriendInviteRepository.CreateInviteCallback() {
+                    @Override
+                    public void onSuccess(@NonNull FriendInvite invite) {
+                        runOnUiThread(() -> {
+                            dialog.dismiss();
+                            shareInvite(invite);
+                        });
+                    }
+
+                    @Override
+                    public void onError(@NonNull String message) {
+                        runOnUiThread(() -> {
+                            v.setEnabled(true);
+                            v.setAlpha(1f);
+                            Toast.makeText(ScanFoodActivity.this, message, Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                });
+            });
         }
+
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
     }
 
-    @NonNull
-    private ImageSize resolveImageSize(@NonNull byte[] bytes) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
-        return new ImageSize(Math.max(0, options.outWidth), Math.max(0, options.outHeight));
-    }
-
-    @NonNull
-    private String buildCloudinaryThumbUrl(@NonNull String rawUrl, int targetSize) {
-        if (TextUtils.isEmpty(rawUrl)) {
-            return "";
-        }
-        String marker = "/image/upload/";
-        int markerIndex = rawUrl.indexOf(marker);
-        if (markerIndex < 0) {
-            return rawUrl;
-        }
-        String prefix = rawUrl.substring(0, markerIndex + marker.length());
-        String suffix = rawUrl.substring(markerIndex + marker.length());
-        String transform = "c_fill,w_" + targetSize + ",h_" + targetSize + ",q_auto,f_auto/";
-        return prefix + transform + suffix;
+    private void shareInvite(@NonNull FriendInvite invite) {
+        String shareText = "Kết bạn với mình trên CoolCook nhé.\n"
+                + invite.buildDeepLink()
+                + "\nNếu app link web đã được cấu hình trên domain, bạn cũng có thể thử:\n"
+                + invite.buildWebLink();
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, shareText);
+        startActivity(Intent.createChooser(intent, "Chia sẻ lời mời"));
     }
 
     private void setProcessingUiEnabled(boolean enabled) {
-        if (btnShutter != null) {
-            btnShutter.setEnabled(enabled);
-            btnShutter.setAlpha(enabled ? 1f : 0.72f);
+        setViewEnabled(btnShutter, enabled);
+        setViewEnabled(btnGallery, enabled);
+        setViewEnabled(btnFlipCamera, enabled);
+        setViewEnabled(btnJournalShutter, enabled);
+        setViewEnabled(btnJournalGallery, enabled);
+        setViewEnabled(btnJournalFlipCamera, enabled);
+        setViewEnabled(tabNhanDien, enabled);
+        setViewEnabled(tabNhatKy, enabled);
+        setViewEnabled(txtJournalModeLabel, enabled);
+    }
+
+    private void setViewEnabled(@Nullable View view, boolean enabled) {
+        if (view == null) {
+            return;
         }
-        if (btnGallery != null) {
-            btnGallery.setEnabled(enabled);
-            btnGallery.setAlpha(enabled ? 1f : 0.72f);
-        }
-        if (btnFlipCamera != null) {
-            btnFlipCamera.setEnabled(enabled);
-            btnFlipCamera.setAlpha(enabled ? 1f : 0.72f);
-        }
-        if (tabNhanDien != null) {
-            tabNhanDien.setEnabled(enabled);
-        }
-        if (tabNhatKy != null) {
-            tabNhatKy.setEnabled(enabled);
-        }
+        view.setEnabled(enabled);
+        view.setAlpha(enabled ? 1f : 0.72f);
     }
 
     private boolean isBusyProcessing() {
@@ -1247,11 +1425,17 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
     }
 
+    private void updateJournalStatus(@NonNull String status) {
+        if (txtJournalStatus != null) {
+            txtJournalStatus.setText(status);
+        }
+    }
+
     @NonNull
     private byte[] readImageBytes(@NonNull Uri uri, int maxBytes) throws IOException {
         ContentResolver resolver = getContentResolver();
         try (InputStream inputStream = resolver.openInputStream(uri);
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             if (inputStream == null) {
                 throw new IOException("Cannot open selected image");
             }
@@ -1331,7 +1515,6 @@ public class ScanFoodActivity extends AppCompatActivity {
         int vSize = vBuffer.remaining();
 
         byte[] nv21 = new byte[ySize + uSize + vSize];
-
         yBuffer.get(nv21, 0, ySize);
 
         int chromaRowStride = planes[2].getRowStride();
@@ -1371,15 +1554,5 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
         finish();
         overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
-    }
-
-    private static class ImageSize {
-        final int width;
-        final int height;
-
-        ImageSize(int width, int height) {
-            this.width = width;
-            this.height = height;
-        }
     }
 }

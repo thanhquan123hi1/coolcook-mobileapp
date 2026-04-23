@@ -34,6 +34,7 @@ import com.coolcook.app.ui.journal.JournalCalendarFragment;
 import com.coolcook.app.ui.main.MainActivity;
 import com.coolcook.app.ui.navigation.HomeBottomNavigation;
 import com.coolcook.app.ui.profile.EditProfileDialogFragment;
+import com.coolcook.app.ui.scan.FriendInviteActivity;
 import com.coolcook.app.ui.scan.ScanFoodActivity;
 import com.coolcook.app.ui.search.FoodCatalogFragment;
 import com.facebook.login.LoginManager;
@@ -154,6 +155,7 @@ public class HomeActivity extends AppCompatActivity {
         loadProfileFromFirestore();
         showInitialTab(getIntent());
         applyInsets();
+        openPendingInviteIfNeeded();
     }
 
     @Override
@@ -161,6 +163,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         setIntent(intent);
         showInitialTab(intent);
+        openPendingInviteIfNeeded();
     }
 
     private void showInitialTab(Intent intent) {
@@ -393,6 +396,22 @@ public class HomeActivity extends AppCompatActivity {
                 () -> showTab(TAB_SEARCH),
                 () -> showTab(TAB_JOURNAL),
                 () -> showTab(TAB_PROFILE));
+    }
+
+    private void openPendingInviteIfNeeded() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            return;
+        }
+
+        String pendingInviteId = FriendInviteActivity.consumePendingInvite(this);
+        if (TextUtils.isEmpty(pendingInviteId)) {
+            return;
+        }
+
+        Intent intent = new Intent(this, FriendInviteActivity.class);
+        intent.putExtra("inviteId", pendingInviteId);
+        startActivity(intent);
     }
 
     private void setupQuickActions() {
