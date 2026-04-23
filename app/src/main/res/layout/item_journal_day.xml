@@ -1,88 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/journalDayRoot"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/journal_day_cell_height"
     android:layout_marginBottom="@dimen/journal_day_cell_bottom_margin"
     android:clipChildren="false"
     android:clipToPadding="false"
-    android:gravity="top|center_horizontal"
-    android:orientation="vertical"
     android:paddingStart="@dimen/journal_day_cell_side_padding"
     android:paddingEnd="@dimen/journal_day_cell_side_padding">
 
     <FrameLayout
-        android:id="@+id/journalDayPhotoStack"
+        android:id="@+id/journalDayPhotoSlot"
         android:layout_width="match_parent"
         android:layout_height="@dimen/journal_day_stack_height_default"
+        android:layout_gravity="top|center_horizontal"
         android:clipChildren="false"
         android:clipToPadding="false">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardJournalPrimaryPhoto"
-            android:layout_width="@dimen/journal_day_photo_primary_size"
-            android:layout_height="@dimen/journal_day_photo_primary_size"
-            android:layout_gravity="top|start"
-            app:cardCornerRadius="@dimen/journal_day_photo_corner"
-            app:cardElevation="2dp"
-            app:strokeColor="#26FFFFFF"
-            app:strokeWidth="1dp">
-
-            <ImageView
-                android:id="@+id/imgJournalPrimaryPhoto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@string/journal_photo_desc"
-                android:scaleType="centerCrop"
-                android:src="@drawable/bg_journal_placeholder_cute" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardJournalSecondaryPhoto"
-            android:layout_width="@dimen/journal_day_photo_secondary_size"
-            android:layout_height="@dimen/journal_day_photo_secondary_size"
-            android:layout_gravity="top|end"
-            app:cardCornerRadius="@dimen/journal_day_photo_corner"
-            app:cardElevation="2dp"
-            app:strokeColor="#26FFFFFF"
-            app:strokeWidth="1dp">
-
-            <ImageView
-                android:id="@+id/imgJournalSecondaryPhoto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@string/journal_placeholder_desc"
-                android:scaleType="centerCrop"
-                android:src="@drawable/bg_journal_placeholder_cute_alt" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <TextView
-            android:id="@+id/txtJournalDayExtra"
+        <FrameLayout
+            android:id="@+id/journalDayPhotoCluster"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="1dp"
-            android:fontFamily="@font/be_vietnam_pro_bold"
-            android:includeFontPadding="false"
-            android:paddingStart="@dimen/journal_day_extra_padding_horizontal"
-            android:paddingTop="@dimen/journal_day_extra_padding_vertical"
-            android:paddingEnd="@dimen/journal_day_extra_padding_horizontal"
-            android:paddingBottom="@dimen/journal_day_extra_padding_vertical"
-            android:text="+3"
-            android:textColor="@color/on_surface"
-            android:textSize="@dimen/journal_day_extra_text_size"
-            android:visibility="gone" />
+            android:layout_gravity="top|center_horizontal"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardJournalPhotoBack"
+                android:layout_width="@dimen/journal_day_photo_width"
+                android:layout_height="@dimen/journal_day_photo_height"
+                android:layout_gravity="top|center_horizontal"
+                app:cardCornerRadius="@dimen/journal_day_photo_corner"
+                app:cardElevation="0dp"
+                app:strokeColor="@android:color/white"
+                app:strokeWidth="@dimen/journal_day_photo_stroke">
+
+                <ImageView
+                    android:id="@+id/imgJournalPhotoBack"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/journal_photo_desc"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/bg_journal_placeholder_cute" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardJournalPhotoFront"
+                android:layout_width="@dimen/journal_day_photo_width"
+                android:layout_height="@dimen/journal_day_photo_height"
+                android:layout_gravity="top|center_horizontal"
+                app:cardCornerRadius="@dimen/journal_day_photo_corner"
+                app:cardElevation="0dp"
+                app:strokeColor="@android:color/white"
+                app:strokeWidth="@dimen/journal_day_photo_stroke">
+
+                <ImageView
+                    android:id="@+id/imgJournalPhotoFront"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/journal_photo_desc"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/bg_journal_placeholder_cute" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/txtJournalDayBadge"
+                android:layout_width="@dimen/journal_day_badge_width"
+                android:layout_height="@dimen/journal_day_badge_height"
+                android:layout_gravity="bottom|center_horizontal"
+                android:background="@drawable/bg_journal_extra_badge"
+                android:elevation="0dp"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="+3"
+                android:textColor="@color/on_surface"
+                android:textSize="@dimen/journal_day_badge_text_size"
+                android:visibility="gone" />
+        </FrameLayout>
     </FrameLayout>
 
     <TextView
         android:id="@+id/txtJournalDayNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/journal_day_number_margin_top"
-        android:fontFamily="@font/be_vietnam_pro"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="@dimen/journal_day_number_margin_bottom"
+        android:fontFamily="@font/be_vietnam_pro_medium"
         android:text="1"
         android:textColor="@color/on_surface_variant"
         android:textSize="@dimen/journal_day_number_text_size" />
 
-</LinearLayout>
+</FrameLayout>

@@ -61,7 +61,7 @@ public class JournalDayDetailAdapter extends RecyclerView.Adapter<JournalDayDeta
         notifyDataSetChanged();
     }
 
-    static class PhotoViewHolder extends RecyclerView.ViewHolder {
+    public static class PhotoViewHolder extends RecyclerView.ViewHolder {
         final ImageView photo;
 
         PhotoViewHolder(@NonNull View itemView) {

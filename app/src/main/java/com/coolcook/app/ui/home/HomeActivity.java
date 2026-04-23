@@ -47,6 +47,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private static final int TAB_HOME = 0;
     private static final int TAB_PROFILE = 1;
+    public static final String EXTRA_OPEN_TAB = "com.coolcook.app.EXTRA_OPEN_TAB";
+    public static final String EXTRA_TAB_PROFILE = "profile";
     private static final String TAG = "HomeActivity";
     private static final String PROFILE_COLLECTION = "users";
     private static final String PROFILE_RESULT_KEY = "edit_profile_result";
@@ -141,8 +143,23 @@ public class HomeActivity extends AppCompatActivity {
         observeProfileUpdates();
         displayUserInfo();
         loadProfileFromFirestore();
-        showTab(TAB_HOME);
+        showInitialTab(getIntent());
         applyInsets();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        showInitialTab(intent);
+    }
+
+    private void showInitialTab(Intent intent) {
+        if (intent != null && EXTRA_TAB_PROFILE.equals(intent.getStringExtra(EXTRA_OPEN_TAB))) {
+            showTab(TAB_PROFILE);
+            return;
+        }
+        showTab(TAB_HOME);
     }
 
     private void displayUserInfo() {

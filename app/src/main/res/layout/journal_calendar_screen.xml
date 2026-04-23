@@ -6,104 +6,93 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <LinearLayout
-        android:id="@+id/journalCalendarTopRow"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/journal_screen_padding_horizontal"
-        android:layout_marginTop="@dimen/journal_screen_padding_top"
-        android:layout_marginEnd="@dimen/journal_screen_padding_horizontal"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <FrameLayout
-            android:id="@+id/btnJournalBack"
-            android:layout_width="@dimen/journal_top_icon_card_size"
-            android:layout_height="@dimen/journal_top_icon_card_size"
-            android:background="@drawable/bg_journal_top_icon_button"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="@drawable/fg_ripple_circle"
-            android:contentDescription="@string/journal_back">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/material_symbols_outlined"
-                android:fontVariationSettings="'wght' 600"
-                android:text="arrow_back"
-                android:textColor="@color/outline"
-                android:textSize="@dimen/journal_top_icon_size" />
-        </FrameLayout>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
-
-        <FrameLayout
-            android:id="@+id/btnJournalTopUtility"
-            android:layout_width="@dimen/journal_top_icon_card_size"
-            android:layout_height="@dimen/journal_top_icon_card_size"
-            android:background="@drawable/bg_journal_top_icon_button"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="@drawable/fg_ripple_circle"
-            android:contentDescription="@string/journal_open_tools">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/material_symbols_outlined"
-                android:fontVariationSettings="'wght' 600"
-                android:text="restaurant"
-                android:textColor="@color/primary"
-                android:textSize="@dimen/journal_top_icon_size" />
-        </FrameLayout>
-    </LinearLayout>
-
     <TextView
         android:id="@+id/txtJournalCalendarTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/journal_screen_padding_horizontal"
-        android:layout_marginTop="@dimen/journal_title_margin_top"
+        android:layout_marginTop="@dimen/journal_screen_padding_top"
         android:layout_marginEnd="@dimen/journal_screen_padding_horizontal"
         android:fontFamily="@font/be_vietnam_pro_bold"
         android:lineSpacingExtra="2dp"
+        android:maxLines="2"
         android:text="@string/journal_calendar_title"
         android:textColor="@color/on_surface"
         android:textSize="@dimen/journal_title_text_size"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/journalHeaderIcon"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/journalCalendarTopRow" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtJournalCalendarSubtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/journal_screen_padding_horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="@dimen/journal_screen_padding_horizontal"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:text="@string/journal_calendar_subtitle"
+        android:textColor="@color/on_surface_variant"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toStartOf="@id/journalHeaderIcon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtJournalCalendarTitle" />
+
+    <FrameLayout
+        android:id="@+id/journalHeaderIcon"
+        android:layout_width="@dimen/journal_top_icon_card_size"
+        android:layout_height="@dimen/journal_top_icon_card_size"
+        android:layout_marginEnd="@dimen/journal_screen_padding_horizontal"
+        android:background="@drawable/bg_home_icon_button"
+        android:elevation="@dimen/home_surface_elevation"
+        android:outlineAmbientShadowColor="@color/home_shadow_ambient"
+        android:outlineProvider="background"
+        android:outlineSpotShadowColor="@color/home_shadow_spot"
+        app:layout_constraintBottom_toBottomOf="@id/txtJournalCalendarSubtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/txtJournalCalendarTitle">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/material_symbols_outlined"
+            android:fontVariationSettings="'wght' 600"
+            android:text="auto_stories"
+            android:textColor="@color/primary"
+            android:textSize="@dimen/journal_top_icon_size" />
+
+        <View
+            android:layout_width="@dimen/journal_top_dot_size"
+            android:layout_height="@dimen/journal_top_dot_size"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="@dimen/journal_top_dot_margin"
+            android:layout_marginEnd="@dimen/journal_top_dot_margin"
+            android:background="@drawable/bg_home_notification_dot" />
+    </FrameLayout>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardJournalCalendar"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/journal_screen_padding_horizontal"
         android:layout_marginTop="@dimen/journal_calendar_card_margin_top"
         android:layout_marginEnd="@dimen/journal_screen_padding_horizontal"
-        android:layout_marginBottom="12dp"
-        app:cardBackgroundColor="@color/surface_container_low"
+        android:outlineAmbientShadowColor="@color/home_shadow_ambient"
+        android:outlineSpotShadowColor="@color/home_shadow_spot"
+        app:cardBackgroundColor="@color/surface_container_lowest"
         app:cardCornerRadius="@dimen/journal_calendar_card_corner"
-        app:cardElevation="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardElevation="@dimen/journal_calendar_card_elevation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtJournalCalendarTitle"
-        app:strokeColor="@color/outline_variant"
+        app:layout_constraintTop_toBottomOf="@id/txtJournalCalendarSubtitle"
+        app:strokeColor="@color/home_card_border_soft"
         app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingStart="@dimen/journal_calendar_card_padding_horizontal"
             android:paddingTop="@dimen/journal_calendar_card_padding_top"
@@ -141,9 +130,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
                     android:gravity="center"
-                    android:text="Tháng 12, 2024"
+                    android:text="Tháng 4, 2026"
                     android:textColor="@color/on_surface"
                     android:textSize="@dimen/journal_month_title_text_size" />
 
@@ -249,9 +241,8 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvJournalCalendarDays"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/journal_grid_margin_top"
-                android:layout_weight="1"
                 android:clipToPadding="false"
                 android:layoutAnimation="@anim/layout_journal_staggered"
                 android:overScrollMode="never"
@@ -284,6 +275,196 @@
         app:layout_constraintStart_toStartOf="@id/cardJournalCalendar"
         app:layout_constraintTop_toTopOf="@id/cardJournalCalendar" />
 
+    <LinearLayout
+        android:id="@+id/homeBottomNav"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/home_bottom_nav_height"
+        android:layout_marginStart="@dimen/home_bottom_nav_margin_horizontal"
+        android:layout_marginEnd="@dimen/home_bottom_nav_margin_horizontal"
+        android:layout_marginBottom="@dimen/home_bottom_nav_margin_bottom"
+        android:background="@drawable/bg_home_bottom_nav"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:elevation="@dimen/home_bottom_nav_elevation"
+        android:gravity="center_vertical"
+        android:outlineAmbientShadowColor="@color/home_shadow_ambient"
+        android:outlineProvider="background"
+        android:outlineSpotShadowColor="@color/home_shadow_spot"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/home_bottom_nav_padding_horizontal"
+        android:paddingTop="@dimen/home_bottom_nav_padding_vertical"
+        android:paddingEnd="@dimen/home_bottom_nav_padding_horizontal"
+        android:paddingBottom="@dimen/home_bottom_nav_padding_vertical"
+        android:weightSum="5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_max="448dp"
+        app:layout_constraintWidth_percent="0.9">
+
+        <LinearLayout
+            android:id="@+id/homeNavItemHome"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_home_nav_item_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:minHeight="@dimen/home_bottom_nav_item_min_height"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/home_bottom_nav_item_vertical_padding"
+            android:paddingBottom="@dimen/home_bottom_nav_item_vertical_padding">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/homeNavIconHome"
+                android:layout_width="@dimen/home_bottom_nav_icon_size"
+                android:layout_height="@dimen/home_bottom_nav_icon_size"
+                android:contentDescription="@string/home_nav_home"
+                app:srcCompat="@drawable/ic_nav_home"
+                app:tint="@color/home_nav_inactive" />
+
+            <TextView
+                android:id="@+id/homeNavLabelHome"
+                style="@style/Widget.Coolcook.Home.NavLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/home_bottom_nav_label_margin_top"
+                android:text="@string/home_nav_home" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/homeNavItemSearch"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_home_nav_item_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:minHeight="@dimen/home_bottom_nav_item_min_height"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/home_bottom_nav_item_vertical_padding"
+            android:paddingBottom="@dimen/home_bottom_nav_item_vertical_padding">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/homeNavIconSearch"
+                android:layout_width="@dimen/home_bottom_nav_icon_size"
+                android:layout_height="@dimen/home_bottom_nav_icon_size"
+                android:contentDescription="@string/home_nav_search"
+                app:srcCompat="@drawable/ic_nav_search"
+                app:tint="@color/home_nav_inactive" />
+
+            <TextView
+                android:id="@+id/homeNavLabelSearch"
+                style="@style/Widget.Coolcook.Home.NavLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/home_bottom_nav_label_margin_top"
+                android:text="@string/home_nav_search" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/homeNavItemCamera"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:background="@drawable/bg_home_nav_item_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:minHeight="@dimen/home_bottom_nav_item_min_height">
+
+            <FrameLayout
+                android:id="@+id/homeNavCameraButton"
+                android:layout_width="@dimen/home_bottom_nav_center_button_size"
+                android:layout_height="@dimen/home_bottom_nav_center_button_size"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_home_nav_center_ripple"
+                android:clickable="true"
+                android:clipToOutline="true"
+                android:elevation="@dimen/home_bottom_nav_center_elevation"
+                android:focusable="true"
+                android:outlineAmbientShadowColor="@color/home_shadow_ambient"
+                android:outlineProvider="background"
+                android:outlineSpotShadowColor="@color/home_shadow_spot"
+                android:translationY="@dimen/home_bottom_nav_center_button_offset">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/homeNavIconCamera"
+                    android:layout_width="@dimen/home_bottom_nav_center_icon_size"
+                    android:layout_height="@dimen/home_bottom_nav_center_icon_size"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/home_nav_camera"
+                    app:srcCompat="@drawable/ic_nav_camera"
+                    app:tint="@color/on_primary" />
+            </FrameLayout>
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/homeNavItemHistory"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_home_nav_item_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:minHeight="@dimen/home_bottom_nav_item_min_height"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/home_bottom_nav_item_vertical_padding"
+            android:paddingBottom="@dimen/home_bottom_nav_item_vertical_padding">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/homeNavIconHistory"
+                android:layout_width="@dimen/home_bottom_nav_icon_size"
+                android:layout_height="@dimen/home_bottom_nav_icon_size"
+                android:contentDescription="@string/home_nav_history"
+                app:srcCompat="@drawable/ic_nav_diary"
+                app:tint="@color/primary" />
+
+            <TextView
+                android:id="@+id/homeNavLabelHistory"
+                style="@style/Widget.Coolcook.Home.NavLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/home_bottom_nav_label_margin_top"
+                android:text="@string/home_nav_history"
+                android:textColor="@color/primary" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/homeNavItemProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_home_nav_item_ripple"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:minHeight="@dimen/home_bottom_nav_item_min_height"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/home_bottom_nav_item_vertical_padding"
+            android:paddingBottom="@dimen/home_bottom_nav_item_vertical_padding">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/homeNavIconProfile"
+                android:layout_width="@dimen/home_bottom_nav_icon_size"
+                android:layout_height="@dimen/home_bottom_nav_icon_size"
+                android:contentDescription="@string/home_nav_profile"
+                app:srcCompat="@drawable/ic_nav_profile"
+                app:tint="@color/home_nav_inactive" />
+
+            <TextView
+                android:id="@+id/homeNavLabelProfile"
+                style="@style/Widget.Coolcook.Home.NavLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/home_bottom_nav_label_margin_top"
+                android:text="@string/home_nav_profile" />
+        </LinearLayout>
+    </LinearLayout>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabJournalAddPhoto"
         android:layout_width="wrap_content"
@@ -297,7 +478,7 @@
         app:maxImageSize="26dp"
         app:rippleColor="@color/home_nav_center_ripple"
         app:tint="@color/on_primary"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/homeBottomNav"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

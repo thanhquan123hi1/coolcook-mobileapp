@@ -29,7 +29,8 @@ public class JournalViewModel extends ViewModel {
     private static final int VISUAL_PATTERN_COUNT = 7;
 
     private final JournalRepository repository;
-    private final DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("'Tháng' M, uuuu", Locale.forLanguageTag("vi-VN"));
+    private final DateTimeFormatter monthFormatter =
+            DateTimeFormatter.ofPattern("'Tháng' M, uuuu", Locale.forLanguageTag("vi-VN"));
 
     private final MutableLiveData<YearMonth> currentMonth = new MutableLiveData<>(YearMonth.now());
     private final MutableLiveData<String> monthLabel = new MutableLiveData<>("");
@@ -42,7 +43,7 @@ public class JournalViewModel extends ViewModel {
 
     public JournalViewModel() {
         this.repository = new JournalRepository(FirebaseFirestore.getInstance());
-        updateMonthLabel(YearMonth.now());
+        updateMonthLabel(nonNullMonth());
     }
 
     public LiveData<YearMonth> getCurrentMonth() {
@@ -73,17 +74,21 @@ public class JournalViewModel extends ViewModel {
         this.userId = userId == null ? "" : userId.trim();
     }
 
+    public void setCurrentMonth(@NonNull YearMonth month) {
+        currentMonth.setValue(month);
+        updateMonthLabel(month);
+        refreshMonth();
+    }
+
     public void goToPreviousMonth() {
-        YearMonth month = nonNullMonth();
-        YearMonth previous = month.minusMonths(1);
+        YearMonth previous = nonNullMonth().minusMonths(1);
         currentMonth.setValue(previous);
         updateMonthLabel(previous);
         refreshMonth();
     }
 
     public void goToNextMonth() {
-        YearMonth month = nonNullMonth();
-        YearMonth next = month.plusMonths(1);
+        YearMonth next = nonNullMonth().plusMonths(1);
         currentMonth.setValue(next);
         updateMonthLabel(next);
         refreshMonth();
@@ -156,7 +161,7 @@ public class JournalViewModel extends ViewModel {
         groupedByDate.values().forEach(dayEntries -> dayEntries.sort(
                 Comparator.comparing(JournalViewModel::capturedAtMillis).reversed()));
 
-        int firstDayOffset = month.atDay(1).getDayOfWeek().getValue() - 1;
+        int firstDayOffset = resolveFirstDayOffset(month);
         int daysInMonth = month.lengthOfMonth();
 
         List<JournalDay> cells = new ArrayList<>();
@@ -203,5 +208,9 @@ public class JournalViewModel extends ViewModel {
             return 0L;
         }
         return entry.getCapturedAt().getTime();
+    }
+
+    private int resolveFirstDayOffset(@NonNull YearMonth month) {
+        return month.atDay(1).getDayOfWeek().getValue() - 1;
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class JournalDay {
 
-    private static final int MAX_VISIBLE_IMAGES = 2;
+    private static final int MAX_VISIBLE_IMAGES = 3;
 
     @Nullable
     private final LocalDate date;

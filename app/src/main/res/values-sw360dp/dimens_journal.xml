@@ -1,43 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="journal_screen_padding_horizontal">20dp</dimen>
-    <dimen name="journal_screen_padding_top">16dp</dimen>
-    <dimen name="journal_top_icon_card_size">52dp</dimen>
+    <dimen name="journal_screen_padding_top">18dp</dimen>
+    <dimen name="journal_top_icon_card_size">54dp</dimen>
     <dimen name="journal_top_icon_size">24sp</dimen>
+    <dimen name="journal_top_dot_size">11dp</dimen>
+    <dimen name="journal_top_dot_margin">6dp</dimen>
 
-    <dimen name="journal_title_margin_top">18dp</dimen>
-    <dimen name="journal_title_text_size">24sp</dimen>
+    <dimen name="journal_title_margin_top">20dp</dimen>
+    <dimen name="journal_title_text_size">28sp</dimen>
 
-    <dimen name="journal_calendar_card_margin_top">18dp</dimen>
+    <dimen name="journal_calendar_card_margin_top">14dp</dimen>
     <dimen name="journal_calendar_card_corner">30dp</dimen>
     <dimen name="journal_calendar_card_padding_horizontal">16dp</dimen>
     <dimen name="journal_calendar_card_padding_top">16dp</dimen>
     <dimen name="journal_calendar_card_padding_bottom">14dp</dimen>
+    <dimen name="journal_calendar_card_elevation">5dp</dimen>
 
-    <dimen name="journal_month_title_text_size">18sp</dimen>
-    <dimen name="journal_month_nav_size">34dp</dimen>
-    <dimen name="journal_weekday_margin_top">10dp</dimen>
-    <dimen name="journal_weekday_text_size">12sp</dimen>
+    <dimen name="journal_month_title_text_size">22sp</dimen>
+    <dimen name="journal_month_nav_size">38dp</dimen>
+    <dimen name="journal_weekday_margin_top">12dp</dimen>
+    <dimen name="journal_weekday_text_size">13sp</dimen>
 
     <dimen name="journal_grid_margin_top">10dp</dimen>
-    <dimen name="journal_grid_bottom_padding">8dp</dimen>
+    <dimen name="journal_grid_bottom_padding">4dp</dimen>
     <dimen name="journal_empty_text_margin_top">12dp</dimen>
 
-    <dimen name="journal_day_cell_side_padding">2dp</dimen>
-    <dimen name="journal_day_cell_bottom_margin">4dp</dimen>
-    <dimen name="journal_day_stack_height_default">58dp</dimen>
+    <dimen name="journal_day_cell_height">86dp</dimen>
+    <dimen name="journal_day_cell_side_padding">1dp</dimen>
+    <dimen name="journal_day_cell_bottom_margin">0dp</dimen>
+    <dimen name="journal_day_stack_height_default">64dp</dimen>
     <dimen name="journal_day_photo_primary_size">34dp</dimen>
     <dimen name="journal_day_photo_secondary_size">30dp</dimen>
+    <dimen name="journal_day_photo_width">34dp</dimen>
+    <dimen name="journal_day_photo_height">42dp</dimen>
     <dimen name="journal_day_photo_corner">12dp</dimen>
-    <dimen name="journal_day_number_margin_top">4dp</dimen>
-    <dimen name="journal_day_number_text_size">14sp</dimen>
+    <dimen name="journal_day_photo_stroke">2dp</dimen>
+    <dimen name="journal_day_photo_overlap">12dp</dimen>
+    <dimen name="journal_day_photo_left_offset">2dp</dimen>
+    <dimen name="journal_day_number_margin_top">0dp</dimen>
+    <dimen name="journal_day_number_margin_bottom">1dp</dimen>
+    <dimen name="journal_day_number_text_size">16sp</dimen>
+    <dimen name="journal_day_badge_width">36dp</dimen>
+    <dimen name="journal_day_badge_height">19dp</dimen>
+    <dimen name="journal_day_badge_size">22dp</dimen>
+    <dimen name="journal_day_badge_text_size">10sp</dimen>
 
     <dimen name="journal_day_extra_text_size">11sp</dimen>
     <dimen name="journal_day_extra_padding_horizontal">0dp</dimen>
     <dimen name="journal_day_extra_padding_vertical">0dp</dimen>
 
     <dimen name="journal_fab_margin">24dp</dimen>
-    <dimen name="journal_fab_size">64dp</dimen>
+    <dimen name="journal_fab_size">72dp</dimen>
 
     <dimen name="journal_detail_title_text_size">24sp</dimen>
     <dimen name="journal_detail_grid_margin_top">14dp</dimen>

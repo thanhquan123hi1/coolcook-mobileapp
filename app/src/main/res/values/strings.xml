@@ -89,6 +89,7 @@
     <string name="journal_back">Quay lại</string>
     <string name="journal_open_tools">Mở công cụ bếp</string>
     <string name="journal_calendar_title">Nhật ký món ăn của bạn nè</string>
+    <string name="journal_calendar_subtitle">Lưu lại từng bữa ngon trong tháng</string>
     <string name="journal_weekday_t2">T2</string>
     <string name="journal_weekday_t3">T3</string>
     <string name="journal_weekday_t4">T4</string>
