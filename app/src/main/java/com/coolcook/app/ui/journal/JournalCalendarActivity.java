@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.coolcook.app.R;
 import com.coolcook.app.ui.home.HomeActivity;
 import com.coolcook.app.ui.journal.model.JournalDay;
+import com.coolcook.app.ui.navigation.HomeBottomNavigation;
 import com.coolcook.app.ui.scan.ScanFoodActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -160,41 +161,7 @@ public class JournalCalendarActivity extends AppCompatActivity {
     }
 
     private void setupBottomNavigation() {
-        View homeTab = findViewById(R.id.homeNavItemHome);
-        View searchTab = findViewById(R.id.homeNavItemSearch);
-        View cameraTab = findViewById(R.id.homeNavItemCamera);
-        View historyTab = findViewById(R.id.homeNavItemHistory);
-        View profileTab = findViewById(R.id.homeNavItemProfile);
-
-        if (homeTab != null) {
-            homeTab.setOnClickListener(v -> openHomeFromNavigation(false, homeTab));
-        }
-        if (searchTab != null) {
-            searchTab.setOnClickListener(v -> playTapFeedback(searchTab));
-        }
-        View.OnClickListener cameraClickListener = v -> {
-            View tapTarget = navCameraButton != null ? navCameraButton : cameraTab;
-            if (tapTarget != null) {
-                playTapFeedback(tapTarget);
-                tapTarget.postDelayed(this::openScanInJournalMode, NAV_NAVIGATION_DELAY_MS);
-            } else {
-                openScanInJournalMode();
-            }
-        };
-        if (cameraTab != null) {
-            cameraTab.setOnClickListener(cameraClickListener);
-        }
-        if (navCameraButton != null) {
-            navCameraButton.setOnClickListener(cameraClickListener);
-        }
-        if (historyTab != null) {
-            historyTab.setOnClickListener(v -> playTapFeedback(historyTab));
-        }
-        if (profileTab != null) {
-            profileTab.setOnClickListener(v -> openHomeFromNavigation(true, profileTab));
-        }
-
-        updateBottomNavigationState();
+        HomeBottomNavigation.bind(this, HomeBottomNavigation.Tab.HISTORY, null, null);
     }
 
     private void updateBottomNavigationState() {

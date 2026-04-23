@@ -30,10 +30,12 @@ import com.bumptech.glide.Glide;
 import com.coolcook.app.R;
 import com.coolcook.app.util.AvatarImageUtils;
 import com.coolcook.app.ui.chatbot.ChatBotActivity;
-import com.coolcook.app.ui.journal.JournalCalendarActivity;
+import com.coolcook.app.ui.journal.JournalCalendarFragment;
 import com.coolcook.app.ui.main.MainActivity;
+import com.coolcook.app.ui.navigation.HomeBottomNavigation;
 import com.coolcook.app.ui.profile.EditProfileDialogFragment;
 import com.coolcook.app.ui.scan.ScanFoodActivity;
+import com.coolcook.app.ui.search.FoodCatalogFragment;
 import com.facebook.login.LoginManager;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -42,12 +44,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.coolcook.app.ui.search.FoodCatalogActivity;
 
 public class HomeActivity extends AppCompatActivity {
 
     private static final int TAB_HOME = 0;
-    private static final int TAB_PROFILE = 1;
+    private static final int TAB_SEARCH = 1;
+    private static final int TAB_JOURNAL = 2;
+    private static final int TAB_PROFILE = 3;
+    private static final String SEARCH_FRAGMENT_TAG = "HomeActivity.SearchFragment";
+    private static final String JOURNAL_FRAGMENT_TAG = "HomeActivity.JournalFragment";
     public static final String EXTRA_OPEN_TAB = "com.coolcook.app.EXTRA_OPEN_TAB";
     public static final String EXTRA_TAB_PROFILE = "profile";
     private static final String TAG = "HomeActivity";
@@ -74,6 +79,8 @@ public class HomeActivity extends AppCompatActivity {
     private static final long LOGOUT_NAVIGATION_FALLBACK_DELAY_MS = 1200L;
 
     private View homeScroll;
+    private View searchContainer;
+    private View journalContainer;
     private View profileScroll;
     private AppCompatImageView navIconHome;
     private AppCompatImageView navIconSearch;
@@ -112,6 +119,8 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         homeScroll = findViewById(R.id.homeScroll);
+        searchContainer = findViewById(R.id.searchContainer);
+        journalContainer = findViewById(R.id.journalContainer);
         profileScroll = findViewById(R.id.profileScroll);
         navIconHome = findViewById(R.id.homeNavIconHome);
         navIconSearch = findViewById(R.id.homeNavIconSearch);
@@ -138,7 +147,6 @@ public class HomeActivity extends AppCompatActivity {
         imgProfileAvatar = findViewById(R.id.imgProfileAvatar);
         firestore = FirebaseFirestore.getInstance();
 
-        setupBottomNavigation();
         setupQuickActions();
         setupProfileActions();
         observeProfileUpdates();
@@ -378,22 +386,13 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupBottomNavigation() {
-        View homeTab = findViewById(R.id.homeNavItemHome);
-        View searchTab = findViewById(R.id.homeNavItemSearch);
-        View cameraTab = findViewById(R.id.homeNavItemCamera);
-        View historyTab = findViewById(R.id.homeNavItemHistory);
-        View profileTab = findViewById(R.id.homeNavItemProfile);
-        View.OnClickListener cameraClickListener = v -> openScanFromNavigation(
-                navCameraButton != null ? navCameraButton : cameraTab);
-
-        homeTab.setOnClickListener(v -> showTab(TAB_HOME));
-        searchTab.setOnClickListener(v -> openFoodCatalogFromNavigation(searchTab));
-        cameraTab.setOnClickListener(cameraClickListener);
-        if (navCameraButton != null) {
-            navCameraButton.setOnClickListener(cameraClickListener);
-        }
-        historyTab.setOnClickListener(v -> openJournalFromNavigation(historyTab));
-        profileTab.setOnClickListener(v -> showTab(TAB_PROFILE));
+        HomeBottomNavigation.bind(
+                this,
+                resolveCurrentBottomNavTab(),
+                () -> showTab(TAB_HOME),
+                () -> showTab(TAB_SEARCH),
+                () -> showTab(TAB_JOURNAL),
+                () -> showTab(TAB_PROFILE));
     }
 
     private void setupQuickActions() {
@@ -451,16 +450,14 @@ public class HomeActivity extends AppCompatActivity {
         if (isFinishing() || isDestroyed()) {
             return;
         }
-        startActivity(new Intent(this, JournalCalendarActivity.class));
-        overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+        showTab(TAB_JOURNAL);
     }
 
     private void launchFoodCatalogScreen() {
         if (isFinishing() || isDestroyed()) {
             return;
         }
-        startActivity(FoodCatalogActivity.createIntent(this));
-        overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
+        showTab(TAB_SEARCH);
     }
 
     private void setupQuickActionCard(View card, Runnable action) {
@@ -498,10 +495,69 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void showTab(int tab) {
-        boolean showProfile = tab == TAB_PROFILE;
-        homeScroll.setVisibility(showProfile ? View.GONE : View.VISIBLE);
-        profileScroll.setVisibility(showProfile ? View.VISIBLE : View.GONE);
-        updateBottomNavigationState(tab);
+        if (tab == TAB_SEARCH) {
+            ensureSearchFragment();
+        } else if (tab == TAB_JOURNAL) {
+            ensureJournalFragment();
+        }
+
+        homeScroll.setVisibility(tab == TAB_HOME ? View.VISIBLE : View.GONE);
+        searchContainer.setVisibility(tab == TAB_SEARCH ? View.VISIBLE : View.GONE);
+        journalContainer.setVisibility(tab == TAB_JOURNAL ? View.VISIBLE : View.GONE);
+        profileScroll.setVisibility(tab == TAB_PROFILE ? View.VISIBLE : View.GONE);
+        HomeBottomNavigation.bind(
+                this,
+                toBottomNavTab(tab),
+                () -> showTab(TAB_HOME),
+                () -> showTab(TAB_SEARCH),
+                () -> showTab(TAB_JOURNAL),
+                () -> showTab(TAB_PROFILE));
+    }
+
+    private void ensureSearchFragment() {
+        if (getSupportFragmentManager().findFragmentByTag(SEARCH_FRAGMENT_TAG) != null) {
+            return;
+        }
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.searchContainer, new FoodCatalogFragment(), SEARCH_FRAGMENT_TAG)
+                .commit();
+    }
+
+    private void ensureJournalFragment() {
+        if (getSupportFragmentManager().findFragmentByTag(JOURNAL_FRAGMENT_TAG) != null) {
+            return;
+        }
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.journalContainer, new JournalCalendarFragment(), JOURNAL_FRAGMENT_TAG)
+                .commit();
+    }
+
+    private HomeBottomNavigation.Tab resolveCurrentBottomNavTab() {
+        if (profileScroll != null && profileScroll.getVisibility() == View.VISIBLE) {
+            return HomeBottomNavigation.Tab.PROFILE;
+        }
+        if (searchContainer != null && searchContainer.getVisibility() == View.VISIBLE) {
+            return HomeBottomNavigation.Tab.SEARCH;
+        }
+        if (journalContainer != null && journalContainer.getVisibility() == View.VISIBLE) {
+            return HomeBottomNavigation.Tab.HISTORY;
+        }
+        return HomeBottomNavigation.Tab.HOME;
+    }
+
+    private HomeBottomNavigation.Tab toBottomNavTab(int tab) {
+        if (tab == TAB_SEARCH) {
+            return HomeBottomNavigation.Tab.SEARCH;
+        }
+        if (tab == TAB_JOURNAL) {
+            return HomeBottomNavigation.Tab.HISTORY;
+        }
+        if (tab == TAB_PROFILE) {
+            return HomeBottomNavigation.Tab.PROFILE;
+        }
+        return HomeBottomNavigation.Tab.HOME;
     }
 
     private void updateBottomNavigationState(int activeTab) {

@@ -1054,6 +1054,26 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <FrameLayout
+        android:id="@+id/searchContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/homeBottomNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/journalContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/homeBottomNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/profileScroll"
         android:layout_width="0dp"
@@ -1071,193 +1091,18 @@
         <include layout="@layout/view_home_profile" />
     </androidx.core.widget.NestedScrollView>
 
-    <LinearLayout
+    <include
         android:id="@+id/homeBottomNav"
+        layout="@layout/view_home_bottom_nav"
         android:layout_width="0dp"
         android:layout_height="@dimen/home_bottom_nav_height"
         android:layout_marginStart="@dimen/home_bottom_nav_margin_horizontal"
         android:layout_marginEnd="@dimen/home_bottom_nav_margin_horizontal"
         android:layout_marginBottom="@dimen/home_bottom_nav_margin_bottom"
-        android:background="@drawable/bg_home_bottom_nav"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:elevation="@dimen/home_bottom_nav_elevation"
-        android:gravity="center_vertical"
-        android:outlineAmbientShadowColor="@color/home_shadow_ambient"
-        android:outlineProvider="background"
-        android:outlineSpotShadowColor="@color/home_shadow_spot"
-        android:orientation="horizontal"
-        android:paddingStart="@dimen/home_bottom_nav_padding_horizontal"
-        android:paddingTop="@dimen/home_bottom_nav_padding_vertical"
-        android:paddingEnd="@dimen/home_bottom_nav_padding_horizontal"
-        android:paddingBottom="@dimen/home_bottom_nav_padding_vertical"
-        android:weightSum="5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_max="448dp"
-        app:layout_constraintWidth_percent="0.9">
-
-        <LinearLayout
-            android:id="@+id/homeNavItemHome"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/bg_home_nav_item_ripple"
-            android:gravity="center"
-            android:minHeight="@dimen/home_bottom_nav_item_min_height"
-            android:orientation="vertical"
-            android:paddingTop="@dimen/home_bottom_nav_item_vertical_padding"
-            android:paddingBottom="@dimen/home_bottom_nav_item_vertical_padding"
-            android:clickable="true"
-            android:focusable="true">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/homeNavIconHome"
-                android:layout_width="@dimen/home_bottom_nav_icon_size"
-                android:layout_height="@dimen/home_bottom_nav_icon_size"
-                android:contentDescription="@string/home_nav_home"
-                app:srcCompat="@drawable/ic_nav_home"
-                app:tint="@color/home_nav_inactive" />
-
-            <TextView
-                android:id="@+id/homeNavLabelHome"
-                style="@style/Widget.Coolcook.Home.NavLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/home_bottom_nav_label_margin_top"
-                android:text="@string/home_nav_home" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/homeNavItemSearch"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/bg_home_nav_item_ripple"
-            android:gravity="center"
-            android:minHeight="@dimen/home_bottom_nav_item_min_height"
-            android:orientation="vertical"
-            android:paddingTop="@dimen/home_bottom_nav_item_vertical_padding"
-            android:paddingBottom="@dimen/home_bottom_nav_item_vertical_padding"
-            android:clickable="true"
-            android:focusable="true">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/homeNavIconSearch"
-                android:layout_width="@dimen/home_bottom_nav_icon_size"
-                android:layout_height="@dimen/home_bottom_nav_icon_size"
-                android:contentDescription="@string/home_nav_search"
-                app:srcCompat="@drawable/ic_nav_search"
-                app:tint="@color/home_nav_inactive" />
-
-            <TextView
-                android:id="@+id/homeNavLabelSearch"
-                style="@style/Widget.Coolcook.Home.NavLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/home_bottom_nav_label_margin_top"
-                android:text="@string/home_nav_search" />
-        </LinearLayout>
-
-        <FrameLayout
-            android:id="@+id/homeNavItemCamera"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/bg_home_nav_item_ripple"
-            android:minHeight="@dimen/home_bottom_nav_item_min_height"
-            android:clickable="true"
-            android:focusable="true">
-
-            <FrameLayout
-                android:id="@+id/homeNavCameraButton"
-                android:layout_width="@dimen/home_bottom_nav_center_button_size"
-                android:layout_height="@dimen/home_bottom_nav_center_button_size"
-                android:layout_gravity="center"
-                android:background="@drawable/bg_home_nav_center_ripple"
-                android:clickable="true"
-                android:clipToOutline="true"
-                android:elevation="@dimen/home_bottom_nav_center_elevation"
-                android:focusable="true"
-                android:outlineAmbientShadowColor="@color/home_shadow_ambient"
-                android:outlineProvider="background"
-                android:outlineSpotShadowColor="@color/home_shadow_spot"
-                android:translationY="@dimen/home_bottom_nav_center_button_offset">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/homeNavIconCamera"
-                    android:layout_width="@dimen/home_bottom_nav_center_icon_size"
-                    android:layout_height="@dimen/home_bottom_nav_center_icon_size"
-                    android:layout_gravity="center"
-                    android:contentDescription="@string/home_nav_camera"
-                    app:srcCompat="@drawable/ic_nav_camera"
-                    app:tint="@color/on_primary" />
-            </FrameLayout>
-        </FrameLayout>
-
-        <LinearLayout
-            android:id="@+id/homeNavItemHistory"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/bg_home_nav_item_ripple"
-            android:gravity="center"
-            android:minHeight="@dimen/home_bottom_nav_item_min_height"
-            android:orientation="vertical"
-            android:paddingTop="@dimen/home_bottom_nav_item_vertical_padding"
-            android:paddingBottom="@dimen/home_bottom_nav_item_vertical_padding"
-            android:clickable="true"
-            android:focusable="true">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/homeNavIconHistory"
-                android:layout_width="@dimen/home_bottom_nav_icon_size"
-                android:layout_height="@dimen/home_bottom_nav_icon_size"
-                android:contentDescription="@string/home_nav_history"
-                app:srcCompat="@drawable/ic_nav_diary"
-                app:tint="@color/home_nav_inactive" />
-
-            <TextView
-                android:id="@+id/homeNavLabelHistory"
-                style="@style/Widget.Coolcook.Home.NavLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/home_bottom_nav_label_margin_top"
-                android:text="@string/home_nav_history" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/homeNavItemProfile"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/bg_home_nav_item_ripple"
-            android:gravity="center"
-            android:minHeight="@dimen/home_bottom_nav_item_min_height"
-            android:orientation="vertical"
-            android:paddingTop="@dimen/home_bottom_nav_item_vertical_padding"
-            android:paddingBottom="@dimen/home_bottom_nav_item_vertical_padding"
-            android:clickable="true"
-            android:focusable="true">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/homeNavIconProfile"
-                android:layout_width="@dimen/home_bottom_nav_icon_size"
-                android:layout_height="@dimen/home_bottom_nav_icon_size"
-                android:contentDescription="@string/home_nav_profile"
-                app:srcCompat="@drawable/ic_nav_profile"
-                app:tint="@color/home_nav_inactive" />
-
-            <TextView
-                android:id="@+id/homeNavLabelProfile"
-                style="@style/Widget.Coolcook.Home.NavLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/home_bottom_nav_label_margin_top"
-                android:text="@string/home_nav_profile" />
-        </LinearLayout>
-    </LinearLayout>
+        app:layout_constraintWidth_percent="0.9" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
