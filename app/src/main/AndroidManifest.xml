@@ -63,6 +63,16 @@
             android:theme="@style/Theme.Coolcook" />
 
         <activity
+            android:name=".ui.search.FoodCatalogActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Coolcook" />
+
+        <activity
+            android:name=".ui.search.FoodDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Coolcook" />
+
+        <activity
             android:name=".ui.chatbot.ChatBotActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook" />

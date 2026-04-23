@@ -1,0 +1,186 @@
+[
+  {
+    "id": "1",
+    "name": "Cơm tấm sườn nướng",
+    "category": "DRY",
+    "image": "food_com_tam",
+    "suitableFor": [
+      "tăng cơ bắp",
+      "người cần nhiều năng lượng"
+    ],
+    "recipe": "### Cơm tấm sườn nướng\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Sườn cốt lết 500g\n- Cơm tấm 400g\n- Nước mắm 2 muỗng canh\n- Mật ong 1 muỗng canh\n- Dầu hào 1 muỗng canh\n- Tỏi băm 2 muỗng cà phê\n- Hành tím băm 2 muỗng cà phê\n- Tiêu 1 muỗng cà phê\n- Dầu ăn 1 muỗng canh\n\n**Các bước thực hiện:**\n1. Rửa sạch sườn, thấm khô rồi ướp với nước mắm, mật ong, dầu hào, tỏi, hành tím, tiêu trong 30 phút; nêm pha ướp vừa đậm.\n2. Nướng hoặc áp chảo sườn 6-8 phút mỗi mặt ở lửa vừa, quét nhẹ phần nước ướp còn lại 1-2 lần.\n3. Hâm cơm tấm 5 phút ở lửa nhỏ hoặc hấp nóng, dọn ra đĩa cùng sườn; nếm cuối nếu cần rưới thêm 1 muỗng cà phê nước mắm pha loãng.\n\n**Mẹo tối ưu:**\n- Dần nhẹ sườn để thịt nhanh mềm.\n- Không quét quá nhiều mật ong lúc đầu để tránh cháy."
+  },
+  {
+    "id": "2",
+    "name": "Bún thịt nướng",
+    "category": "DRY",
+    "image": "food_bun_thit_nuong",
+    "suitableFor": [
+      "tăng cơ bắp",
+      "người vận động nhiều"
+    ],
+    "recipe": "### Bún thịt nướng\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Thịt nạc vai 400g\n- Bún tươi 500g\n- Nước mắm 2 muỗng canh\n- Sả băm 1 muỗng canh\n- Tỏi băm 2 muỗng cà phê\n- Mật ong 1 muỗng canh\n- Dầu ăn 1 muỗng canh\n- Rau sống 200g\n- Dưa leo 1 quả\n\n**Các bước thực hiện:**\n1. Thái mỏng thịt, ướp với nước mắm, sả, tỏi, mật ong và dầu ăn trong 25 phút; nêm pha ướp hơi đậm.\n2. Nướng thịt 10-12 phút ở lửa vừa, trở đều hai mặt đến khi chín thơm.\n3. Xếp bún, rau sống, dưa leo và thịt ra tô; nếm cuối bằng nước mắm chua ngọt pha nhẹ rồi rưới vừa đủ.\n\n**Mẹo tối ưu:**\n- Chọn nạc vai có chút mỡ để thịt không khô.\n- Nướng xong để nghỉ 2 phút rồi cắt."
+  },
+  {
+    "id": "3",
+    "name": "Gỏi cuốn tôm thịt",
+    "category": "DRY",
+    "image": "food_goi_cuon",
+    "suitableFor": [
+      "mỡ nhiễm máu",
+      "người ăn ít dầu mỡ",
+      "tiểu đường mức nhẹ cần ăn kiểm soát"
+    ],
+    "recipe": "### Gỏi cuốn tôm thịt\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Bánh tráng 10 lá\n- Tôm 200g\n- Thịt ba chỉ 200g\n- Bún tươi 300g\n- Xà lách 100g\n- Hẹ 50g\n- Nước mắm 1 muỗng canh\n- Muối 1 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Luộc thịt 15 phút ở lửa vừa với 500ml nước và 1 muỗng cà phê muối; luộc tôm 3-4 phút ở lửa vừa.\n2. Làm mềm bánh tráng từng lá trong 3-5 giây, xếp rau, bún, thịt, tôm rồi cuốn chặt tay.\n3. Dọn ra đĩa, ăn kèm nước chấm; nếm cuối nước chấm sao cho chua ngọt dịu.\n\n**Mẹo tối ưu:**\n- Nhúng bánh tráng rất nhanh.\n- Có thể thay ba chỉ bằng ức gà để giảm béo."
+  },
+  {
+    "id": "4",
+    "name": "Bò lúc lắc",
+    "category": "DRY",
+    "image": "food_bo_luc_lac",
+    "suitableFor": [
+      "tăng cơ bắp",
+      "thiếu sắt"
+    ],
+    "recipe": "### Bò lúc lắc\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Thịt bò thăn 400g\n- Hành tây 100g\n- Ớt chuông 100g\n- Tỏi băm 2 muỗng cà phê\n- Dầu hào 1 muỗng canh\n- Nước tương 1 muỗng canh\n- Tiêu 1 muỗng cà phê\n- Dầu ăn 1 muỗng canh\n\n**Các bước thực hiện:**\n1. Cắt bò hạt lựu, ướp với tỏi, dầu hào, nước tương, tiêu trong 20 phút.\n2. Làm nóng chảo 1 phút ở lửa lớn, cho dầu ăn rồi xào bò 2-3 phút, thêm hành tây và ớt chuông đảo 2 phút ở lửa vừa.\n3. Nếm cuối, nếu nhạt thêm 1 muỗng cà phê nước tương; tắt bếp ngay khi bò vừa chín tới.\n\n**Mẹo tối ưu:**\n- Chảo phải nóng trước khi cho bò vào.\n- Không xào quá lâu."
+  },
+  {
+    "id": "5",
+    "name": "Cá hấp gừng",
+    "category": "DRY",
+    "image": "food_ca_hap_gung",
+    "suitableFor": [
+      "mỡ nhiễm máu",
+      "người đau dạ dày ăn thanh đạm",
+      "người hạn chế dầu mỡ"
+    ],
+    "recipe": "### Cá hấp gừng\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Cá 500g\n- Gừng 30g\n- Hành lá 30g\n- Nước tương 1 muỗng canh\n- Muối 1 muỗng cà phê\n- Dầu mè 1 muỗng cà phê\n- Nước lọc 50ml\n\n**Các bước thực hiện:**\n1. Rửa cá, ướp với muối và 1/2 lượng gừng trong 15 phút.\n2. Hấp cá với phần gừng còn lại và 50ml nước trong 15-18 phút ở lửa vừa; gần cuối rưới nước tương và dầu mè.\n3. Nếm cuối phần nước hấp, nếu thiếu vị thêm 1 muỗng cà phê nước tương.\n\n**Mẹo tối ưu:**\n- Có thể lót thêm sả dưới cá.\n- Chỉ hấp vừa chín."
+  },
+  {
+    "id": "6",
+    "name": "Rau củ xào nấm",
+    "category": "DRY",
+    "image": "food_rau_cu_xao_nam",
+    "suitableFor": [
+      "mỡ nhiễm máu",
+      "tiểu đường",
+      "người ăn nhẹ bụng"
+    ],
+    "recipe": "### Rau củ xào nấm\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Bông cải 200g\n- Cà rốt 100g\n- Nấm đùi gà 150g\n- Tỏi băm 1 muỗng cà phê\n- Nước tương 1 muỗng canh\n- Dầu ăn 1 muỗng canh\n- Muối 1/2 muỗng cà phê\n- Nước lọc 30ml\n\n**Các bước thực hiện:**\n1. Sơ chế rau củ, chần bông cải và cà rốt 1 phút ở lửa lớn.\n2. Phi tỏi 20 giây ở lửa vừa, cho nấm vào xào 2 phút rồi thêm rau củ, nước tương và 30ml nước, đảo tiếp 3 phút ở lửa vừa.\n3. Nếm cuối, điều chỉnh thêm 1/2 muỗng cà phê nước tương nếu cần.\n\n**Mẹo tối ưu:**\n- Chần nhanh giúp rau giữ màu.\n- Dùng ít dầu để món thanh hơn."
+  },
+  {
+    "id": "7",
+    "name": "Gà áp chảo sốt nhẹ",
+    "category": "DRY",
+    "image": "food_ga_ap_chao",
+    "suitableFor": [
+      "tăng cơ bắp",
+      "người hạn chế dầu mỡ"
+    ],
+    "recipe": "### Gà áp chảo sốt nhẹ\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Ức gà 400g\n- Tỏi băm 2 muỗng cà phê\n- Tiêu 1 muỗng cà phê\n- Muối 1/2 muỗng cà phê\n- Dầu ăn 1 muỗng canh\n- Nước lọc 50ml\n- Nước tương 1 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Ướp ức gà với tỏi, tiêu, muối trong 20 phút.\n2. Áp chảo gà 4-5 phút mỗi mặt ở lửa vừa với 1 muỗng canh dầu; thêm 50ml nước và nước tương ở phút cuối.\n3. Nếm cuối phần sốt trong chảo, nếu cần thêm 1 nhúm muối nhỏ.\n\n**Mẹo tối ưu:**\n- Dần nhẹ ức gà cho đều độ dày.\n- Không lật gà quá nhiều lần."
+  },
+  {
+    "id": "8",
+    "name": "Đậu hũ non sốt nấm",
+    "category": "DRY",
+    "image": "food_dau_hu_non",
+    "suitableFor": [
+      "dạ dày",
+      "mỡ nhiễm máu",
+      "người ăn mềm dễ tiêu"
+    ],
+    "recipe": "### Đậu hũ non sốt nấm\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Đậu hũ non 300g\n- Nấm 150g\n- Tỏi băm 1 muỗng cà phê\n- Nước tương 1 muỗng canh\n- Dầu ăn 1 muỗng cà phê\n- Bột bắp 1 muỗng cà phê\n- Nước lọc 80ml\n\n**Các bước thực hiện:**\n1. Cắt đậu hũ non, để ráo; khuấy bột bắp với 80ml nước và nước tương.\n2. Phi tỏi 15 giây ở lửa nhỏ, cho nấm vào xào 2 phút ở lửa vừa rồi thêm hỗn hợp sốt, khuấy 1 phút.\n3. Cho đậu hũ vào đun thêm 2 phút ở lửa nhỏ, nếm cuối lại vị mặn ngọt dịu.\n\n**Mẹo tối ưu:**\n- Đảo rất nhẹ tay để đậu không nát.\n- Có thể hấp nóng đậu trước 2 phút."
+  },
+  {
+    "id": "9",
+    "name": "Phở bò",
+    "category": "SOUP",
+    "image": "food_pho_bo",
+    "suitableFor": [
+      "người mới ốm dậy",
+      "tăng cơ bắp nếu dùng thịt nạc"
+    ],
+    "recipe": "### Phở bò\n**Khẩu phần:** 3-4 người\n**Nguyên liệu:**\n- Xương bò 700g\n- Thịt bò nạc 300g\n- Bánh phở 600g\n- Hành tây 1 củ\n- Gừng 40g\n- Quế 1 thanh\n- Hoa hồi 2 cái\n- Nước mắm 2 muỗng canh\n- Muối 1 muỗng canh\n- Đường phèn 1 muỗng canh\n- Nước 2,5 lít\n\n**Các bước thực hiện:**\n1. Chần xương bò 3 phút ở lửa lớn, rửa sạch; nướng hành tây và gừng 5 phút ở lửa vừa.\n2. Hầm xương với 2,5 lít nước, hành, gừng, quế, hồi trong 90-120 phút ở lửa nhỏ; nêm nước mắm và đường phèn ở giai đoạn giữa.\n3. Trụng bánh phở 20-30 giây ở lửa lớn, chan nước dùng; nếm cuối nồi nước dùng cho vị thanh cân bằng.\n\n**Mẹo tối ưu:**\n- Hầm lửa nhỏ giúp nước trong.\n- Thịt bò thái mỏng khi còn hơi cứng."
+  },
+  {
+    "id": "10",
+    "name": "Bún bò Huế",
+    "category": "SOUP",
+    "image": "food_bun_bo_hue",
+    "suitableFor": [
+      "người cần nhiều năng lượng"
+    ],
+    "recipe": "### Bún bò Huế\n**Khẩu phần:** 3-4 người\n**Nguyên liệu:**\n- Xương ống hoặc giò heo 800g\n- Bắp bò 300g\n- Bún sợi to 700g\n- Sả cây 4 cây\n- Mắm ruốc 1 muỗng canh\n- Dầu điều 1 muỗng canh\n- Muối 1 muỗng canh\n- Nước mắm 1 muỗng canh\n- Nước 3 lít\n\n**Các bước thực hiện:**\n1. Chần xương 3 phút ở lửa lớn, rửa sạch; đập dập sả, hòa mắm ruốc với 100ml nước, lọc lấy phần trong.\n2. Hầm xương, giò heo, sả trong 70-90 phút ở lửa nhỏ; giữa quá trình cho mắm ruốc lọc và dầu điều vào, nêm thêm nước mắm.\n3. Luộc bún 1 phút ở lửa lớn nếu cần, chan nước dùng vào tô; nếm cuối, điều chỉnh vị đậm vừa phải.\n\n**Mẹo tối ưu:**\n- Muốn dịu bụng hơn thì giảm dầu điều và ớt.\n- Cho mắm ruốc từng ít để dễ cân vị."
+  },
+  {
+    "id": "11",
+    "name": "Canh chua cá",
+    "category": "SOUP",
+    "image": "food_canh_chua_ca",
+    "suitableFor": [
+      "mỡ nhiễm máu",
+      "người ăn thanh đạm",
+      "dạ dày nếu nấu dịu vị chua"
+    ],
+    "recipe": "### Canh chua cá\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Cá 400g\n- Cà chua 2 quả\n- Dứa 150g\n- Đậu bắp 100g\n- Me chua 30g\n- Nước mắm 1,5 muỗng canh\n- Đường 1 muỗng canh\n- Tỏi 1 muỗng cà phê\n- Nước 1,2 lít\n\n**Các bước thực hiện:**\n1. Sơ chế cá, ướp với 1/2 muỗng cà phê muối trong 10 phút; dầm me với 100ml nước ấm, lọc bỏ hạt.\n2. Phi tỏi 15 giây ở lửa vừa, cho cà chua và dứa vào đảo 2 phút rồi thêm nước; cho nước me, đường, nước mắm, đun 5 phút ở lửa vừa.\n3. Thả cá và đậu bắp vào nấu 6-8 phút ở lửa nhỏ-vừa; nếm cuối, chỉnh vị chua ngọt dịu.\n\n**Mẹo tối ưu:**\n- Không khuấy mạnh sau khi cho cá vào.\n- Với người đau dạ dày, giảm lượng me."
+  },
+  {
+    "id": "12",
+    "name": "Cháo gà",
+    "category": "SOUP",
+    "image": "food_chao_ga",
+    "suitableFor": [
+      "dạ dày",
+      "người mới ốm dậy",
+      "người cần món dễ tiêu"
+    ],
+    "recipe": "### Cháo gà\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Gạo tẻ 150g\n- Thịt gà 300g\n- Gừng 15g\n- Hành lá 20g\n- Muối 1 muỗng cà phê\n- Nước mắm 1 muỗng canh\n- Nước 1,5 lít\n\n**Các bước thực hiện:**\n1. Rang gạo 3 phút ở lửa nhỏ cho thơm nhẹ; luộc gà với 1,5 lít nước, gừng và muối trong 20 phút ở lửa vừa.\n2. Xé gà thành sợi, cho gạo vào nước luộc gà rồi nấu 25-30 phút ở lửa nhỏ, khuấy đều; nêm nước mắm ở giai đoạn giữa.\n3. Cho thịt gà xé trở lại nồi, đun thêm 3 phút ở lửa nhỏ; nếm cuối để cháo có vị dịu vừa miệng.\n\n**Mẹo tối ưu:**\n- Ngâm gạo 20 phút trước khi nấu.\n- Với người đau dạ dày, dùng ít tiêu."
+  },
+  {
+    "id": "13",
+    "name": "Canh bí đỏ thịt bằm",
+    "category": "SOUP",
+    "image": "food_canh_bi_do",
+    "suitableFor": [
+      "dạ dày",
+      "người cần hồi sức",
+      "trẻ nhỏ"
+    ],
+    "recipe": "### Canh bí đỏ thịt bằm\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Bí đỏ 300g\n- Thịt heo bằm 150g\n- Hành tím băm 1 muỗng cà phê\n- Nước mắm 1 muỗng canh\n- Muối 1/2 muỗng cà phê\n- Nước 1 lít\n\n**Các bước thực hiện:**\n1. Ướp thịt bằm với 1/2 muỗng canh nước mắm và hành tím trong 10 phút.\n2. Đun sôi 1 lít nước ở lửa lớn, thả bí đỏ vào nấu 8 phút rồi cho thịt bằm vào, hạ lửa vừa thêm 5 phút.\n3. Nêm cuối với phần nước mắm còn lại và chút muối nếu cần.\n\n**Mẹo tối ưu:**\n- Cắt bí miếng vừa để chín đều.\n- Có thể dầm nhẹ một phần bí để nước canh sánh hơn."
+  },
+  {
+    "id": "14",
+    "name": "Súp nấm gà xé",
+    "category": "SOUP",
+    "image": "food_sup_nam_ga",
+    "suitableFor": [
+      "dạ dày",
+      "người mới ốm dậy",
+      "người ăn mềm"
+    ],
+    "recipe": "### Súp nấm gà xé\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Ức gà 250g\n- Nấm hương 100g\n- Bắp hạt 80g\n- Bột bắp 1,5 muỗng canh\n- Nước dùng 1 lít\n- Muối 1/2 muỗng cà phê\n- Nước mắm 1 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Luộc gà 15 phút ở lửa vừa với 1 lít nước, xé sợi; hòa bột bắp với 80ml nước.\n2. Cho nấm và bắp vào nước dùng nấu 5 phút ở lửa vừa, thêm gà xé rồi rót từ từ nước bột bắp, khuấy 2 phút ở lửa nhỏ-vừa.\n3. Nếm cuối với 1 muỗng cà phê nước mắm, điều chỉnh vị dịu và không quá đặc.\n\n**Mẹo tối ưu:**\n- Rót bột bắp từ từ để súp mượt.\n- Có thể bỏ trứng nếu muốn món thật nhẹ bụng."
+  },
+  {
+    "id": "15",
+    "name": "Canh rau ngót thịt nạc",
+    "category": "SOUP",
+    "image": "food_canh_rau_ngot",
+    "suitableFor": [
+      "dạ dày",
+      "mỡ nhiễm máu",
+      "người ăn thanh đạm"
+    ],
+    "recipe": "### Canh rau ngót thịt nạc\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Rau ngót 200g\n- Thịt nạc bằm 150g\n- Hành tím 1 muỗng cà phê\n- Nước mắm 1 muỗng canh\n- Muối 1/2 muỗng cà phê\n- Nước 1 lít\n\n**Các bước thực hiện:**\n1. Ướp thịt bằm với hành tím và 1/2 muỗng canh nước mắm trong 10 phút.\n2. Đun sôi 1 lít nước ở lửa lớn, cho thịt vào khuấy tơi rồi hạ lửa vừa nấu 3 phút; tiếp tục cho rau ngót vào thêm 2 phút.\n3. Nếm cuối với phần nước mắm còn lại và chút muối nếu cần.\n\n**Mẹo tối ưu:**\n- Vò nhẹ rau ngót trước khi nấu.\n- Không nấu quá lâu."
+  },
+  {
+    "id": "16",
+    "name": "Canh rong biển đậu hũ",
+    "category": "SOUP",
+    "image": "food_canh_rong_bien",
+    "suitableFor": [
+      "bướu cổ cần bổ sung iod đúng mức",
+      "người ăn thanh nhẹ"
+    ],
+    "recipe": "### Canh rong biển đậu hũ\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Rong biển khô 10g\n- Đậu hũ mềm 200g\n- Hành boa rô 20g\n- Nước tương 1 muỗng canh\n- Dầu mè 1 muỗng cà phê\n- Nước 1 lít\n\n**Các bước thực hiện:**\n1. Ngâm rong biển 5 phút rồi rửa nhanh, cắt đậu hũ thành miếng vuông.\n2. Phi boa rô 20 giây ở lửa nhỏ với dầu mè, cho nước vào đun sôi ở lửa vừa rồi thả rong biển vào nấu 2 phút.\n3. Cho đậu hũ vào nấu thêm 2 phút ở lửa nhỏ, nếm cuối điều chỉnh nước tương cho vừa miệng.\n\n**Mẹo tối ưu:**\n- Rong biển nấu quá lâu sẽ dai.\n- Món này hợp ăn nóng, vị thật nhẹ."
+  }
+]
