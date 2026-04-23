@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -214,7 +215,7 @@ public class FoodDetailActivity extends AppCompatActivity {
         textView.setText(text);
         textView.setTextSize(textSizeSp);
         textView.setTextColor(getColor(textColorRes));
-        textView.setTypeface(getResources().getFont(R.font.be_vietnam_pro));
+        textView.setTypeface(ResourcesCompat.getFont(this, R.font.be_vietnam_pro));
         textView.setIncludeFontPadding(true);
         return textView;
     }

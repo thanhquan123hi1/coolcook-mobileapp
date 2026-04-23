@@ -44,13 +44,15 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:background="@drawable/bg_food_icon_circle_light"
+                android:clickable="true"
+                android:contentDescription="Yêu thích"
+                android:focusable="true"
                 android:fontFamily="@font/material_symbols_outlined"
-                android:fontVariationSettings="'FILL' 1, 'wght' 600"
+                android:fontVariationSettings="'FILL' 0, 'wght' 600"
                 android:gravity="center"
                 android:text="favorite"
-                android:textColor="@color/error"
+                android:textColor="@color/on_surface_variant"
                 android:textSize="18sp"
-                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView

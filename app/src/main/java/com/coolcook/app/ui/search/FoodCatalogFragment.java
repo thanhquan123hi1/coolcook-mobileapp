@@ -64,7 +64,7 @@ public class FoodCatalogFragment extends Fragment {
         content = view.findViewById(R.id.foodCatalogContent);
         repository = new FoodJsonRepository(requireContext());
         favoriteFoodStore = new FavoriteFoodStore(requireContext());
-        adapter = new FoodAdapter(favoriteFoodStore, this::openFoodDetail);
+        adapter = new FoodAdapter(favoriteFoodStore, this::openFoodDetail, this::toggleFavorite);
 
         View embeddedBottomNav = view.findViewById(R.id.homeBottomNav);
         if (embeddedBottomNav != null) {
@@ -204,6 +204,11 @@ public class FoodCatalogFragment extends Fragment {
     private void openFoodDetail(@NonNull FoodItem foodItem) {
         startActivity(FoodDetailActivity.createIntent(requireContext(), foodItem.getId()));
         requireActivity().overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
+    }
+
+    private void toggleFavorite(@NonNull FoodItem foodItem) {
+        favoriteFoodStore.toggle(foodItem.getId());
+        renderFoods();
     }
 
     private void applyInsets() {

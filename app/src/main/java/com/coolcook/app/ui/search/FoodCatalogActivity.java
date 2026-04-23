@@ -60,7 +60,7 @@ public class FoodCatalogActivity extends AppCompatActivity {
 
         repository = new FoodJsonRepository(this);
         favoriteFoodStore = new FavoriteFoodStore(this);
-        adapter = new FoodAdapter(favoriteFoodStore, this::openFoodDetail);
+        adapter = new FoodAdapter(favoriteFoodStore, this::openFoodDetail, this::toggleFoodFavorite);
 
         edtSearch = findViewById(R.id.edtFoodSearch);
         chipAll = findViewById(R.id.chipFoodAll);
@@ -193,6 +193,11 @@ public class FoodCatalogActivity extends AppCompatActivity {
     private void openFoodDetail(@NonNull FoodItem foodItem) {
         startActivity(FoodDetailActivity.createIntent(this, foodItem.getId()));
         overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
+    }
+
+    private void toggleFoodFavorite(@NonNull FoodItem foodItem) {
+        favoriteFoodStore.toggle(foodItem.getId());
+        renderFoods();
     }
 
     private void applyInsets() {

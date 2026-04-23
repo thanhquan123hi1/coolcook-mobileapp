@@ -23,18 +23,26 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
         void onFoodClick(@NonNull FoodItem foodItem);
     }
 
+    public interface FoodFavoriteListener {
+        void onFoodFavoriteClick(@NonNull FoodItem foodItem);
+    }
+
     @NonNull
     private final List<FoodItem> foods = new ArrayList<>();
     @NonNull
     private final FavoriteFoodStore favoriteFoodStore;
     @NonNull
     private final FoodClickListener clickListener;
+    @NonNull
+    private final FoodFavoriteListener favoriteListener;
 
     public FoodAdapter(
             @NonNull FavoriteFoodStore favoriteFoodStore,
-            @NonNull FoodClickListener clickListener) {
+            @NonNull FoodClickListener clickListener,
+            @NonNull FoodFavoriteListener favoriteListener) {
         this.favoriteFoodStore = favoriteFoodStore;
         this.clickListener = clickListener;
+        this.favoriteListener = favoriteListener;
     }
 
     @NonNull
@@ -53,9 +61,14 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
         holder.txtCookTime.setText(String.format(Locale.US, "%d MIN", food.getCookTimeMinutes()));
 
         boolean favorite = favoriteFoodStore.isFavorite(food.getId());
-        holder.txtFavorite.setVisibility(favorite ? View.VISIBLE : View.GONE);
+        holder.txtFavorite.setTextColor(holder.itemView.getContext().getColor(
+                favorite ? R.color.error : R.color.on_surface_variant));
+        holder.txtFavorite.setFontVariationSettings(
+                favorite ? "'FILL' 1, 'wght' 600" : "'FILL' 0, 'wght' 600");
+        holder.txtFavorite.setContentDescription(favorite ? "Bỏ yêu thích" : "Yêu thích");
 
         holder.itemView.setOnClickListener(v -> clickListener.onFoodClick(food));
+        holder.txtFavorite.setOnClickListener(v -> favoriteListener.onFoodFavoriteClick(food));
     }
 
     @Override
