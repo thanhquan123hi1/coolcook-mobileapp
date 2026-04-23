@@ -25,11 +25,29 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
         void onDayClick(@NonNull JournalDay day);
     }
 
-    private static final int[] STACK_HEIGHT_DP = {58, 64, 52, 68, 60, 66, 56};
-    private static final float[] PRIMARY_ROTATION = {-7f, -4f, -6f, -3f, -8f, -5f, -2f};
-    private static final float[] SECONDARY_ROTATION = {6f, 8f, 5f, 9f, 7f, 4f, 6f};
-    private static final int[] SECONDARY_TRANSLATE_Y_DP = {6, 2, 7, 4, 8, 3, 5};
-    private static final int[] SECONDARY_TRANSLATE_X_DP = {0, 2, -1, 1, -2, 2, 0};
+    private static final int DAYS_PER_WEEK = 7;
+
+    private static final int[] COLUMN_STACK_BIAS_DP = {1, 0, 1, 0, 1, 0, 1};
+    private static final int[] ROW_STACK_BIAS_DP = {0, -1, 1, 0, -1, 1};
+
+    private static final float[] COLUMN_PRIMARY_ROTATION = {-8.5f, -5.5f, -7f, -4.5f, -6.5f, -5f, -3.5f};
+    private static final float[] COLUMN_SECONDARY_ROTATION = {8f, 6.5f, 9f, 6f, 8.5f, 6.5f, 7.5f};
+
+    private static final int[] COLUMN_PRIMARY_TRANSLATE_X_DP = {-2, -1, -1, 0, 0, 1, 1};
+    private static final int[] COLUMN_PRIMARY_TRANSLATE_Y_DP = {0, 1, 0, 1, 0, 1, 0};
+    private static final int[] COLUMN_SECONDARY_TRANSLATE_X_DP = {1, 2, 1, 2, 0, 1, 0};
+    private static final int[] COLUMN_SECONDARY_TRANSLATE_Y_DP = {4, 5, 4, 5, 4, 4, 3};
+
+    private static final float[] DAY_PRIMARY_ROTATION_DELTA = {0f, 0.8f, -0.6f, 0.5f, -0.4f, 0.7f};
+    private static final float[] DAY_SECONDARY_ROTATION_DELTA = {0f, -0.4f, 0.6f, -0.2f, 0.4f, -0.5f};
+
+    private static final int[] DAY_PRIMARY_TRANSLATE_Y_DELTA_DP = {0, -1, 1, 0, -1, 1};
+    private static final int[] DAY_SECONDARY_TRANSLATE_Y_DELTA_DP = {0, 1, 0, 1, 0, -1};
+
+    private static final float[] DAY_PRIMARY_SCALE_X = {1.16f, 1.12f, 1.18f, 1.13f, 1.15f, 1.17f};
+    private static final float[] DAY_PRIMARY_SCALE_Y = {0.94f, 0.92f, 0.95f, 0.93f, 0.94f, 0.92f};
+    private static final float[] DAY_SECONDARY_SCALE_X = {1.08f, 1.06f, 1.10f, 1.07f, 1.09f, 1.06f};
+    private static final float[] DAY_SECONDARY_SCALE_Y = {0.90f, 0.88f, 0.91f, 0.89f, 0.90f, 0.88f};
 
     @NonNull
     private final List<JournalDay> days = new ArrayList<>();
@@ -50,8 +68,7 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
     @Override
     public void onBindViewHolder(@NonNull DayViewHolder holder, int position) {
         JournalDay day = days.get(position);
-        int pattern = normalizePattern(day.getVisualPatternIndex());
-        applyVisualPattern(holder, pattern);
+        applyVisualPattern(holder, day, position);
 
         if (!day.isInCurrentMonth()) {
             bindEmptyCell(holder);
@@ -135,22 +152,38 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
         target.setImageResource(drawableRes);
     }
 
-    private void applyVisualPattern(@NonNull DayViewHolder holder, int pattern) {
+    private void applyVisualPattern(@NonNull DayViewHolder holder, @NonNull JournalDay day, int adapterPosition) {
+        int column = Math.floorMod(adapterPosition, DAYS_PER_WEEK);
+        int row = Math.max(0, adapterPosition / DAYS_PER_WEEK);
+        int dayVariant = resolveDayVariant(day, adapterPosition);
+
+        int baseStackHeightPx = holder.itemView.getResources().getDimensionPixelSize(R.dimen.journal_day_stack_height_default);
+        int stackHeightPx = baseStackHeightPx
+                + dpToPx(holder.itemView, COLUMN_STACK_BIAS_DP[column] + ROW_STACK_BIAS_DP[row % ROW_STACK_BIAS_DP.length]);
+
         ViewGroup.LayoutParams stackParams = holder.photoStack.getLayoutParams();
-        stackParams.height = dpToPx(holder.itemView, STACK_HEIGHT_DP[pattern]);
+        stackParams.height = stackHeightPx;
         holder.photoStack.setLayoutParams(stackParams);
 
-        holder.cardPrimary.setRotation(PRIMARY_ROTATION[pattern]);
-        holder.cardSecondary.setRotation(SECONDARY_ROTATION[pattern]);
-        holder.cardSecondary.setTranslationY(dpToPx(holder.itemView, SECONDARY_TRANSLATE_Y_DP[pattern]));
-        holder.cardSecondary.setTranslationX(dpToPx(holder.itemView, SECONDARY_TRANSLATE_X_DP[pattern]));
+        holder.cardPrimary.setRotation(COLUMN_PRIMARY_ROTATION[column] + DAY_PRIMARY_ROTATION_DELTA[dayVariant]);
+        holder.cardPrimary.setTranslationX(dpToPx(holder.itemView, COLUMN_PRIMARY_TRANSLATE_X_DP[column]));
+        holder.cardPrimary.setTranslationY(dpToPx(holder.itemView,
+                COLUMN_PRIMARY_TRANSLATE_Y_DP[column] + DAY_PRIMARY_TRANSLATE_Y_DELTA_DP[dayVariant]));
+        holder.cardPrimary.setScaleX(DAY_PRIMARY_SCALE_X[dayVariant]);
+        holder.cardPrimary.setScaleY(DAY_PRIMARY_SCALE_Y[dayVariant]);
+
+        holder.cardSecondary.setRotation(COLUMN_SECONDARY_ROTATION[column] + DAY_SECONDARY_ROTATION_DELTA[dayVariant]);
+        holder.cardSecondary.setTranslationX(dpToPx(holder.itemView, COLUMN_SECONDARY_TRANSLATE_X_DP[column]));
+        holder.cardSecondary.setTranslationY(dpToPx(holder.itemView,
+                COLUMN_SECONDARY_TRANSLATE_Y_DP[column] + DAY_SECONDARY_TRANSLATE_Y_DELTA_DP[dayVariant]));
+        holder.cardSecondary.setScaleX(DAY_SECONDARY_SCALE_X[dayVariant]);
+        holder.cardSecondary.setScaleY(DAY_SECONDARY_SCALE_Y[dayVariant]);
     }
 
-    private int normalizePattern(int index) {
-        if (index < 0) {
-            return 0;
-        }
-        return index % STACK_HEIGHT_DP.length;
+    private int resolveDayVariant(@NonNull JournalDay day, int adapterPosition) {
+        int seed = day.isInCurrentMonth() ? day.getDayOfMonth() : adapterPosition + 1;
+        seed += day.getVisualPatternIndex() * 2;
+        return Math.floorMod(seed, DAY_PRIMARY_SCALE_X.length);
     }
 
     private static int dpToPx(@NonNull View view, int dp) {

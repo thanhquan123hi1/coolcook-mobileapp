@@ -24,17 +24,17 @@
     <dimen name="journal_empty_text_margin_top">12dp</dimen>
 
     <dimen name="journal_day_cell_side_padding">2dp</dimen>
-    <dimen name="journal_day_cell_bottom_margin">2dp</dimen>
-    <dimen name="journal_day_stack_height_default">56dp</dimen>
+    <dimen name="journal_day_cell_bottom_margin">4dp</dimen>
+    <dimen name="journal_day_stack_height_default">58dp</dimen>
     <dimen name="journal_day_photo_primary_size">34dp</dimen>
     <dimen name="journal_day_photo_secondary_size">30dp</dimen>
-    <dimen name="journal_day_photo_corner">14dp</dimen>
-    <dimen name="journal_day_number_margin_top">6dp</dimen>
+    <dimen name="journal_day_photo_corner">12dp</dimen>
+    <dimen name="journal_day_number_margin_top">4dp</dimen>
     <dimen name="journal_day_number_text_size">14sp</dimen>
 
-    <dimen name="journal_day_extra_text_size">10sp</dimen>
-    <dimen name="journal_day_extra_padding_horizontal">6dp</dimen>
-    <dimen name="journal_day_extra_padding_vertical">1dp</dimen>
+    <dimen name="journal_day_extra_text_size">11sp</dimen>
+    <dimen name="journal_day_extra_padding_horizontal">0dp</dimen>
+    <dimen name="journal_day_extra_padding_vertical">0dp</dimen>
 
     <dimen name="journal_fab_margin">24dp</dimen>
     <dimen name="journal_fab_size">64dp</dimen>

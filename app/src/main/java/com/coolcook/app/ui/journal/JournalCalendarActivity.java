@@ -16,8 +16,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.coolcook.app.R;
 import com.coolcook.app.ui.journal.model.JournalDay;
@@ -91,8 +91,7 @@ public class JournalCalendarActivity extends AppCompatActivity {
     private void setupRecycler() {
         calendarAdapter = new JournalCalendarAdapter(this::openDayDetail);
 
-        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(7, RecyclerView.VERTICAL);
-        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 7, RecyclerView.VERTICAL, false);
         calendarRecycler.setLayoutManager(layoutManager);
         calendarRecycler.setAdapter(calendarAdapter);
         calendarRecycler.setHasFixedSize(false);
