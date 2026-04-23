@@ -21,13 +21,22 @@ public class JournalDayDetailAdapter extends RecyclerView.Adapter<JournalDayDeta
         void onPhotoClick(@NonNull JournalEntry entry);
     }
 
+    public interface OnPhotoLongClickListener {
+        void onPhotoLongClick(@NonNull JournalEntry entry);
+    }
+
     @NonNull
     private final List<JournalEntry> entries = new ArrayList<>();
     @NonNull
     private final OnPhotoClickListener onPhotoClickListener;
+    @NonNull
+    private final OnPhotoLongClickListener onPhotoLongClickListener;
 
-    public JournalDayDetailAdapter(@NonNull OnPhotoClickListener onPhotoClickListener) {
+    public JournalDayDetailAdapter(
+            @NonNull OnPhotoClickListener onPhotoClickListener,
+            @NonNull OnPhotoLongClickListener onPhotoLongClickListener) {
         this.onPhotoClickListener = onPhotoClickListener;
+        this.onPhotoLongClickListener = onPhotoLongClickListener;
     }
 
     @NonNull
@@ -48,6 +57,10 @@ public class JournalDayDetailAdapter extends RecyclerView.Adapter<JournalDayDeta
                 .into(holder.photo);
 
         holder.itemView.setOnClickListener(v -> onPhotoClickListener.onPhotoClick(entry));
+        holder.itemView.setOnLongClickListener(v -> {
+            onPhotoLongClickListener.onPhotoLongClick(entry);
+            return true;
+        });
     }
 
     @Override

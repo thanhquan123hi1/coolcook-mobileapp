@@ -1,11 +1,15 @@
 package com.coolcook.app.ui.journal;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,9 +23,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.coolcook.app.R;
+import com.coolcook.app.ui.journal.model.JournalEntry;
 import com.coolcook.app.ui.scan.ScanFoodActivity;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -41,6 +50,8 @@ public class JournalDayDetailActivity extends AppCompatActivity {
     }
 
     private final DateTimeFormatter titleFormatter = DateTimeFormatter.ofPattern("'Ngày' d 'tháng' M, uuuu", Locale.forLanguageTag("vi-VN"));
+
+    private final DateTimeFormatter editDateFormatter = DateTimeFormatter.ofPattern("dd/MM/uuuu", Locale.forLanguageTag("vi-VN"));
 
     private View root;
     private View topRow;
@@ -94,8 +105,9 @@ public class JournalDayDetailActivity extends AppCompatActivity {
     }
 
     private void setupRecycler() {
-        detailAdapter = new JournalDayDetailAdapter(entry ->
-                Toast.makeText(this, R.string.journal_fullscreen_coming_soon, Toast.LENGTH_SHORT).show());
+        detailAdapter = new JournalDayDetailAdapter(
+                this::showPhotoDetailDialog,
+                this::showDeleteConfirmation);
 
         rvPhotos.setLayoutManager(new GridLayoutManager(this, resolveSpanCount()));
         rvPhotos.setAdapter(detailAdapter);
@@ -172,6 +184,98 @@ public class JournalDayDetailActivity extends AppCompatActivity {
     private void openScanInJournalMode() {
         startActivity(ScanFoodActivity.createJournalIntent(this));
         overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+    }
+
+    private void showDeleteConfirmation(@NonNull JournalEntry entry) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Xóa ảnh nhật ký?")
+                .setMessage("Bạn có chắc muốn xóa ảnh này khỏi nhật ký không?")
+                .setNegativeButton("Giữ lại", null)
+                .setPositiveButton("Xóa", (dialog, which) -> deleteEntry(entry))
+                .show();
+    }
+
+    private void deleteEntry(@NonNull JournalEntry entry) {
+        viewModel.deleteEntry(entry, success -> runOnUiThread(() -> {
+            if (success) {
+                Toast.makeText(this, "Đã xóa ảnh nhật ký", Toast.LENGTH_SHORT).show();
+                viewModel.loadEntriesOfDate(selectedDate);
+            } else {
+                Toast.makeText(this, "Không thể xóa ảnh. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+            }
+        }));
+    }
+
+    private void showPhotoDetailDialog(@NonNull JournalEntry entry) {
+        Dialog dialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_journal_photo_detail);
+
+        ImageView imgPhoto = dialog.findViewById(R.id.imgJournalPhotoFull);
+        View btnClose = dialog.findViewById(R.id.btnJournalPhotoClose);
+        TextInputEditText edtDate = dialog.findViewById(R.id.edtJournalPhotoDate);
+        TextInputEditText edtCaption = dialog.findViewById(R.id.edtJournalPhotoCaption);
+        MaterialButton btnSave = dialog.findViewById(R.id.btnJournalPhotoSave);
+
+        final LocalDate[] editableDate = new LocalDate[]{entry.getDate()};
+        Glide.with(this)
+                .load(entry.getImageUrl())
+                .placeholder(R.drawable.bg_journal_placeholder_cute)
+                .error(R.drawable.bg_journal_placeholder_cute_alt)
+                .into(imgPhoto);
+
+        edtDate.setText(editableDate[0].format(editDateFormatter));
+        edtCaption.setText(entry.getCaption());
+
+        View.OnClickListener datePickerClick = v -> showPhotoDatePicker(editableDate[0], pickedDate -> {
+            editableDate[0] = pickedDate;
+            edtDate.setText(pickedDate.format(editDateFormatter));
+        });
+        edtDate.setOnClickListener(datePickerClick);
+        edtDate.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                datePickerClick.onClick(v);
+            }
+        });
+
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        btnSave.setOnClickListener(v -> {
+            String caption = edtCaption.getText() == null ? "" : edtCaption.getText().toString();
+            btnSave.setEnabled(false);
+            viewModel.updateEntryMetadata(entry, editableDate[0], caption, success -> runOnUiThread(() -> {
+                btnSave.setEnabled(true);
+                if (success) {
+                    Toast.makeText(this, "Đã lưu thay đổi ảnh nhật ký", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                    viewModel.loadEntriesOfDate(selectedDate);
+                } else {
+                    Toast.makeText(this, "Không thể lưu thay đổi. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                }
+            }));
+        });
+
+        dialog.setOnShowListener(shownDialog -> {
+            Window shownWindow = dialog.getWindow();
+            if (shownWindow != null) {
+                shownWindow.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                shownWindow.setBackgroundDrawableResource(android.R.color.transparent);
+            }
+        });
+        dialog.show();
+    }
+
+    private interface DatePickCallback {
+        void onDatePicked(@NonNull LocalDate pickedDate);
+    }
+
+    private void showPhotoDatePicker(@NonNull LocalDate currentDate, @NonNull DatePickCallback callback) {
+        DatePickerDialog pickerDialog = new DatePickerDialog(
+                this,
+                (view, year, month, dayOfMonth) -> callback.onDatePicked(LocalDate.of(year, month + 1, dayOfMonth)),
+                currentDate.getYear(),
+                currentDate.getMonthValue() - 1,
+                currentDate.getDayOfMonth());
+        pickerDialog.show();
     }
 
     private void finishWithSlideBack() {

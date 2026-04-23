@@ -41,6 +41,10 @@ public class JournalViewModel extends ViewModel {
 
     private String userId = "";
 
+    public interface EntryActionCallback {
+        void onComplete(boolean success);
+    }
+
     public JournalViewModel() {
         this.repository = new JournalRepository(FirebaseFirestore.getInstance());
         updateMonthLabel(nonNullMonth());
@@ -136,6 +140,58 @@ public class JournalViewModel extends ViewModel {
 
             selectedDayEntries.postValue(entries);
             uiMessage.postValue(entries.isEmpty() ? "Ngày này chưa có ảnh món ăn." : "");
+        });
+    }
+
+    public void updateEntryMetadata(
+            @NonNull JournalEntry originalEntry,
+            @NonNull LocalDate nextDate,
+            @NonNull String nextCaption,
+            @NonNull EntryActionCallback callback) {
+        if (TextUtils.isEmpty(userId)) {
+            uiMessage.setValue("Bạn cần đăng nhập để chỉnh sửa nhật ký món ăn.");
+            callback.onComplete(false);
+            return;
+        }
+
+        JournalEntry updatedEntry = new JournalEntry(
+                originalEntry.getId(),
+                userId,
+                nextDate,
+                originalEntry.getImageUrl(),
+                originalEntry.getThumbnailUrl(),
+                originalEntry.getCapturedAt(),
+                nextCaption.trim(),
+                originalEntry.getMealType());
+
+        loading.setValue(true);
+        repository.saveEntry(userId, updatedEntry, error -> {
+            loading.postValue(false);
+            if (error != null) {
+                uiMessage.postValue("Không thể lưu thay đổi ảnh nhật ký.");
+                callback.onComplete(false);
+                return;
+            }
+            callback.onComplete(true);
+        });
+    }
+
+    public void deleteEntry(@NonNull JournalEntry entry, @NonNull EntryActionCallback callback) {
+        if (TextUtils.isEmpty(userId)) {
+            uiMessage.setValue("Bạn cần đăng nhập để xóa ảnh nhật ký.");
+            callback.onComplete(false);
+            return;
+        }
+
+        loading.setValue(true);
+        repository.deleteEntry(userId, entry.getId(), error -> {
+            loading.postValue(false);
+            if (error != null) {
+                uiMessage.postValue("Không thể xóa ảnh nhật ký.");
+                callback.onComplete(false);
+                return;
+            }
+            callback.onComplete(true);
         });
     }
 

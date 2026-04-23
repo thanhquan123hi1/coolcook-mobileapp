@@ -117,6 +117,25 @@ public class JournalRepository {
                 .addOnFailureListener(callback::onComplete);
     }
 
+    public void deleteEntry(
+            @NonNull String userId,
+            @NonNull String entryId,
+            @NonNull SaveCallback callback) {
+        if (TextUtils.isEmpty(userId)) {
+            callback.onComplete(new IllegalArgumentException("userId is required"));
+            return;
+        }
+        if (TextUtils.isEmpty(entryId)) {
+            callback.onComplete(new IllegalArgumentException("entryId is required"));
+            return;
+        }
+
+        journalCollection(userId).document(entryId)
+                .delete()
+                .addOnSuccessListener(unused -> callback.onComplete(null))
+                .addOnFailureListener(callback::onComplete);
+    }
+
     private CollectionReference journalCollection(@NonNull String userId) {
         return firestore.collection(USERS_COLLECTION)
                 .document(userId)

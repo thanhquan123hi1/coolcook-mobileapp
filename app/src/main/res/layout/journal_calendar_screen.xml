@@ -63,13 +63,6 @@
             android:textColor="@color/primary"
             android:textSize="@dimen/journal_top_icon_size" />
 
-        <View
-            android:layout_width="@dimen/journal_top_dot_size"
-            android:layout_height="@dimen/journal_top_dot_size"
-            android:layout_gravity="top|end"
-            android:layout_marginTop="@dimen/journal_top_dot_margin"
-            android:layout_marginEnd="@dimen/journal_top_dot_margin"
-            android:background="@drawable/bg_home_notification_dot" />
     </FrameLayout>
 
     <com.google.android.material.card.MaterialCardView
@@ -244,7 +237,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/journal_grid_margin_top"
                 android:clipToPadding="false"
-                android:layoutAnimation="@anim/layout_journal_staggered"
                 android:overScrollMode="never"
                 android:paddingBottom="@dimen/journal_grid_bottom_padding"
                 android:scrollbars="none" />
