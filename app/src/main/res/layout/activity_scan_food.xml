@@ -135,6 +135,153 @@
                 android:background="@drawable/bg_scan_detection_box"
                 android:clickable="false"
                 android:focusable="false" />
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scanResultContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#EE090909"
+                android:fillViewport="true"
+                android:padding="18dp"
+                android:scrollbars="none"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_medium"
+                        android:text="Ảnh đã chụp"
+                        android:textColor="#FFF4DA"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:layout_marginTop="10dp"
+                        app:cardBackgroundColor="#161616"
+                        app:cardCornerRadius="24dp"
+                        app:cardElevation="0dp">
+
+                        <ImageView
+                            android:id="@+id/imgCapturedRecognition"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:adjustViewBounds="true"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/img_scan_food_salad" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Nguyên liệu nhận diện được"
+                        android:textColor="#F8F5EE"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/txtDetectedIngredientsEmpty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:text="Chưa có nguyên liệu nhận diện được."
+                        android:textColor="#C3D4C5AB"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/groupDetectedIngredients"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        app:chipSpacingHorizontal="8dp"
+                        app:chipSpacingVertical="8dp"
+                        app:singleLine="false" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Lọc theo sức khỏe"
+                        android:textColor="#F8F5EE"
+                        android:textSize="16sp" />
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:scrollbars="none">
+
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/groupHealthFilters"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:chipSpacingHorizontal="8dp"
+                            app:chipSpacingVertical="8dp"
+                            app:singleLine="true" />
+                    </HorizontalScrollView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Món có thể nấu"
+                        android:textColor="#F8F5EE"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/txtDishSuggestionsEmpty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:text="Chưa có món gợi ý phù hợp."
+                        android:textColor="#C3D4C5AB"
+                        android:textSize="13sp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvDishSuggestions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:nestedScrollingEnabled="false" />
+
+                    <TextView
+                        android:id="@+id/txtSelectedDishHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/be_vietnam_pro_medium"
+                        android:text="Chưa chọn món nào để lưu"
+                        android:textColor="#FFF4DA"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/btnSaveSelectedDish"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:background="#FABD00"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:gravity="center"
+                        android:minHeight="50dp"
+                        android:paddingStart="16dp"
+                        android:paddingTop="14dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="14dp"
+                        android:text="Lưu món đã chọn"
+                        android:textColor="#1A1203"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
         </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout

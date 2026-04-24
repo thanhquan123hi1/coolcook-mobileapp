@@ -37,6 +37,8 @@ import java.util.Locale;
 
 public class FoodCatalogActivity extends AppCompatActivity {
 
+    private static final String EXTRA_SHOW_FAVORITES_ONLY = "extra_show_favorites_only";
+
     private FoodJsonRepository repository;
     private FavoriteFoodStore favoriteFoodStore;
     private FoodAdapter adapter;
@@ -47,10 +49,18 @@ public class FoodCatalogActivity extends AppCompatActivity {
     private TextView txtEmpty;
     private FoodCategory selectedCategory;
     private String query = "";
+    private boolean showFavoritesOnly;
 
     @NonNull
     public static Intent createIntent(@NonNull Context context) {
         return new Intent(context, FoodCatalogActivity.class);
+    }
+
+    @NonNull
+    public static Intent createFavoritesIntent(@NonNull Context context) {
+        Intent intent = createIntent(context);
+        intent.putExtra(EXTRA_SHOW_FAVORITES_ONLY, true);
+        return intent;
     }
 
     @Override
@@ -59,6 +69,7 @@ public class FoodCatalogActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_food_catalog);
 
+        showFavoritesOnly = getIntent().getBooleanExtra(EXTRA_SHOW_FAVORITES_ONLY, false);
         repository = new FoodJsonRepository(this);
         favoriteFoodStore = new FavoriteFoodStore(this);
         adapter = new FoodAdapter(favoriteFoodStore, this::openFoodDetail, this::toggleFoodFavorite);
@@ -134,6 +145,9 @@ public class FoodCatalogActivity extends AppCompatActivity {
         String normalizedQuery = SearchTextUtils.normalizeForSearch(query);
 
         for (FoodItem food : repository.getFoods()) {
+            if (showFavoritesOnly && !favoriteFoodStore.isFavorite(food.getId())) {
+                continue;
+            }
             if (selectedCategory != null && food.getCategory() != selectedCategory) {
                 continue;
             }
@@ -146,6 +160,11 @@ public class FoodCatalogActivity extends AppCompatActivity {
         Collections.sort(filteredFoods, favoriteFirstComparator());
         adapter.submitFoods(filteredFoods);
         txtEmpty.setVisibility(filteredFoods.isEmpty() ? View.VISIBLE : View.GONE);
+        if (txtEmpty != null) {
+            txtEmpty.setText(showFavoritesOnly
+                    ? "Bạn chưa có món ăn yêu thích nào."
+                    : "Chưa tìm thấy món phù hợp");
+        }
     }
 
     private boolean matchesQuery(@NonNull FoodItem food, @NonNull String normalizedQuery) {

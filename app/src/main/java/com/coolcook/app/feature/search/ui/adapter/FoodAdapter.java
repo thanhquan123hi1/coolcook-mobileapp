@@ -61,14 +61,13 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
         holder.txtCookTime.setText(String.format(Locale.US, "%d MIN", food.getCookTimeMinutes()));
 
         boolean favorite = favoriteFoodStore.isFavorite(food.getId());
-        holder.txtFavorite.setTextColor(holder.itemView.getContext().getColor(
+        holder.imgFavorite.setImageResource(favorite ? R.drawable.ic_favorite_filled : R.drawable.ic_favorite_outline);
+        holder.imgFavorite.setColorFilter(holder.itemView.getContext().getColor(
                 favorite ? R.color.error : R.color.on_surface_variant));
-        holder.txtFavorite.setFontVariationSettings(
-                favorite ? "'FILL' 1, 'wght' 600" : "'FILL' 0, 'wght' 600");
-        holder.txtFavorite.setContentDescription(favorite ? "Bỏ yêu thích" : "Yêu thích");
+        holder.imgFavorite.setContentDescription(favorite ? "Bo yeu thich" : "Yeu thich");
 
         holder.itemView.setOnClickListener(v -> clickListener.onFoodClick(food));
-        holder.txtFavorite.setOnClickListener(v -> favoriteListener.onFoodFavoriteClick(food));
+        holder.imgFavorite.setOnClickListener(v -> favoriteListener.onFoodFavoriteClick(food));
     }
 
     @Override
@@ -85,7 +84,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
     static class FoodViewHolder extends RecyclerView.ViewHolder {
         final ImageView imgFood;
         final TextView txtCookTime;
-        final TextView txtFavorite;
+        final ImageView imgFavorite;
         final TextView txtName;
         final TextView txtTag;
 
@@ -93,7 +92,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
             super(itemView);
             imgFood = itemView.findViewById(R.id.imgFoodCard);
             txtCookTime = itemView.findViewById(R.id.txtFoodCookTime);
-            txtFavorite = itemView.findViewById(R.id.txtFoodFavorite);
+            imgFavorite = itemView.findViewById(R.id.txtFoodFavorite);
             txtName = itemView.findViewById(R.id.txtFoodName);
             txtTag = itemView.findViewById(R.id.txtFoodPrimaryTag);
         }

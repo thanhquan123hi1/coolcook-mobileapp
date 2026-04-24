@@ -102,6 +102,26 @@ public class GeminiRepository {
             @Nullable String imageMimeType,
             @Nullable String imageBase64,
             @NonNull StreamCallback callback) {
+        requestResponse(SYSTEM_PROMPT, history, userPrompt, imageMimeType, imageBase64, true, callback);
+    }
+
+    public void requestStructuredResponse(
+            @NonNull String systemPrompt,
+            @Nullable String userPrompt,
+            @Nullable String imageMimeType,
+            @Nullable String imageBase64,
+            @NonNull StreamCallback callback) {
+        requestResponse(systemPrompt, Collections.emptyList(), userPrompt, imageMimeType, imageBase64, false, callback);
+    }
+
+    private void requestResponse(
+            @NonNull String systemPrompt,
+            @NonNull List<ChatMessage> history,
+            @Nullable String userPrompt,
+            @Nullable String imageMimeType,
+            @Nullable String imageBase64,
+            boolean useLegacyImagePrompt,
+            @NonNull StreamCallback callback) {
 
         final String apiKey = resolveApiKey();
         if (TextUtils.isEmpty(apiKey)) {
@@ -121,10 +141,12 @@ public class GeminiRepository {
             callback.onStart();
             try {
                 ChatRequest requestBody = buildRequestBody(
+                        systemPrompt,
                         history,
                         normalizedPrompt,
                         imageMimeType,
-                        imageBase64);
+                        imageBase64,
+                        useLegacyImagePrompt);
 
                 Response<ChatResponse> response = groqApiService
                         .createChatCompletion("Bearer " + apiKey, requestBody)
@@ -174,13 +196,15 @@ public class GeminiRepository {
 
     @NonNull
     private ChatRequest buildRequestBody(
+            @NonNull String systemPrompt,
             @NonNull List<ChatMessage> history,
             @Nullable String userPrompt,
             @Nullable String imageMimeType,
-            @Nullable String imageBase64) {
+            @Nullable String imageBase64,
+            boolean useLegacyImagePrompt) {
 
         List<Message> messages = new ArrayList<>();
-        messages.add(new Message("system", SYSTEM_PROMPT));
+        messages.add(new Message("system", systemPrompt));
 
         for (ChatMessage item : compactHistory(history)) {
             String text = trimMessage(item.getContent(), MAX_SINGLE_MESSAGE_CHARS);
@@ -194,14 +218,7 @@ public class GeminiRepository {
 
         if (!TextUtils.isEmpty(imageBase64)) {
             List<Object> contentParts = new ArrayList<>();
-            String imagePromptText;
-            if (TextUtils.isEmpty(currentPrompt)) {
-                imagePromptText = "Nhận diện chính xác món ăn trong ảnh này rồi hướng dẫn nấu chính món đó theo khuôn mẫu bắt buộc.";
-            } else {
-                imagePromptText = "Dựa trên ảnh món ăn này và yêu cầu sau: \""
-                        + currentPrompt
-                        + "\". Trước tiên phải gọi đúng tên món trong ảnh, sau đó hướng dẫn nấu chính món đó theo khuôn mẫu bắt buộc.";
-            }
+            String imagePromptText = buildImagePromptText(currentPrompt, useLegacyImagePrompt);
             contentParts.add(new TextContent("text", imagePromptText));
 
             String safeMimeType = TextUtils.isEmpty(imageMimeType) ? "image/jpeg" : imageMimeType;
@@ -214,6 +231,23 @@ public class GeminiRepository {
         }
 
         return new ChatRequest(MODEL, messages, 0.25f, 0.9f, MAX_OUTPUT_TOKENS);
+    }
+
+    @NonNull
+    private static String buildImagePromptText(@Nullable String currentPrompt, boolean useLegacyImagePrompt) {
+        if (!useLegacyImagePrompt) {
+            return TextUtils.isEmpty(currentPrompt)
+                    ? "Phân tích ảnh này theo đúng system prompt và chỉ trả về nội dung được yêu cầu."
+                    : currentPrompt;
+        }
+
+        if (TextUtils.isEmpty(currentPrompt)) {
+            return "Nhận diện chính xác món ăn trong ảnh này rồi hướng dẫn nấu chính món đó theo khuôn mẫu bắt buộc.";
+        }
+
+        return "Dựa trên ảnh món ăn này và yêu cầu sau: \""
+                + currentPrompt
+                + "\". Trước tiên phải gọi đúng tên món trong ảnh, sau đó hướng dẫn nấu chính món đó theo khuôn mẫu bắt buộc.";
     }
 
     @NonNull
@@ -400,6 +434,11 @@ public class GeminiRepository {
 
     private static class Choice {
         @SerializedName("message")
-        Message message;
+        MessageResponse message;
+    }
+
+    private static class MessageResponse {
+        @SerializedName("content")
+        Object content;
     }
 }

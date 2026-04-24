@@ -36,7 +36,7 @@
                 app:shapeAppearanceOverlay="@style/ShapeAppearance.Coolcook.HomeRecipeImage"
                 tools:src="@drawable/img_home_recipe_pho" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/txtFoodFavorite"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
@@ -45,14 +45,11 @@
                 android:layout_marginEnd="10dp"
                 android:background="@drawable/bg_food_icon_circle_light"
                 android:clickable="true"
-                android:contentDescription="Yêu thích"
+                android:contentDescription="Yeu thich"
                 android:focusable="true"
-                android:fontFamily="@font/material_symbols_outlined"
-                android:fontVariationSettings="'FILL' 0, 'wght' 600"
-                android:gravity="center"
-                android:text="favorite"
-                android:textColor="@color/on_surface_variant"
-                android:textSize="18sp"
+                android:padding="7dp"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/ic_favorite_outline"
                 tools:visibility="visible" />
 
             <TextView

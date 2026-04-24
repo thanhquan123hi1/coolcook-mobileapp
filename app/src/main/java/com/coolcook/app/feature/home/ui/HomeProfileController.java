@@ -15,6 +15,7 @@ import com.coolcook.app.R;
 import com.coolcook.app.core.util.AvatarImageUtils;
 import com.coolcook.app.feature.main.ui.MainActivity;
 import com.coolcook.app.feature.profile.ui.EditProfileDialogFragment;
+import com.coolcook.app.feature.search.ui.FoodCatalogActivity;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -86,6 +87,11 @@ final class HomeProfileController {
 
         if (btnProfileLogout != null) {
             btnProfileLogout.setOnClickListener(v -> performLogout());
+        }
+
+        View favoritesAction = activity.findViewById(R.id.actionProfileFavorites);
+        if (favoritesAction != null) {
+            favoritesAction.setOnClickListener(v -> openFavoriteFoods());
         }
     }
 
@@ -231,6 +237,12 @@ final class HomeProfileController {
                 currentPhoneNumber,
                 currentBirthDate,
                 currentAvatarUrl).show(activity.getSupportFragmentManager(), "EditProfileDialog");
+    }
+
+    private void openFavoriteFoods() {
+        Intent intent = FoodCatalogActivity.createFavoritesIntent(activity);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
     }
 
     private void performLogout() {

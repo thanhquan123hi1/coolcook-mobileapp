@@ -264,19 +264,16 @@
             android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/btnFoodFavorite"
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:background="@drawable/bg_food_icon_circle_light"
             android:clickable="true"
-            android:contentDescription="Yêu thích"
+            android:contentDescription="Yeu thich"
             android:focusable="true"
-            android:fontFamily="@font/material_symbols_outlined"
-            android:fontVariationSettings="'FILL' 0, 'wght' 600"
-            android:gravity="center"
-            android:text="favorite"
-            android:textColor="@color/on_surface_variant"
-            android:textSize="23sp" />
+            android:padding="10dp"
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/ic_favorite_outline" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

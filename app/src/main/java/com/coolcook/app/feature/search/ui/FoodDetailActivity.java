@@ -37,7 +37,7 @@ public class FoodDetailActivity extends AppCompatActivity {
     private FavoriteFoodStore favoriteFoodStore;
     private FoodItem foodItem;
     private AppCompatImageView imgFoodHero;
-    private TextView btnFavorite;
+    private AppCompatImageView btnFavorite;
 
     @NonNull
     public static Intent createIntent(@NonNull Context context, @NonNull String foodId) {
@@ -227,10 +227,9 @@ public class FoodDetailActivity extends AppCompatActivity {
 
     private void bindFavoriteState() {
         boolean favorite = favoriteFoodStore.isFavorite(foodItem.getId());
-        btnFavorite.setText("favorite");
-        btnFavorite.setTextColor(getColor(favorite ? R.color.error : R.color.on_surface_variant));
-        btnFavorite.setFontVariationSettings(favorite ? "'FILL' 1, 'wght' 600" : "'FILL' 0, 'wght' 600");
-        btnFavorite.setContentDescription(favorite ? "Bỏ yêu thích" : "Yêu thích");
+        btnFavorite.setImageResource(favorite ? R.drawable.ic_favorite_filled : R.drawable.ic_favorite_outline);
+        btnFavorite.setColorFilter(getColor(favorite ? R.color.error : R.color.on_surface_variant));
+        btnFavorite.setContentDescription(favorite ? "Bo yeu thich" : "Yeu thich");
     }
 
     private int dpToPx(float dp) {

@@ -15,6 +15,7 @@
         android:textStyle="bold" />
 
     <LinearLayout
+        android:id="@+id/actionProfileSavedFoods"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/profile_action_item_margin_top"
@@ -62,6 +63,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/actionProfileJournal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/profile_action_item_margin_top"
@@ -109,6 +111,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/actionProfileFavorites"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/profile_action_item_margin_top"
@@ -156,6 +159,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/actionProfileHealth"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/profile_action_item_margin_top"
@@ -203,6 +207,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/actionProfileSettings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/profile_action_item_margin_top"
