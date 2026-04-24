@@ -26,6 +26,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.NestedScrollView;
 
 import com.coolcook.app.R;
+import com.coolcook.app.core.util.ActivityTransitionUtils;
 import com.coolcook.app.feature.home.ui.HomeActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -128,14 +129,6 @@ public class AuthActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         checkCurrentUser();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (facebookCallbackManager != null) {
-            facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
-        }
     }
 
     public static Intent createIntent(AppCompatActivity activity, String mode) {
@@ -310,7 +303,10 @@ public class AuthActivity extends AppCompatActivity {
     private void setupActions() {
         btnBack.setOnClickListener(v -> {
             finish();
-            overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+            ActivityTransitionUtils.applyCloseTransition(
+                    this,
+                    R.anim.slide_in_left_scale,
+                    R.anim.slide_out_right_scale);
         });
 
         txtSwitchToRegister.setOnClickListener(v -> switchMode(true));
@@ -436,7 +432,10 @@ public class AuthActivity extends AppCompatActivity {
         }
 
         setLoading(true);
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
+        LoginManager.getInstance().logInWithReadPermissions(
+                this,
+                facebookCallbackManager,
+                Arrays.asList("email", "public_profile"));
     }
 
     private void handleFacebookAccessToken(AccessToken token) {

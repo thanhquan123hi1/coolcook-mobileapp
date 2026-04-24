@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coolcook.app.R;
+import com.coolcook.app.core.util.ActivityTransitionUtils;
 import com.coolcook.app.feature.journal.model.JournalDay;
 import com.coolcook.app.feature.journal.ui.adapter.JournalCalendarAdapter;
 import com.coolcook.app.core.navigation.HomeBottomNavigation;
@@ -373,12 +374,18 @@ public class JournalCalendarActivity extends AppCompatActivity {
         }
         Intent intent = JournalDayDetailActivity.createIntent(this, day.getDate());
         startActivity(intent);
-        overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
+        ActivityTransitionUtils.applyOpenTransition(
+                this,
+                R.anim.slide_in_right_scale,
+                R.anim.slide_out_left_scale);
     }
 
     private void openScanInJournalMode() {
         startActivity(ScanFoodActivity.createJournalIntent(this));
-        overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+        ActivityTransitionUtils.applyOpenTransition(
+                this,
+                R.anim.slide_in_left_scale,
+                R.anim.slide_out_right_scale);
     }
 
     private void openHomeFromNavigation(boolean openProfile, @NonNull View tapTarget) {
@@ -390,13 +397,19 @@ public class JournalCalendarActivity extends AppCompatActivity {
                 intent.putExtra(HomeActivity.EXTRA_OPEN_TAB, HomeActivity.EXTRA_TAB_PROFILE);
             }
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+            ActivityTransitionUtils.applyOpenTransition(
+                    this,
+                    R.anim.slide_in_left_scale,
+                    R.anim.slide_out_right_scale);
         }, NAV_NAVIGATION_DELAY_MS);
     }
 
     private void finishWithSlideBack() {
         finish();
-        overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+        ActivityTransitionUtils.applyCloseTransition(
+                this,
+                R.anim.slide_in_left_scale,
+                R.anim.slide_out_right_scale);
     }
 
     private void playTapFeedback(View target) {

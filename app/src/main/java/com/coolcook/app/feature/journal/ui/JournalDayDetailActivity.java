@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.coolcook.app.R;
+import com.coolcook.app.core.util.ActivityTransitionUtils;
 import com.coolcook.app.feature.journal.model.JournalEntry;
 import com.coolcook.app.feature.journal.ui.adapter.JournalDayDetailAdapter;
 import com.coolcook.app.feature.camera.ui.ScanFoodActivity;
@@ -184,7 +185,10 @@ public class JournalDayDetailActivity extends AppCompatActivity {
 
     private void openScanInJournalMode() {
         startActivity(ScanFoodActivity.createJournalIntent(this));
-        overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+        ActivityTransitionUtils.applyOpenTransition(
+                this,
+                R.anim.slide_in_left_scale,
+                R.anim.slide_out_right_scale);
     }
 
     private void showDeleteConfirmation(@NonNull JournalEntry entry) {
@@ -281,7 +285,10 @@ public class JournalDayDetailActivity extends AppCompatActivity {
 
     private void finishWithSlideBack() {
         finish();
-        overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+        ActivityTransitionUtils.applyCloseTransition(
+                this,
+                R.anim.slide_in_left_scale,
+                R.anim.slide_out_right_scale);
     }
 
     private void playBounceThen(@NonNull View target, @NonNull Runnable action) {

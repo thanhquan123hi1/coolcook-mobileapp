@@ -548,43 +548,7 @@
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
     <FrameLayout
-        android:id="@+id/journalModeContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/journal_camera_bg"
-        android:visibility="gone">
-
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/journalSurface"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:fillViewport="true"
-            android:overScrollMode="never"
-            android:scrollbars="none">
-
-            <include layout="@layout/view_journal_feed_section" />
-        </androidx.core.widget.NestedScrollView>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/journalCameraShell"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:elevation="4dp">
-
-            <include layout="@layout/view_journal_header" />
-
-            <include layout="@layout/view_journal_camera_card" />
-
-            <include
-                layout="@layout/view_journal_bottom_bar"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/journalCaptureOverlay"
+        android:id="@+id/captureSaveOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#E6000000"
@@ -612,7 +576,7 @@
                 app:cardElevation="0dp">
 
                 <ImageView
-                    android:id="@+id/imgJournalCapturedPreview"
+                    android:id="@+id/imgCapturePreview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:adjustViewBounds="false"
@@ -621,7 +585,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <EditText
-                android:id="@+id/edtJournalCaption"
+                android:id="@+id/edtCaptureCaption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
@@ -640,7 +604,7 @@
                 android:textColorHint="#80FFFFFF" />
 
             <TextView
-                android:id="@+id/txtJournalUploadProgress"
+                android:id="@+id/txtCaptureUploadProgress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -649,7 +613,7 @@
                 android:textSize="13sp" />
 
             <TextView
-                android:id="@+id/txtJournalPostError"
+                android:id="@+id/txtCaptureSaveError"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
@@ -666,7 +630,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/btnJournalPostCancel"
+                    android:id="@+id/btnCaptureSaveCancel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
@@ -685,7 +649,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/btnJournalPostPublish"
+                    android:id="@+id/btnCaptureSaveConfirm"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
@@ -705,7 +669,7 @@
             </LinearLayout>
 
             <ProgressBar
-                android:id="@+id/journalPostLoading"
+                android:id="@+id/captureSaveLoading"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginTop="14dp"

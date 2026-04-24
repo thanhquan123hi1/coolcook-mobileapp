@@ -20,6 +20,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.coolcook.app.R;
+import com.coolcook.app.core.util.ActivityTransitionUtils;
 import com.coolcook.app.feature.search.data.FavoriteFoodStore;
 import com.coolcook.app.feature.search.data.FoodJsonRepository;
 import com.coolcook.app.feature.search.model.FoodItem;
@@ -68,7 +69,10 @@ public class FoodDetailActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+        ActivityTransitionUtils.applyCloseTransition(
+                this,
+                R.anim.slide_in_left_scale,
+                R.anim.slide_out_right_scale);
     }
 
     private void bindViews() {

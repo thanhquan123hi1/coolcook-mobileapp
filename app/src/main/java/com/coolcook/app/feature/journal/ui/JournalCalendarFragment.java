@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coolcook.app.R;
+import com.coolcook.app.core.util.ActivityTransitionUtils;
 import com.coolcook.app.feature.journal.model.JournalDay;
 import com.coolcook.app.feature.journal.ui.adapter.JournalCalendarAdapter;
 import com.coolcook.app.feature.camera.ui.ScanFoodActivity;
@@ -243,12 +244,18 @@ public class JournalCalendarFragment extends Fragment {
         }
         Intent intent = JournalDayDetailActivity.createIntent(requireContext(), day.getDate());
         startActivity(intent);
-        requireActivity().overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
+        ActivityTransitionUtils.applyOpenTransition(
+                requireActivity(),
+                R.anim.slide_in_right_scale,
+                R.anim.slide_out_left_scale);
     }
 
     private void openScanInJournalMode() {
         startActivity(ScanFoodActivity.createJournalIntent(requireContext()));
-        requireActivity().overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+        ActivityTransitionUtils.applyOpenTransition(
+                requireActivity(),
+                R.anim.slide_in_left_scale,
+                R.anim.slide_out_right_scale);
     }
 
     private void playBounceThen(@NonNull View target, @NonNull Runnable action) {

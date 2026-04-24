@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.coolcook.app.R;
+import com.coolcook.app.core.util.ActivityTransitionUtils;
 import com.coolcook.app.feature.auth.ui.AuthActivity;
 import com.coolcook.app.feature.home.ui.HomeActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,13 +46,19 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, HomeActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
+            ActivityTransitionUtils.applyOpenTransition(
+                    this,
+                    R.anim.slide_in_right_scale,
+                    R.anim.slide_out_left_scale);
         }
     }
 
     private void openAuth(String mode) {
         Intent intent = AuthActivity.createIntent(this, mode);
         startActivity(intent);
-        overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
+        ActivityTransitionUtils.applyOpenTransition(
+                this,
+                R.anim.slide_in_right_scale,
+                R.anim.slide_out_left_scale);
     }
 }

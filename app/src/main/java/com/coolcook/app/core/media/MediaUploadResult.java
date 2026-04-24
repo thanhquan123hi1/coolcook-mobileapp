@@ -1,4 +1,4 @@
-package com.coolcook.app.feature.social.model;
+package com.coolcook.app.core.media;
 
 import androidx.annotation.NonNull;
 
@@ -54,3 +54,4 @@ public class MediaUploadResult {
         return cloudCreatedAt;
     }
 }
+

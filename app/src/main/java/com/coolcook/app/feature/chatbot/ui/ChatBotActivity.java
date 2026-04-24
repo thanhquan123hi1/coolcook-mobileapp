@@ -18,6 +18,7 @@ import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -100,6 +101,12 @@ public class ChatBotActivity extends AppCompatActivity {
         setupSessionPanel();
         setupViewModel();
         applyInsets();
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                handleBackPressed();
+            }
+        });
     }
 
     @Override
@@ -461,12 +468,11 @@ public class ChatBotActivity extends AppCompatActivity {
         updateScreenState(false, false);
     }
 
-    @Override
-    public void onBackPressed() {
+    private void handleBackPressed() {
         if (drawer != null && drawer.isDrawerOpen(GravityCompat.END)) {
             drawer.closeDrawer(GravityCompat.END);
             return;
         }
-        super.onBackPressed();
+        finish();
     }
 }

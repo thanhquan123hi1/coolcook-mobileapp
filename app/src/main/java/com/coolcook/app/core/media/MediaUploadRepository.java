@@ -1,4 +1,4 @@
-package com.coolcook.app.feature.social.data;
+package com.coolcook.app.core.media;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,7 +15,6 @@ import com.cloudinary.android.UploadRequest;
 import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
 import com.coolcook.app.BuildConfig;
-import com.coolcook.app.feature.social.model.MediaUploadResult;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -45,7 +44,7 @@ public class MediaUploadRepository {
 
     public void uploadJournalImage(@NonNull byte[] sourceBytes, @NonNull UploadCallbackListener callback) {
         if (sourceBytes.length == 0) {
-            callback.onError("Không có ảnh để đăng.");
+            callback.onError("Khong co anh de dang.");
             return;
         }
 
@@ -53,7 +52,7 @@ public class MediaUploadRepository {
         new Thread(() -> {
             byte[] preparedBytes = prepareJournalImageForUpload(sourceBytes);
             if (preparedBytes == null || preparedBytes.length == 0) {
-                postError(callback, "Không tối ưu được ảnh để đăng.");
+                postError(callback, "Khong toi uu duoc anh de dang.");
                 return;
             }
             ImageSize localSize = resolveImageSize(preparedBytes);
@@ -66,7 +65,7 @@ public class MediaUploadRepository {
             @NonNull ImageSize localSize,
             @NonNull UploadCallbackListener callback) {
         if (!ensureCloudinaryConfigured()) {
-            callback.onError("Thiếu cấu hình Cloudinary để đăng ảnh.");
+            callback.onError("Thieu cau hinh Cloudinary de dang anh.");
             return;
         }
 
@@ -103,7 +102,7 @@ public class MediaUploadRepository {
                 MediaUploadResult result = buildResult(resultData, localSize);
                 mainHandler.post(() -> {
                     if (TextUtils.isEmpty(result.getImageUrl())) {
-                        callback.onError("Cloudinary không trả về URL ảnh hợp lệ.");
+                        callback.onError("Cloudinary khong tra ve URL anh hop le.");
                         return;
                     }
                     callback.onSuccess(result);
@@ -112,63 +111,33 @@ public class MediaUploadRepository {
 
             @Override
             public void onError(String requestId, ErrorInfo error) {
-                String message = error == null || TextUtils.isEmpty(error.getDescription())
-                        ? "Upload ảnh thất bại."
-                        : error.getDescription();
-                postError(callback, message);
+                mainHandler.post(() -> callback.onError("Upload that bai. Vui long thu lai."));
             }
 
             @Override
             public void onReschedule(String requestId, ErrorInfo error) {
-                mainHandler.post(() -> callback.onProgress(0));
+                mainHandler.post(() -> callback.onError("Upload bi tam dung. Vui long thu lai."));
             }
-        }).dispatch();
+        }).dispatch(appContext);
     }
 
     private boolean ensureCloudinaryConfigured() {
-        String cloudName = BuildConfig.CLOUDINARY_CLOUD_NAME.trim();
-        String apiKey = BuildConfig.CLOUDINARY_API_KEY.trim();
-        String apiSecret = BuildConfig.CLOUDINARY_API_SECRET.trim();
-        String uploadPreset = BuildConfig.CLOUDINARY_UPLOAD_PRESET.trim();
-
-        boolean hasSignedCredentials = !TextUtils.isEmpty(apiKey) && !TextUtils.isEmpty(apiSecret);
-        boolean hasUnsignedPreset = !TextUtils.isEmpty(uploadPreset);
-        if (TextUtils.isEmpty(cloudName) || (!hasSignedCredentials && !hasUnsignedPreset)) {
-            return false;
-        }
-
         try {
             MediaManager.get();
             return true;
-        } catch (IllegalStateException ignored) {
-            HashMap<String, Object> config = new HashMap<>();
-            config.put("cloud_name", cloudName);
-            config.put("secure", true);
-            if (!TextUtils.isEmpty(apiKey)) {
-                config.put("api_key", apiKey);
-            }
-            if (!TextUtils.isEmpty(apiSecret)) {
-                // Avoid shipping API secret in production builds; use a signed-upload backend instead.
-                config.put("api_secret", apiSecret);
-            }
-            MediaManager.init(appContext, config);
-            return true;
+        } catch (Exception ignored) {
+            return false;
         }
     }
 
     @NonNull
     private MediaUploadResult buildResult(@Nullable Map resultData, @NonNull ImageSize fallbackSize) {
-        if (resultData == null) {
-            return new MediaUploadResult("", "", "", fallbackSize.width, fallbackSize.height, "");
-        }
-
-        String secureUrl = stringValue(resultData.get("secure_url"));
-        String publicId = stringValue(resultData.get("public_id"));
-        String createdAt = stringValue(resultData.get("created_at"));
-        int width = intValue(resultData.get("width"), fallbackSize.width);
-        int height = intValue(resultData.get("height"), fallbackSize.height);
-        String thumbUrl = buildCloudinaryThumbUrl(secureUrl, 720, 960);
-
+        String secureUrl = stringValue(resultData == null ? null : resultData.get("secure_url"));
+        String publicId = stringValue(resultData == null ? null : resultData.get("public_id"));
+        String createdAt = stringValue(resultData == null ? null : resultData.get("created_at"));
+        int width = intValue(resultData == null ? null : resultData.get("width"), fallbackSize.width);
+        int height = intValue(resultData == null ? null : resultData.get("height"), fallbackSize.height);
+        String thumbUrl = buildCloudinaryThumbUrl(secureUrl, 720, 720);
         return new MediaUploadResult(secureUrl, thumbUrl, publicId, width, height, createdAt);
     }
 
@@ -281,3 +250,4 @@ public class MediaUploadRepository {
         }
     }
 }
+

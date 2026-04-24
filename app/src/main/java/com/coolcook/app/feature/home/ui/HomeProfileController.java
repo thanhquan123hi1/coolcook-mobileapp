@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.coolcook.app.R;
+import com.coolcook.app.core.util.ActivityTransitionUtils;
 import com.coolcook.app.core.util.AvatarImageUtils;
 import com.coolcook.app.feature.camera.ui.SavedScanDishesActivity;
 import com.coolcook.app.feature.main.ui.MainActivity;
@@ -248,13 +249,19 @@ final class HomeProfileController {
     private void openFavoriteFoods() {
         Intent intent = FoodCatalogActivity.createFavoritesIntent(activity);
         activity.startActivity(intent);
-        activity.overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
+        ActivityTransitionUtils.applyOpenTransition(
+                activity,
+                R.anim.slide_in_right_scale,
+                R.anim.slide_out_left_scale);
     }
 
     private void openSavedDishes() {
         Intent intent = SavedScanDishesActivity.createIntent(activity);
         activity.startActivity(intent);
-        activity.overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
+        ActivityTransitionUtils.applyOpenTransition(
+                activity,
+                R.anim.slide_in_right_scale,
+                R.anim.slide_out_left_scale);
     }
 
     private void performLogout() {
@@ -305,7 +312,10 @@ final class HomeProfileController {
         Intent intent = new Intent(activity, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         activity.startActivity(intent);
-        activity.overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+        ActivityTransitionUtils.applyOpenTransition(
+                activity,
+                R.anim.slide_in_left_scale,
+                R.anim.slide_out_right_scale);
         activity.finish();
     }
 

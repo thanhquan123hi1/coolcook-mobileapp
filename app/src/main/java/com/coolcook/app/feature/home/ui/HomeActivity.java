@@ -28,10 +28,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.Glide;
 import com.coolcook.app.R;
 import com.coolcook.app.core.navigation.HomeBottomNavigation;
+import com.coolcook.app.core.util.ActivityTransitionUtils;
 import com.coolcook.app.feature.chatbot.ui.ChatBotActivity;
 import com.coolcook.app.feature.journal.ui.JournalCalendarFragment;
 import com.coolcook.app.feature.camera.ui.ScanFoodActivity;
-import com.coolcook.app.feature.social.ui.FriendInviteActivity;
 import com.coolcook.app.feature.search.ui.FoodCatalogFragment;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -147,7 +147,6 @@ public class HomeActivity extends AppCompatActivity {
         profileController.loadProfileFromFirestore(firestore);
         showInitialTab(getIntent());
         applyInsets();
-        openPendingInviteIfNeeded();
     }
 
     @Override
@@ -155,7 +154,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         setIntent(intent);
         showInitialTab(intent);
-        openPendingInviteIfNeeded();
     }
 
     private void showInitialTab(Intent intent) {
@@ -174,22 +172,6 @@ public class HomeActivity extends AppCompatActivity {
                 () -> showTab(TAB_SEARCH),
                 () -> showTab(TAB_JOURNAL),
                 () -> showTab(TAB_PROFILE));
-    }
-
-    private void openPendingInviteIfNeeded() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            return;
-        }
-
-        String pendingInviteId = FriendInviteActivity.consumePendingInvite(this);
-        if (TextUtils.isEmpty(pendingInviteId)) {
-            return;
-        }
-
-        Intent intent = new Intent(this, FriendInviteActivity.class);
-        intent.putExtra("inviteId", pendingInviteId);
-        startActivity(intent);
     }
 
     private void setupQuickActions() {
@@ -240,7 +222,10 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
         startActivity(ScanFoodActivity.createIntent(this));
-        overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+        ActivityTransitionUtils.applyOpenTransition(
+                this,
+                R.anim.slide_in_left_scale,
+                R.anim.slide_out_right_scale);
     }
 
     private void launchJournalScreen() {

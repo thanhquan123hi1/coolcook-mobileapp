@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coolcook.app.R;
+import com.coolcook.app.core.util.ActivityTransitionUtils;
 import com.coolcook.app.feature.search.data.FavoriteFoodStore;
 import com.coolcook.app.feature.search.data.FoodJsonRepository;
 import com.coolcook.app.feature.search.model.FoodCategory;
@@ -212,7 +213,10 @@ public class FoodCatalogActivity extends AppCompatActivity {
 
     private void openFoodDetail(@NonNull FoodItem foodItem) {
         startActivity(FoodDetailActivity.createIntent(this, foodItem.getId()));
-        overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
+        ActivityTransitionUtils.applyOpenTransition(
+                this,
+                R.anim.slide_in_right_scale,
+                R.anim.slide_out_left_scale);
     }
 
     private void toggleFoodFavorite(@NonNull FoodItem foodItem) {
