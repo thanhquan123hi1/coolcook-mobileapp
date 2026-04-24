@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.coolcook.app.R;
 import com.coolcook.app.core.util.AvatarImageUtils;
+import com.coolcook.app.feature.camera.ui.SavedScanDishesActivity;
 import com.coolcook.app.feature.main.ui.MainActivity;
 import com.coolcook.app.feature.profile.ui.EditProfileDialogFragment;
 import com.coolcook.app.feature.search.ui.FoodCatalogActivity;
@@ -92,6 +93,11 @@ final class HomeProfileController {
         View favoritesAction = activity.findViewById(R.id.actionProfileFavorites);
         if (favoritesAction != null) {
             favoritesAction.setOnClickListener(v -> openFavoriteFoods());
+        }
+
+        View savedFoodsAction = activity.findViewById(R.id.actionProfileSavedFoods);
+        if (savedFoodsAction != null) {
+            savedFoodsAction.setOnClickListener(v -> openSavedDishes());
         }
     }
 
@@ -241,6 +247,12 @@ final class HomeProfileController {
 
     private void openFavoriteFoods() {
         Intent intent = FoodCatalogActivity.createFavoritesIntent(activity);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
+    }
+
+    private void openSavedDishes() {
+        Intent intent = SavedScanDishesActivity.createIntent(activity);
         activity.startActivity(intent);
         activity.overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
     }

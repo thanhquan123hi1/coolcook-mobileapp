@@ -18,6 +18,8 @@ public class SuggestedDish {
     private final List<String> healthTags;
     @NonNull
     private final String reason;
+    @NonNull
+    private final String recipe;
     private final double confidence;
 
     public SuggestedDish(
@@ -26,12 +28,14 @@ public class SuggestedDish {
             @NonNull List<String> missingIngredients,
             @NonNull List<String> healthTags,
             @NonNull String reason,
+            @NonNull String recipe,
             double confidence) {
         this.name = name;
         this.usedIngredients = new ArrayList<>(usedIngredients);
         this.missingIngredients = new ArrayList<>(missingIngredients);
         this.healthTags = new ArrayList<>(healthTags);
         this.reason = reason;
+        this.recipe = recipe;
         this.confidence = confidence;
     }
 
@@ -58,6 +62,11 @@ public class SuggestedDish {
     @NonNull
     public String getReason() {
         return reason;
+    }
+
+    @NonNull
+    public String getRecipe() {
+        return recipe;
     }
 
     public double getConfidence() {

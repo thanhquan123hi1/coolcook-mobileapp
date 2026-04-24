@@ -47,10 +47,10 @@ public class SplashActivity extends AppCompatActivity {
             Intent intent;
             if (checkCurrentUser()) {
                 intent = new Intent(SplashActivity.this, HomeActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             } else {
                 intent = new Intent(SplashActivity.this, MainActivity.class);
             }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
             startActivity(intent);
             finish();

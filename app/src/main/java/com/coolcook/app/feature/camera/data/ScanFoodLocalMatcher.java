@@ -16,9 +16,11 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 public class ScanFoodLocalMatcher {
@@ -27,10 +29,13 @@ public class ScanFoodLocalMatcher {
     private final List<FoodItem> foods;
     @NonNull
     private final List<String> ingredientVocabulary;
+    @NonNull
+    private final Set<String> normalizedIngredientVocabulary;
 
     public ScanFoodLocalMatcher(@NonNull Context context) {
         foods = new FoodJsonRepository(context).getFoods();
         ingredientVocabulary = buildIngredientVocabulary(foods);
+        normalizedIngredientVocabulary = buildNormalizedIngredientVocabulary(ingredientVocabulary);
     }
 
     @Nullable
@@ -43,8 +48,7 @@ public class ScanFoodLocalMatcher {
         FoodItem bestMatch = null;
         int bestScore = 0;
         for (FoodItem food : foods) {
-            String candidate = normalize(food.getName());
-            int score = scoreMatch(target, candidate);
+            int score = scoreMatch(target, normalize(food.getName()));
             if (score > bestScore) {
                 bestScore = score;
                 bestMatch = food;
@@ -78,10 +82,51 @@ public class ScanFoodLocalMatcher {
         return (local ? "local:" : "ai:") + normalize(name);
     }
 
+    public boolean hasCompleteLocalCoverage(@NonNull List<DetectedIngredient> detectedIngredients) {
+        if (detectedIngredients.isEmpty()) {
+            return false;
+        }
+
+        for (DetectedIngredient ingredient : detectedIngredients) {
+            if (!isCoveredByLocalData(ingredient.getName())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @NonNull
-    public List<ScanDishItem> suggestDishes(@NonNull List<DetectedIngredient> detectedIngredients, int limit) {
+    public List<ScanDishItem> suggestDishes(
+            @NonNull List<DetectedIngredient> detectedIngredients,
+            int limit,
+            @NonNull String preferredHealthFilter) {
+        return suggestDishesInternal(detectedIngredients, limit, preferredHealthFilter, true);
+    }
+
+    @NonNull
+    public List<ScanDishItem> suggestDishesRelaxed(
+            @NonNull List<DetectedIngredient> detectedIngredients,
+            int limit,
+            @NonNull String preferredHealthFilter) {
+        return suggestDishesInternal(detectedIngredients, limit, preferredHealthFilter, false);
+    }
+
+    @NonNull
+    private List<ScanDishItem> suggestDishesInternal(
+            @NonNull List<DetectedIngredient> detectedIngredients,
+            int limit,
+            @NonNull String preferredHealthFilter,
+            boolean strictMatching) {
         if (detectedIngredients.isEmpty() || limit <= 0) {
             return new ArrayList<>();
+        }
+
+        List<ScanDishItem> directMatches = findDirectDishMatches(
+                detectedIngredients,
+                limit,
+                preferredHealthFilter);
+        if (!directMatches.isEmpty()) {
+            return directMatches;
         }
 
         List<LocalSuggestion> rankedSuggestions = new ArrayList<>();
@@ -92,7 +137,7 @@ public class ScanFoodLocalMatcher {
                 continue;
             }
 
-            List<String> usedIngredients = new ArrayList<>();
+            List<String> matchedIngredients = new ArrayList<>();
             List<String> missingIngredients = new ArrayList<>();
             double totalSimilarity = 0d;
 
@@ -118,8 +163,8 @@ public class ScanFoodLocalMatcher {
                 }
 
                 if (bestSimilarity >= 72 && matchedDetectedName != null) {
-                    if (!usedIngredients.contains(matchedDetectedName)) {
-                        usedIngredients.add(matchedDetectedName);
+                    if (!matchedIngredients.contains(matchedDetectedName)) {
+                        matchedIngredients.add(matchedDetectedName);
                     }
                     totalSimilarity += bestSimilarity / 100d;
                 } else if (!missingIngredients.contains(recipeName)) {
@@ -127,27 +172,34 @@ public class ScanFoodLocalMatcher {
                 }
             }
 
-            if (usedIngredients.isEmpty()) {
+            if (matchedIngredients.isEmpty()) {
                 continue;
             }
 
-            double recipeCoverage = usedIngredients.size() / (double) Math.max(1, recipeIngredients.size());
-            double pantryCoverage = usedIngredients.size() / (double) Math.max(1, detectedIngredients.size());
-            double ingredientQuality = totalSimilarity / Math.max(1, usedIngredients.size());
+            double recipeCoverage = matchedIngredients.size() / (double) Math.max(1, recipeIngredients.size());
+            double pantryCoverage = matchedIngredients.size() / (double) Math.max(1, detectedIngredients.size());
+            double ingredientQuality = totalSimilarity / Math.max(1, matchedIngredients.size());
+            boolean strongIngredientMatch = matchedIngredients.size() >= 2 || recipeCoverage >= 0.6d;
+            if (strictMatching && !strongIngredientMatch) {
+                continue;
+            }
             double confidence = Math.min(
                     0.98d,
-                    recipeCoverage * 0.5d + pantryCoverage * 0.3d + ingredientQuality * 0.2d);
+                    recipeCoverage * 0.55d + pantryCoverage * 0.25d + ingredientQuality * 0.20d);
 
+            boolean healthMatch = ScanHealthFilters.matches(food.getSuitableFor(), preferredHealthFilter);
             rankedSuggestions.add(new LocalSuggestion(
                     food,
-                    usedIngredients,
+                    matchedIngredients,
                     missingIngredients,
-                    confidence));
+                    confidence,
+                    healthMatch));
         }
 
         Collections.sort(rankedSuggestions, Comparator
-                .comparingDouble(LocalSuggestion::getConfidence).reversed()
-                .thenComparing(Comparator.comparingInt(LocalSuggestion::getUsedCount).reversed())
+                .comparingInt(LocalSuggestion::getMatchedCount).reversed()
+                .thenComparing(LocalSuggestion::hasHealthMatch, Comparator.reverseOrder())
+                .thenComparingDouble(LocalSuggestion::getConfidence).reversed()
                 .thenComparingInt(LocalSuggestion::getMissingCount)
                 .thenComparing(suggestion -> suggestion.food.getName(), String.CASE_INSENSITIVE_ORDER));
 
@@ -158,10 +210,10 @@ public class ScanFoodLocalMatcher {
                     createStableId(suggestion.food.getId(), true),
                     suggestion.food.getName(),
                     suggestion.food,
-                    suggestion.usedIngredients,
+                    suggestion.matchedIngredients,
                     suggestion.missingIngredients,
                     suggestion.food.getSuitableFor(),
-                    buildReason(suggestion.usedIngredients, suggestion.missingIngredients),
+                    buildReason(suggestion.matchedIngredients, suggestion.food.getName()),
                     suggestion.food.getRecipe(),
                     suggestion.confidence));
         }
@@ -169,17 +221,134 @@ public class ScanFoodLocalMatcher {
     }
 
     @NonNull
-    private static String buildReason(
-            @NonNull List<String> usedIngredients,
-            @NonNull List<String> missingIngredients) {
-        StringBuilder reason = new StringBuilder("Phu hop vi ban da co ");
-        reason.append(joinPreview(usedIngredients, 3)).append('.');
-        if (!missingIngredients.isEmpty()) {
-            reason.append(" Con thieu ").append(joinPreview(missingIngredients, 3)).append('.');
-        } else {
-            reason.append(" Ban da co du nhung nguyen lieu chinh de nau mon nay.");
+    private List<ScanDishItem> findDirectDishMatches(
+            @NonNull List<DetectedIngredient> detectedIngredients,
+            int limit,
+            @NonNull String preferredHealthFilter) {
+        List<DirectSuggestion> rankedSuggestions = new ArrayList<>();
+        Set<String> seenFoodIds = new LinkedHashSet<>();
+
+        for (DetectedIngredient ingredient : detectedIngredients) {
+            String detectedName = ingredient.getName().trim();
+            if (detectedName.isEmpty()) {
+                continue;
+            }
+
+            FoodItem localFood = findDishByName(detectedName);
+            if (localFood == null || seenFoodIds.contains(localFood.getId())) {
+                continue;
+            }
+
+            int nameScore = scoreMatch(normalize(detectedName), normalize(localFood.getName()));
+            if (nameScore < 88) {
+                continue;
+            }
+
+            seenFoodIds.add(localFood.getId());
+            rankedSuggestions.add(new DirectSuggestion(
+                    localFood,
+                    detectedName,
+                    Math.min(0.99d, 0.82d + (nameScore / 100d * 0.17d)),
+                    ScanHealthFilters.matches(localFood.getSuitableFor(), preferredHealthFilter)));
         }
-        return reason.toString();
+
+        rankedSuggestions.sort(Comparator
+                .comparing(DirectSuggestion::hasHealthMatch, Comparator.reverseOrder())
+                .thenComparingDouble(DirectSuggestion::getConfidence).reversed()
+                .thenComparing(suggestion -> suggestion.food.getName(), String.CASE_INSENSITIVE_ORDER));
+
+        List<ScanDishItem> dishItems = new ArrayList<>();
+        for (int index = 0; index < rankedSuggestions.size() && dishItems.size() < limit; index++) {
+            DirectSuggestion suggestion = rankedSuggestions.get(index);
+            dishItems.add(new ScanDishItem(
+                    createStableId(suggestion.food.getId(), true),
+                    suggestion.food.getName(),
+                    suggestion.food,
+                    Collections.singletonList(suggestion.detectedName),
+                    new ArrayList<>(),
+                    suggestion.food.getSuitableFor(),
+                    buildDirectReason(suggestion.detectedName, suggestion.food.getName()),
+                    suggestion.food.getRecipe(),
+                    suggestion.confidence));
+        }
+        return dishItems;
+    }
+
+    @NonNull
+    public List<String> suggestComplementaryIngredients(
+            @NonNull List<DetectedIngredient> detectedIngredients,
+            @NonNull List<String> selectedIngredients,
+            int limit) {
+        if (limit <= 0) {
+            return new ArrayList<>();
+        }
+
+        Set<String> normalizedSelected = new LinkedHashSet<>();
+        for (DetectedIngredient ingredient : detectedIngredients) {
+            normalizedSelected.add(normalize(ingredient.getName()));
+        }
+        for (String ingredient : selectedIngredients) {
+            normalizedSelected.add(normalize(ingredient));
+        }
+
+        Map<String, Integer> scores = new LinkedHashMap<>();
+        for (FoodItem food : foods) {
+            ParsedRecipe recipe = RecipeParser.parse(food.getRecipe());
+            List<ParsedRecipe.Ingredient> recipeIngredients = recipe.getIngredients();
+            if (recipeIngredients.isEmpty()) {
+                continue;
+            }
+
+            int matchedCount = 0;
+            List<String> missingCandidates = new ArrayList<>();
+            for (ParsedRecipe.Ingredient ingredient : recipeIngredients) {
+                String name = ingredient.getName().trim();
+                String normalized = normalize(name);
+                if (name.isEmpty() || normalized.isEmpty()) {
+                    continue;
+                }
+                if (normalizedSelected.contains(normalized)) {
+                    matchedCount++;
+                } else {
+                    missingCandidates.add(name);
+                }
+            }
+
+            if (matchedCount == 0 || missingCandidates.isEmpty()) {
+                continue;
+            }
+
+            int recipeWeight = matchedCount * 10;
+            for (String candidate : missingCandidates) {
+                scores.put(candidate, scores.getOrDefault(candidate, 0) + recipeWeight);
+            }
+        }
+
+        List<Map.Entry<String, Integer>> ranked = new ArrayList<>(scores.entrySet());
+        ranked.sort(Map.Entry.<String, Integer>comparingByValue().reversed()
+                .thenComparing(Map.Entry::getKey, String.CASE_INSENSITIVE_ORDER));
+
+        List<String> suggestions = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : ranked) {
+            String candidate = entry.getKey().trim();
+            if (candidate.isEmpty()) {
+                continue;
+            }
+            String normalizedCandidate = normalize(candidate);
+            if (normalizedSelected.contains(normalizedCandidate) || suggestions.contains(candidate)) {
+                continue;
+            }
+            suggestions.add(candidate);
+            if (suggestions.size() >= limit) {
+                break;
+            }
+        }
+        return suggestions;
+    }
+
+    @NonNull
+    private static String buildReason(@NonNull List<String> matchedIngredients, @NonNull String dishName) {
+        return "Vì có " + joinPreview(matchedIngredients, 3) + " nên phù hợp để nấu " + dishName + ".";
     }
 
     @NonNull
@@ -191,7 +360,44 @@ public class ScanFoodLocalMatcher {
                 preview.add(value);
             }
         }
-        return preview.isEmpty() ? "mot so nguyen lieu phu hop" : String.join(", ", preview);
+        return preview.isEmpty() ? "một vài nguyên liệu phù hợp" : String.join(", ", preview);
+    }
+
+    @NonNull
+    private static String buildDirectReason(@NonNull String detectedName, @NonNull String dishName) {
+        return "Nhan dien truc tiep \"" + detectedName + "\" nen uu tien lay mon local " + dishName + ".";
+    }
+
+    @NonNull
+    private Set<String> buildNormalizedIngredientVocabulary(@NonNull List<String> values) {
+        Set<String> normalizedValues = new LinkedHashSet<>();
+        for (String value : values) {
+            String normalized = normalize(value);
+            if (!normalized.isEmpty()) {
+                normalizedValues.add(normalized);
+            }
+        }
+        return normalizedValues;
+    }
+
+    private boolean isCoveredByLocalData(@NonNull String rawName) {
+        String normalizedName = normalize(rawName);
+        if (normalizedName.isEmpty()) {
+            return false;
+        }
+
+        FoodItem localDish = findDishByName(rawName);
+        if (localDish != null && scoreMatch(normalizedName, normalize(localDish.getName())) >= 88) {
+            return true;
+        }
+
+        if (normalizedIngredientVocabulary.contains(normalizedName)) {
+            return true;
+        }
+
+        String normalizedIngredient = normalize(normalizeIngredientName(rawName));
+        return !normalizedIngredient.isEmpty()
+                && normalizedIngredientVocabulary.contains(normalizedIngredient);
     }
 
     @NonNull
@@ -260,32 +466,67 @@ public class ScanFoodLocalMatcher {
         @NonNull
         final FoodItem food;
         @NonNull
-        final List<String> usedIngredients;
+        final List<String> matchedIngredients;
         @NonNull
         final List<String> missingIngredients;
         final double confidence;
+        final boolean healthMatch;
 
         LocalSuggestion(
                 @NonNull FoodItem food,
-                @NonNull List<String> usedIngredients,
+                @NonNull List<String> matchedIngredients,
                 @NonNull List<String> missingIngredients,
-                double confidence) {
+                double confidence,
+                boolean healthMatch) {
             this.food = food;
-            this.usedIngredients = new ArrayList<>(usedIngredients);
+            this.matchedIngredients = new ArrayList<>(matchedIngredients);
             this.missingIngredients = new ArrayList<>(missingIngredients);
             this.confidence = confidence;
+            this.healthMatch = healthMatch;
+        }
+
+        int getMatchedCount() {
+            return matchedIngredients.size();
+        }
+
+        int getMissingCount() {
+            return missingIngredients.size();
         }
 
         double getConfidence() {
             return confidence;
         }
 
-        int getUsedCount() {
-            return usedIngredients.size();
+        boolean hasHealthMatch() {
+            return healthMatch;
+        }
+    }
+
+    private static final class DirectSuggestion {
+        @NonNull
+        final FoodItem food;
+        @NonNull
+        final String detectedName;
+        final double confidence;
+        final boolean healthMatch;
+
+        DirectSuggestion(
+                @NonNull FoodItem food,
+                @NonNull String detectedName,
+                double confidence,
+                boolean healthMatch) {
+            this.food = food;
+            this.detectedName = detectedName;
+            this.confidence = confidence;
+            this.healthMatch = healthMatch;
         }
 
-        int getMissingCount() {
-            return missingIngredients.size();
+        double getConfidence() {
+            return confidence;
+        }
+
+        boolean hasHealthMatch() {
+            return healthMatch;
         }
     }
 }

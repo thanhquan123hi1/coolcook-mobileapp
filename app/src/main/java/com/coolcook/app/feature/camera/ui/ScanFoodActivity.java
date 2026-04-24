@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.view.MotionEvent;
@@ -21,6 +22,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -65,6 +67,8 @@ import com.coolcook.app.feature.social.data.MediaUploadRepository;
 import com.coolcook.app.feature.social.model.JournalFeedItem;
 import com.coolcook.app.feature.home.ui.HomeActivity;
 import com.coolcook.app.feature.search.model.FoodItem;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -74,12 +78,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ScanFoodActivity extends AppCompatActivity {
+    private static final int SUGGESTION_LIMIT = 3;
 
     private static final long PRESS_IN_DURATION = 200L;
     private static final long PRESS_OUT_DURATION = 220L;
@@ -149,6 +160,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private TextView txtDetectedIngredientsEmpty;
     private TextView txtDishSuggestionsEmpty;
     private TextView txtSelectedDishHint;
+    private TextView txtExtraIngredientsHint;
     private TextView txtJournalStatus;
     private TextView txtJournalEmptyState;
     private TextView txtJournalFriendCount;
@@ -160,6 +172,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private TextView iconFlash;
     private TextView iconJournalFlash;
     private EditText edtJournalCaption;
+    private EditText edtManualExtraIngredient;
     private ImageView imgJournalCapturedPreview;
     private ImageView imgCapturedRecognition;
     private PreviewView recognitionPreviewView;
@@ -168,6 +181,8 @@ public class ScanFoodActivity extends AppCompatActivity {
     private RecyclerView rvJournalMoments;
     private RecyclerView rvDishSuggestions;
     private ChipGroup groupDetectedIngredients;
+    private ChipGroup groupSuggestedExtraIngredients;
+    private ChipGroup groupSelectedExtraIngredients;
     private ChipGroup groupHealthFilters;
 
     private ActivityResultLauncher<String> galleryPickerLauncher;
@@ -194,6 +209,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private JournalFeedRepository journalFeedRepository;
     private FriendInviteRepository friendInviteRepository;
     private final List<DetectedIngredient> currentDetectedIngredients = new ArrayList<>();
+    private final List<String> currentExtraIngredients = new ArrayList<>();
     private final List<ScanDishItem> allSuggestedDishItems = new ArrayList<>();
     private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private ScanFoodJournalManager journalManager;
@@ -206,6 +222,11 @@ public class ScanFoodActivity extends AppCompatActivity {
     private byte[] lastRecognitionImageBytes;
     private ScanDishItem selectedDishItem;
     private String selectedHealthFilter = ScanHealthFilters.FILTER_ALL;
+    private ExecutorService recognitionExecutor;
+    private BottomSheetDialog suggestionDialog;
+    private ScanDishSuggestionAdapter suggestionDialogAdapter;
+    private ChipGroup suggestionIngredientGroup;
+    private TextView txtSuggestionEmpty;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, ScanFoodActivity.class);
@@ -230,17 +251,17 @@ public class ScanFoodActivity extends AppCompatActivity {
         setupGalleryPicker();
         setupPermissionFlow();
         setupPressScaleFeedback();
-        setupRecognitionResultUi();
-        setupJournalList();
-        setupJournalFeedSheet();
-        setupClickListeners();
-
         geminiRepository = new GeminiRepository();
         scanFoodLocalMatcher = new ScanFoodLocalMatcher(getApplicationContext());
         scanSavedDishStore = new ScanSavedDishStore(getApplicationContext());
         mediaUploadRepository = new MediaUploadRepository(getApplicationContext());
         journalFeedRepository = new JournalFeedRepository(firestore);
         friendInviteRepository = new FriendInviteRepository(firestore);
+        setupRecognitionResultUi();
+        setupJournalList();
+        setupJournalFeedSheet();
+        setupClickListeners();
+        recognitionExecutor = Executors.newSingleThreadExecutor();
         journalManager = new ScanFoodJournalManager(
                 this,
                 new ScanFoodJournalManager.Host() {
@@ -314,8 +335,18 @@ public class ScanFoodActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         stopJournalRealtimeListeners();
+        dismissSuggestionDialog();
+        if (recognitionExecutor != null) {
+            recognitionExecutor.shutdownNow();
+        }
         if (cameraProvider != null) {
             cameraProvider.unbindAll();
+        }
+    }
+
+    private void dismissSuggestionDialog() {
+        if (suggestionDialog != null && suggestionDialog.isShowing()) {
+            suggestionDialog.dismiss();
         }
     }
 
@@ -355,6 +386,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         txtDetectedIngredientsEmpty = findViewById(R.id.txtDetectedIngredientsEmpty);
         txtDishSuggestionsEmpty = findViewById(R.id.txtDishSuggestionsEmpty);
         txtSelectedDishHint = findViewById(R.id.txtSelectedDishHint);
+        txtExtraIngredientsHint = findViewById(R.id.txtExtraIngredientsHint);
         txtJournalStatus = findViewById(R.id.txtJournalStatus);
         txtJournalEmptyState = findViewById(R.id.txtJournalEmptyState);
         txtJournalFriendCount = findViewById(R.id.txtJournalFriendCount);
@@ -381,6 +413,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         btnJournalPostPublish = findViewById(R.id.btnJournalPostPublish);
         journalPostLoading = findViewById(R.id.journalPostLoading);
         edtJournalCaption = findViewById(R.id.edtJournalCaption);
+        edtManualExtraIngredient = findViewById(R.id.edtManualExtraIngredient);
         imgJournalCapturedPreview = findViewById(R.id.imgJournalCapturedPreview);
         imgCapturedRecognition = findViewById(R.id.imgCapturedRecognition);
         recognitionPreviewView = findViewById(R.id.previewView);
@@ -388,38 +421,59 @@ public class ScanFoodActivity extends AppCompatActivity {
         rvJournalMoments = findViewById(R.id.rvJournalMoments);
         rvDishSuggestions = findViewById(R.id.rvDishSuggestions);
         groupDetectedIngredients = findViewById(R.id.groupDetectedIngredients);
+        groupSuggestedExtraIngredients = findViewById(R.id.groupSuggestedExtraIngredients);
+        groupSelectedExtraIngredients = findViewById(R.id.groupSelectedExtraIngredients);
         groupHealthFilters = findViewById(R.id.groupHealthFilters);
         previewView = recognitionPreviewView;
     }
 
     private void setupRecognitionResultUi() {
-        if (rvDishSuggestions != null) {
-            scanDishSuggestionAdapter = new ScanDishSuggestionAdapter(this::onDishSelected);
-            rvDishSuggestions.setLayoutManager(new LinearLayoutManager(this));
-            rvDishSuggestions.setNestedScrollingEnabled(false);
-            rvDishSuggestions.setAdapter(scanDishSuggestionAdapter);
-        }
-
-        if (groupHealthFilters != null) {
-            groupHealthFilters.removeAllViews();
-            for (String filter : ScanHealthFilters.defaultFilters()) {
-                Chip chip = createSelectableChip(filter, ScanHealthFilters.FILTER_ALL.equals(filter));
-                chip.setOnClickListener(v -> {
-                    selectedHealthFilter = filter;
-                    syncHealthFilterSelection();
-                    applyDishFilter();
-                });
-                groupHealthFilters.addView(chip);
+        suggestionDialogAdapter = new ScanDishSuggestionAdapter(new ScanDishSuggestionAdapter.DishActionListener() {
+            @Override
+            public void onDishClicked(@NonNull ScanDishItem item) {
+                openDishRecipe(item);
             }
-        }
 
-        syncHealthFilterSelection();
-        renderDetectedIngredients(new ArrayList<>());
-        renderSuggestedDishes(new ArrayList<>());
-        updateSelectedDishState();
+            @Override
+            public void onSaveDishClicked(@NonNull ScanDishItem item) {
+                saveSuggestedDish(item);
+            }
+        }, true);
+        scanDishSuggestionAdapter = suggestionDialogAdapter;
+        selectedHealthFilter = ScanHealthFilters.FILTER_ALL;
         if (scanResultContainer != null) {
             scanResultContainer.setVisibility(View.GONE);
         }
+        if (groupHealthFilters != null) {
+            groupHealthFilters.setVisibility(View.GONE);
+        }
+        if (rvDishSuggestions != null) {
+            rvDishSuggestions.setVisibility(View.GONE);
+        }
+        if (btnSaveSelectedDish != null) {
+            btnSaveSelectedDish.setVisibility(View.GONE);
+        }
+        if (txtSelectedDishHint != null) {
+            txtSelectedDishHint.setVisibility(View.GONE);
+        }
+        renderSelectedExtraIngredients();
+        renderSuggestedExtraIngredients();
+    }
+
+    private void saveSuggestedDish(@NonNull ScanDishItem item) {
+        boolean saved = scanSavedDishStore != null && scanSavedDishStore.save(item);
+        Toast.makeText(
+                this,
+                saved ? "Da luu mon vao ho so" : "Mon nay da co trong danh sach da luu",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    private void openDishRecipe(@NonNull ScanDishItem item) {
+        if (item.getRecipe().trim().isEmpty()) {
+            Toast.makeText(this, "Mon nay chua co cong thuc chi tiet.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ScanDishRecipeBottomSheet.show(this, item);
     }
 
     @NonNull
@@ -1173,6 +1227,10 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (btnSaveSelectedDish != null) {
             btnSaveSelectedDish.setOnClickListener(v -> saveSelectedDish());
         }
+        View btnAddManualExtraIngredient = findViewById(R.id.btnAddManualExtraIngredient);
+        if (btnAddManualExtraIngredient != null) {
+            btnAddManualExtraIngredient.setOnClickListener(v -> addManualExtraIngredient());
+        }
     }
 
     private void toggleFlash() {
@@ -1215,32 +1273,47 @@ public class ScanFoodActivity extends AppCompatActivity {
 
         final boolean routeRecognition = isRecognitionMode;
         imageCapture.takePicture(
-                ContextCompat.getMainExecutor(this),
+                recognitionExecutor == null ? ContextCompat.getMainExecutor(this) : command -> recognitionExecutor.execute(command),
                 new ImageCapture.OnImageCapturedCallback() {
                     @Override
                     public void onCaptureSuccess(@NonNull ImageProxy image) {
                         super.onCaptureSuccess(image);
-                        byte[] bytes = ScanFoodImageUtils.imageProxyToJpeg(image);
-                        image.close();
+                        byte[] bytes;
+                        try {
+                            bytes = ScanFoodImageUtils.imageProxyToJpeg(image);
+                        } finally {
+                            image.close();
+                        }
                         if (bytes == null || bytes.length == 0) {
-                            updateScanStatus("Không đọc được ảnh chụp, vui lòng thử lại");
-                            updateJournalStatus("Không đọc được ảnh vừa chụp.");
+                            runOnUiThread(() -> {
+                                updateScanStatus("Khong doc duoc anh chup, vui long thu lai");
+                                updateJournalStatus("Khong doc duoc anh vua chup.");
+                                Toast.makeText(
+                                        ScanFoodActivity.this,
+                                        "Khong doc duoc anh vua chup",
+                                        Toast.LENGTH_SHORT).show();
+                            });
                             return;
                         }
 
                         if (routeRecognition) {
                             processImageBytesForRecognition(bytes, "image/jpeg", "camera");
                         } else {
-                            processImageBytesForJournal(bytes, "camera");
+                            runOnUiThread(() -> processImageBytesForJournal(bytes, "camera"));
                         }
                     }
 
                     @Override
                     public void onError(@NonNull ImageCaptureException exception) {
                         super.onError(exception);
-                        updateScanStatus("Chụp thất bại, vui lòng thử lại");
-                        updateJournalStatus("Chụp thất bại, vui lòng thử lại.");
-                        Toast.makeText(ScanFoodActivity.this, "Không chụp được ảnh", Toast.LENGTH_SHORT).show();
+                        runOnUiThread(() -> {
+                            updateScanStatus("Chup that bai, vui long thu lai");
+                            updateJournalStatus("Chup that bai, vui long thu lai.");
+                            Toast.makeText(
+                                    ScanFoodActivity.this,
+                                    "Khong chup duoc anh",
+                                    Toast.LENGTH_SHORT).show();
+                        });
                     }
                 });
     }
@@ -1266,6 +1339,10 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void openGalleryPicker() {
+        if (isBusyProcessing()) {
+            Toast.makeText(this, "Đang nhận diện thực phẩm...", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (galleryPickerLauncher == null) {
             return;
         }
@@ -1273,28 +1350,29 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void processImageUriForRecognition(@NonNull Uri uri, @NonNull String sourceLabel) {
-        new Thread(() -> {
+        ExecutorService executor = recognitionExecutor == null ? Executors.newSingleThreadExecutor() : recognitionExecutor;
+        executor.execute(() -> {
             try {
                 String mimeType = GeminiRepository.detectMimeType(getContentResolver(), uri);
-                byte[] raw = ScanFoodImageUtils.readImageBytes(
+                byte[] raw = ScanFoodImageUtils.readOptimizedRecognitionBytes(
                         getContentResolver(),
                         uri,
                         MAX_RECOGNITION_IMAGE_BYTES);
-                runOnUiThread(() -> {
-                    if (raw.length > MAX_RECOGNITION_IMAGE_BYTES) {
-                        updateScanStatus("Ảnh quá lớn, vui lòng chọn ảnh dưới 4MB");
-                        Toast.makeText(this, "Ảnh vượt quá 4MB", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    processImageBytesForRecognition(raw, mimeType, sourceLabel);
-                });
+                if (raw.length > MAX_RECOGNITION_IMAGE_BYTES) {
+                    runOnUiThread(() -> {
+                        updateScanStatus("Anh qua lon, vui long chon anh nho hon");
+                        Toast.makeText(this, "Anh vuot qua gioi han nhan dien", Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
+                runOnUiThread(() -> processImageBytesForRecognition(raw, mimeType, sourceLabel));
             } catch (IOException ioException) {
                 runOnUiThread(() -> {
-                    updateScanStatus("Không đọc được ảnh, vui lòng thử lại");
-                    Toast.makeText(this, "Không thể đọc ảnh đã chọn", Toast.LENGTH_SHORT).show();
+                    updateScanStatus("Khong doc duoc anh, vui long thu lai");
+                    Toast.makeText(this, "Khong the doc anh da chon", Toast.LENGTH_SHORT).show();
                 });
             }
-        }).start();
+        });
     }
 
     private void processImageUriForJournal(@NonNull Uri uri, @NonNull String sourceLabel) {
@@ -1325,208 +1403,500 @@ public class ScanFoodActivity extends AppCompatActivity {
             @NonNull byte[] imageBytes,
             @Nullable String mimeType,
             @NonNull String sourceLabel) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            runOnUiThread(() -> processImageBytesForRecognition(imageBytes, mimeType, sourceLabel));
+            return;
+        }
         if (isBusyProcessing()) {
             return;
         }
-        if (imageBytes.length > MAX_RECOGNITION_IMAGE_BYTES) {
-            updateScanStatus("Anh qua lon, vui long chup/chon anh khac");
+        isRecognitionInProgress = true;
+        setProcessingUiEnabled(false);
+        updateScanStatus("Dang nhan dien thuc pham...");
+        selectedDishItem = null;
+        dismissSuggestionDialog();
+        renderDetectedIngredients(currentDetectedIngredients);
+        applyDishFilter();
+        updateRecognitionPreviewState();
+
+        ExecutorService executor = recognitionExecutor == null ? Executors.newSingleThreadExecutor() : recognitionExecutor;
+        executor.execute(() -> {
+            try {
+                byte[] optimizedBytes = ScanFoodImageUtils.optimizeForRecognition(
+                        imageBytes,
+                        MAX_RECOGNITION_IMAGE_BYTES);
+                lastRecognitionImageBytes = optimizedBytes.clone();
+                String safeMimeType = TextUtils.isEmpty(mimeType) ? "image/jpeg" : mimeType;
+                String imageBase64 = Base64.encodeToString(optimizedBytes, Base64.NO_WRAP);
+
+                geminiRepository.requestStructuredResponse(
+                        INGREDIENT_DETECTION_PROMPT,
+                        "Phan tich anh nay va nhan dien tung thuc pham nhin thay ro trong anh.",
+                        safeMimeType,
+                        imageBase64,
+                        new GeminiRepository.StreamCallback() {
+                            @Override
+                            public void onStart() {
+                                runOnUiThread(() -> updateScanStatus("Dang nhan dien thuc pham..."));
+                            }
+
+                            @Override
+                            public void onChunk(@NonNull String accumulatedText) {
+                                runOnUiThread(() -> updateScanStatus("Dang nhan dien thuc pham..."));
+                            }
+
+                            @Override
+                            public void onCompleted(@NonNull String finalText) {
+                                executor.execute(() -> handleDetectedIngredients(finalText, sourceLabel));
+                            }
+
+                            @Override
+                            public void onError(@NonNull String friendlyError) {
+                                runOnUiThread(() -> finishRecognitionWithError("AI dang ban, vui long thu lai"));
+                            }
+                        });
+            } catch (IOException ioException) {
+                runOnUiThread(() -> finishRecognitionWithError(
+                        "Chua nhan dien duoc thuc pham, hay thu chup ro hon"));
+            }
+        });
+    }
+
+    private void handleDetectedIngredients(@NonNull String finalText, @NonNull String sourceLabel) {
+        List<DetectedIngredient> rawIngredients = parseDetectedIngredients(finalText);
+        List<DetectedIngredient> refinedIngredients = refineDetectedIngredients(rawIngredients);
+        if (refinedIngredients.isEmpty()) {
+            runOnUiThread(() -> finishRecognitionWithError(
+                    "Chua nhan dien duoc thuc pham, hay thu chup ro hon"));
             return;
         }
 
-        isRecognitionInProgress = true;
-        setProcessingUiEnabled(false);
-        updateScanStatus("Dang nhan dien nguyen lieu...");
-        lastRecognitionImageBytes = imageBytes.clone();
-        selectedDishItem = null;
-        prepareRecognitionResultUiForLoading(imageBytes);
+        List<DetectedIngredient> mergedIngredients = mergeDetectedIngredients(currentDetectedIngredients, refinedIngredients);
+        currentDetectedIngredients.clear();
+        currentDetectedIngredients.addAll(mergedIngredients);
+        requestDishSuggestions(new ArrayList<>(currentDetectedIngredients), sourceLabel);
+    }
 
-        String safeMimeType = TextUtils.isEmpty(mimeType) ? "image/jpeg" : mimeType;
-        String imageBase64 = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
+    private void requestDishSuggestions(@NonNull List<DetectedIngredient> ingredients, @NonNull String sourceLabel) {
+        List<DetectedIngredient> effectiveIngredients = buildEffectiveIngredients(ingredients);
+        if (effectiveIngredients.isEmpty()) {
+            runOnUiThread(() -> finishRecognitionWithError(
+                    "Chua nhan dien duoc thuc pham, hay thu chup ro hon"));
+            return;
+        }
+
+        boolean hasCompleteLocalCoverage = scanFoodLocalMatcher.hasCompleteLocalCoverage(effectiveIngredients);
+        List<ScanDishItem> resolvedLocalSuggestions = scanFoodLocalMatcher.suggestDishes(
+                effectiveIngredients,
+                SUGGESTION_LIMIT,
+                selectedHealthFilter);
+
+        if (hasCompleteLocalCoverage && resolvedLocalSuggestions.isEmpty()) {
+            resolvedLocalSuggestions = scanFoodLocalMatcher.suggestDishesRelaxed(
+                    effectiveIngredients,
+                    SUGGESTION_LIMIT,
+                    selectedHealthFilter);
+        }
+        final List<ScanDishItem> localSuggestions = resolvedLocalSuggestions;
+        final boolean hasLocalCombinationMatch = hasLocalCombinationMatch(effectiveIngredients, localSuggestions);
+
+        if (hasCompleteLocalCoverage && hasLocalCombinationMatch && !localSuggestions.isEmpty()) {
+            runOnUiThread(() -> finishRecognitionSuccess(localSuggestions, sourceLabel));
+            return;
+        }
 
         geminiRepository.requestStructuredResponse(
-                INGREDIENT_DETECTION_PROMPT,
-                "Phan tich anh nay va nhan dien tung nguyen lieu hoac thuc pham nhin thay ro trong anh.",
-                safeMimeType,
-                imageBase64,
+                DISH_SUGGESTION_SYSTEM_PROMPT,
+                buildDishSuggestionPrompt(effectiveIngredients, localSuggestions),
+                null,
+                null,
                 new GeminiRepository.StreamCallback() {
                     @Override
                     public void onStart() {
-                        runOnUiThread(() -> updateScanStatus("Dang phan tich nguyen lieu trong anh..."));
+                        runOnUiThread(() -> updateScanStatus("Dang goi y mon an..."));
                     }
 
                     @Override
                     public void onChunk(@NonNull String accumulatedText) {
-                        runOnUiThread(() -> updateScanStatus("Dang nhan dien nguyen lieu..."));
+                        runOnUiThread(() -> updateScanStatus("Dang goi y mon an..."));
                     }
 
                     @Override
                     public void onCompleted(@NonNull String finalText) {
-                        runOnUiThread(() -> {
-                            List<DetectedIngredient> detectedIngredients = refineDetectedIngredients(
-                                    parseDetectedIngredients(finalText));
-                            if (detectedIngredients.isEmpty()) {
-                                finishRecognitionWithError("Chua nhan dien ro nguyen lieu trong anh, vui long thu lai voi anh ro hon.");
-                                return;
-                            }
-                            List<DetectedIngredient> mergedIngredients = mergeDetectedIngredients(
-                                    currentDetectedIngredients,
-                                    detectedIngredients);
-                            currentDetectedIngredients.clear();
-                            currentDetectedIngredients.addAll(mergedIngredients);
-                            renderDetectedIngredients(currentDetectedIngredients);
-                            updateScanStatus("Da them nguyen lieu vao danh sach. Dang goi y mon co the nau...");
-                            requestDishSuggestions(sourceLabel);
+                        ExecutorService executor = recognitionExecutor == null
+                                ? Executors.newSingleThreadExecutor()
+                                : recognitionExecutor;
+                        executor.execute(() -> {
+                            List<ScanDishItem> combinedDishItems = buildAiSuggestionItems(
+                                    localSuggestions,
+                                    parseSuggestedDishes(finalText));
+                            runOnUiThread(() -> {
+                                if (combinedDishItems.isEmpty()) {
+                                    finishRecognitionWithError("Chua tim thay mon phu hop");
+                                } else {
+                                    finishRecognitionSuccess(combinedDishItems, sourceLabel);
+                                }
+                            });
                         });
                     }
 
                     @Override
                     public void onError(@NonNull String friendlyError) {
-                        runOnUiThread(() -> finishRecognitionWithError(
-                                TextUtils.isEmpty(friendlyError)
-                                        ? "Nhan dien nguyen lieu that bai, vui long thu lai."
-                                        : friendlyError));
+                        runOnUiThread(() -> {
+                            if (hasCompleteLocalCoverage && hasLocalCombinationMatch && !localSuggestions.isEmpty()) {
+                                finishRecognitionSuccess(localSuggestions, sourceLabel);
+                            } else {
+                                finishRecognitionWithError("AI dang ban, vui long thu lai");
+                            }
+                        });
                     }
                 });
     }
 
     private void requestDishSuggestions(@NonNull String sourceLabel) {
-        List<ScanDishItem> localSuggestions = scanFoodLocalMatcher.suggestDishes(currentDetectedIngredients, 8);
-        if (localSuggestions.isEmpty()) {
-            finishRecognitionWithError("Da them nguyen lieu nhung chua co mon phu hop trong danh sach hien tai.");
-            return;
-        }
-        finishRecognitionSuccess(localSuggestions, sourceLabel);
+        requestDishSuggestions(new ArrayList<>(currentDetectedIngredients), sourceLabel);
     }
 
-    private void requestAiGeneratedDishesIfNeeded(
-            @NonNull List<SuggestedDish> suggestedDishes,
-            @NonNull String sourceLabel) {
-        List<SuggestedDish> unmatchedDishes = new ArrayList<>();
-        for (SuggestedDish suggestedDish : suggestedDishes) {
-            if (scanFoodLocalMatcher.findDishByName(suggestedDish.getName()) == null) {
-                unmatchedDishes.add(suggestedDish);
+    @NonNull
+    private List<DetectedIngredient> buildEffectiveIngredients(@NonNull List<DetectedIngredient> detectedIngredients) {
+        List<DetectedIngredient> effectiveIngredients = new ArrayList<>(detectedIngredients);
+        for (String extraIngredient : currentExtraIngredients) {
+            String normalizedName = scanFoodLocalMatcher.normalizeIngredientName(extraIngredient);
+            if (normalizedName.isEmpty()) {
+                continue;
+            }
+            boolean exists = false;
+            for (DetectedIngredient ingredient : effectiveIngredients) {
+                if (scanFoodLocalMatcher.createStableId(ingredient.getName(), false)
+                        .equals(scanFoodLocalMatcher.createStableId(normalizedName, false))) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                effectiveIngredients.add(new DetectedIngredient(
+                        normalizedName,
+                        1d,
+                        "other",
+                        "tu them",
+                        "Nguoi dung bo sung"));
+            }
+        }
+        return effectiveIngredients;
+    }
+
+    private boolean hasLocalCombinationMatch(
+            @NonNull List<DetectedIngredient> effectiveIngredients,
+            @NonNull List<ScanDishItem> localSuggestions) {
+        if (effectiveIngredients.isEmpty() || localSuggestions.isEmpty()) {
+            return false;
+        }
+
+        List<String> requiredIngredientIds = new ArrayList<>();
+        for (DetectedIngredient ingredient : effectiveIngredients) {
+            String stableId = scanFoodLocalMatcher.createStableId(ingredient.getName(), false);
+            if (!requiredIngredientIds.contains(stableId)) {
+                requiredIngredientIds.add(stableId);
             }
         }
 
-        if (unmatchedDishes.isEmpty()) {
-            finishRecognitionSuccess(buildDishItems(suggestedDishes, new ArrayList<>()), sourceLabel);
+        for (ScanDishItem item : localSuggestions) {
+            List<String> usedIngredientIds = new ArrayList<>();
+            for (String usedIngredient : item.getUsedIngredients()) {
+                String stableId = scanFoodLocalMatcher.createStableId(usedIngredient, false);
+                if (!usedIngredientIds.contains(stableId)) {
+                    usedIngredientIds.add(stableId);
+                }
+            }
+
+            boolean coversAllIngredients = true;
+            for (String requiredId : requiredIngredientIds) {
+                if (!usedIngredientIds.contains(requiredId)) {
+                    coversAllIngredients = false;
+                    break;
+                }
+            }
+            if (coversAllIngredients) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @NonNull
+    private List<ScanDishItem> buildAiSuggestionItems(
+            @NonNull List<ScanDishItem> localSuggestions,
+            @NonNull List<SuggestedDish> aiSuggestions) {
+        List<ScanDishItem> items = new ArrayList<>();
+        List<String> seenStableIds = new ArrayList<>();
+
+        for (SuggestedDish suggestedDish : aiSuggestions) {
+            FoodItem localFood = scanFoodLocalMatcher.findDishByName(suggestedDish.getName());
+            if (localFood != null) {
+                String stableId = scanFoodLocalMatcher.createStableId(localFood.getId(), true);
+                if (seenStableIds.contains(stableId)) {
+                    continue;
+                }
+                seenStableIds.add(stableId);
+                items.add(new ScanDishItem(
+                        stableId,
+                        localFood.getName(),
+                        localFood,
+                        suggestedDish.getUsedIngredients(),
+                        suggestedDish.getMissingIngredients(),
+                        suggestedDish.getHealthTags().isEmpty() ? localFood.getSuitableFor() : suggestedDish.getHealthTags(),
+                        suggestedDish.getReason(),
+                        localFood.getRecipe(),
+                        suggestedDish.getConfidence()));
+                if (items.size() >= SUGGESTION_LIMIT) {
+                    break;
+                }
+                continue;
+            }
+            if (!suggestedDish.getRecipe().trim().isEmpty()) {
+                String stableId = scanFoodLocalMatcher.createStableId(suggestedDish.getName(), false);
+                if (seenStableIds.contains(stableId)) {
+                    continue;
+                }
+                seenStableIds.add(stableId);
+                items.add(new ScanDishItem(
+                        stableId,
+                        suggestedDish.getName(),
+                        null,
+                        suggestedDish.getUsedIngredients(),
+                        suggestedDish.getMissingIngredients(),
+                        suggestedDish.getHealthTags(),
+                        suggestedDish.getReason(),
+                        suggestedDish.getRecipe(),
+                        suggestedDish.getConfidence()));
+                if (items.size() >= SUGGESTION_LIMIT) {
+                    break;
+                }
+            }
+        }
+        if (items.isEmpty() && !localSuggestions.isEmpty()) {
+            return new ArrayList<>(localSuggestions);
+        }
+        return items;
+    }
+
+    private void requestRecipesForAiDishes(
+            @NonNull List<DetectedIngredient> ingredients,
+            @NonNull List<ScanDishItem> dishItems,
+            @NonNull String sourceLabel) {
+        List<ScanDishItem> missingRecipes = new ArrayList<>();
+        for (ScanDishItem item : dishItems) {
+            if (!item.isLocal() && item.getRecipe().trim().isEmpty()) {
+                missingRecipes.add(item);
+            }
+        }
+        if (missingRecipes.isEmpty()) {
+            finishRecognitionSuccess(dishItems, sourceLabel);
             return;
         }
 
         geminiRepository.requestStructuredResponse(
                 AI_DISH_GENERATION_SYSTEM_PROMPT,
-                buildAiDishGenerationPrompt(unmatchedDishes),
+                buildRecipeGenerationPrompt(ingredients, missingRecipes),
                 null,
                 null,
                 new GeminiRepository.StreamCallback() {
                     @Override
                     public void onStart() {
-                        runOnUiThread(() -> updateScanStatus("Dang tao them mon AI cho cac mon chua co san..."));
+                        runOnUiThread(() -> updateScanStatus("Dang bo sung cong thuc mon an..."));
                     }
 
                     @Override
                     public void onChunk(@NonNull String accumulatedText) {
-                        runOnUiThread(() -> updateScanStatus("Dang hoan thien mon AI goi y..."));
+                        runOnUiThread(() -> updateScanStatus("Dang bo sung cong thuc mon an..."));
                     }
 
                     @Override
                     public void onCompleted(@NonNull String finalText) {
-                        runOnUiThread(() -> finishRecognitionSuccess(
-                                buildDishItems(suggestedDishes, parseGeneratedDishes(finalText)),
-                                sourceLabel));
+                        ExecutorService executor = recognitionExecutor == null
+                                ? Executors.newSingleThreadExecutor()
+                                : recognitionExecutor;
+                        executor.execute(() -> {
+                            List<ScanDishItem> merged = mergeGeneratedRecipes(
+                                    dishItems,
+                                    parseGeneratedDishes(finalText));
+                            runOnUiThread(() -> finishRecognitionSuccess(merged, sourceLabel));
+                        });
                     }
 
                     @Override
                     public void onError(@NonNull String friendlyError) {
-                        runOnUiThread(() -> finishRecognitionSuccess(
-                                buildDishItems(suggestedDishes, new ArrayList<>()),
-                                sourceLabel));
+                        runOnUiThread(() -> finishRecognitionSuccess(dishItems, sourceLabel));
                     }
                 });
     }
 
     @NonNull
-    private List<ScanDishItem> buildDishItems(
-            @NonNull List<SuggestedDish> suggestedDishes,
+    private String buildRecipeGenerationPrompt(
+            @NonNull List<DetectedIngredient> ingredients,
+            @NonNull List<ScanDishItem> dishItems) {
+        JSONArray ingredientArray = new JSONArray();
+        for (DetectedIngredient ingredient : ingredients) {
+            ingredientArray.put(ingredient.getName());
+        }
+
+        JSONArray dishArray = new JSONArray();
+        for (ScanDishItem item : dishItems) {
+            JSONObject dishObject = new JSONObject();
+            try {
+                dishObject.put("name", item.getName());
+                dishObject.put("usedIngredients", new JSONArray(item.getUsedIngredients()));
+                dishObject.put("missingIngredients", new JSONArray(item.getMissingIngredients()));
+                dishObject.put("healthTags", new JSONArray(item.getHealthTags()));
+                dishObject.put("reason", item.getReason());
+            } catch (Exception ignored) {
+            }
+            dishArray.put(dishObject);
+        }
+
+        StringBuilder prompt = new StringBuilder();
+        prompt.append("Nguyen lieu da nhan dien: ").append(ingredientArray).append('.').append("\n");
+        prompt.append("Can tao cong thuc cho cac mon sau: ").append(dishArray).append('.').append("\n");
+        prompt.append("Cong thuc phai theo dung format recipe local cua CoolCook trong foods.json.\n");
+        prompt.append("Bat buoc dung cac heading sau theo dung thu tu:\n");
+        prompt.append("### Ten mon\n");
+        prompt.append("**Khau phan:**\n");
+        prompt.append("**Nguyen lieu:**\n");
+        prompt.append("**Cac buoc thuc hien:**\n");
+        prompt.append("**Meo toi uu:**\n");
+        prompt.append("Cong thuc phai thuc te, tiếng Việt rõ ràng, uu tien tan dung usedIngredients va chi them missingIngredients khi can.\n");
+        prompt.append("Chi tra ve JSON hop le theo schema sau:\n");
+        prompt.append('{').append("\n");
+        prompt.append("  \"generatedDishes\": [\n");
+        prompt.append("    {\n");
+        prompt.append("      \"name\": \"...\",\n");
+        prompt.append("      \"healthTags\": [\"...\"],\n");
+        prompt.append("      \"reason\": \"...\",\n");
+        prompt.append("      \"recipe\": \"### ...\"\n");
+        prompt.append("    }\n");
+        prompt.append("  ]\n");
+        prompt.append('}');
+        return prompt.toString();
+    }
+
+    @NonNull
+    private List<ScanDishItem> mergeGeneratedRecipes(
+            @NonNull List<ScanDishItem> sourceItems,
             @NonNull List<GeneratedDishPayload> generatedDishes) {
-        List<ScanDishItem> dishItems = new ArrayList<>();
-        for (SuggestedDish suggestedDish : suggestedDishes) {
-            FoodItem localFood = scanFoodLocalMatcher.findDishByName(suggestedDish.getName());
-            if (localFood != null) {
-                dishItems.add(new ScanDishItem(
-                        scanFoodLocalMatcher.createStableId(localFood.getId(), true),
-                        localFood.getName(),
-                        localFood,
-                        suggestedDish.getUsedIngredients(),
-                        suggestedDish.getMissingIngredients(),
-                        suggestedDish.getHealthTags(),
-                        suggestedDish.getReason(),
-                        localFood.getRecipe(),
-                        suggestedDish.getConfidence()));
+        Map<String, GeneratedDishPayload> payloadByStableId = new LinkedHashMap<>();
+        for (GeneratedDishPayload payload : generatedDishes) {
+            payloadByStableId.put(
+                    scanFoodLocalMatcher.createStableId(payload.name, false),
+                    payload);
+        }
+
+        List<ScanDishItem> mergedItems = new ArrayList<>();
+        for (ScanDishItem item : sourceItems) {
+            if (item.isLocal() || !item.getRecipe().trim().isEmpty()) {
+                mergedItems.add(item);
                 continue;
             }
 
-            GeneratedDishPayload generatedDish = findGeneratedDish(generatedDishes, suggestedDish.getName());
-            dishItems.add(new ScanDishItem(
-                    scanFoodLocalMatcher.createStableId(suggestedDish.getName(), false),
-                    suggestedDish.getName(),
-                    null,
-                    suggestedDish.getUsedIngredients(),
-                    suggestedDish.getMissingIngredients(),
-                    generatedDish == null || generatedDish.healthTags.isEmpty()
-                            ? suggestedDish.getHealthTags()
-                            : generatedDish.healthTags,
-                    generatedDish == null || generatedDish.reason.isEmpty()
-                            ? suggestedDish.getReason()
-                            : generatedDish.reason,
-                    generatedDish == null ? "" : generatedDish.recipe,
-                    suggestedDish.getConfidence()));
-        }
-        return dishItems;
-    }
-
-    @Nullable
-    private GeneratedDishPayload findGeneratedDish(
-            @NonNull List<GeneratedDishPayload> generatedDishes,
-            @NonNull String dishName) {
-        String targetId = scanFoodLocalMatcher.createStableId(dishName, false);
-        for (GeneratedDishPayload payload : generatedDishes) {
-            if (targetId.equals(scanFoodLocalMatcher.createStableId(payload.name, false))) {
-                return payload;
+            GeneratedDishPayload payload = payloadByStableId.get(item.getStableId());
+            if (payload == null) {
+                mergedItems.add(item);
+                continue;
             }
+
+            mergedItems.add(new ScanDishItem(
+                    item.getStableId(),
+                    item.getName(),
+                    item.getLocalFood(),
+                    item.getUsedIngredients(),
+                    item.getMissingIngredients(),
+                    payload.healthTags.isEmpty() ? item.getHealthTags() : payload.healthTags,
+                    payload.reason.trim().isEmpty() ? item.getReason() : payload.reason,
+                    payload.recipe.trim(),
+                    item.getConfidence()));
         }
-        return null;
+        return rankAndLimitDishItems(mergedItems);
     }
 
     private void finishRecognitionSuccess(@NonNull List<ScanDishItem> dishItems, @NonNull String sourceLabel) {
         isRecognitionInProgress = false;
         setProcessingUiEnabled(true);
         allSuggestedDishItems.clear();
-        allSuggestedDishItems.addAll(dishItems);
+        allSuggestedDishItems.addAll(rankAndLimitDishItems(dishItems));
         selectedDishItem = null;
-        renderSuggestedDishes(dishItems);
+        renderDetectedIngredients(currentDetectedIngredients);
         applyDishFilter();
-        updateSelectedDishState();
         updateRecognitionPreviewState();
-        if (dishItems.isEmpty()) {
-            updateScanStatus("Da nhan dien nguyen lieu nhung chua thay mon phu hop.");
-        } else if (isRecognitionMode) {
-            updateScanStatus("Da cap nhat goi y mon. Ban co the chup them de bo sung nguyen lieu.");
+        if (allSuggestedDishItems.isEmpty()) {
+            updateScanStatus("Chua tim thay mon phu hop");
         } else {
-            updateScanStatus("Da goi y mon. Chuyen tab Nhan dien de xem tiep.");
+            updateScanStatus("Mo popup goi y mon an");
+            showSuggestionDialog();
         }
-        Toast.makeText(this, "Da nhan dien nguyen lieu tu anh " + sourceLabel, Toast.LENGTH_SHORT).show();
+        if ("cap nhat".equalsIgnoreCase(sourceLabel)) {
+            Toast.makeText(this, "Da cap nhat goi y 1 mon theo tap nguyen lieu hien tai.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Da nhan dien nguyen lieu tu anh " + sourceLabel, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void finishRecognitionWithError(@NonNull String message) {
         isRecognitionInProgress = false;
         setProcessingUiEnabled(true);
         renderDetectedIngredients(currentDetectedIngredients);
-        applyDishFilter();
-        updateSelectedDishState();
+        renderSuggestedDishes(allSuggestedDishItems);
+        dismissSuggestionDialog();
         updateRecognitionPreviewState();
         updateScanStatus(message);
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showSuggestionDialog() {
+        if (suggestionDialog == null) {
+            suggestionDialog = new BottomSheetDialog(this);
+            View dialogView = getLayoutInflater().inflate(R.layout.bottom_sheet_scan_suggestions, null, false);
+            suggestionDialog.setContentView(dialogView);
+            suggestionDialog.setCancelable(false);
+            suggestionDialog.setCanceledOnTouchOutside(false);
+            suggestionIngredientGroup = dialogView.findViewById(R.id.groupSuggestionIngredients);
+            txtSuggestionEmpty = dialogView.findViewById(R.id.txtSuggestionEmpty);
+            TextView txtSuggestionIngredientsLabel = dialogView.findViewById(R.id.txtSuggestionIngredientsLabel);
+            if (txtSuggestionIngredientsLabel != null) {
+                txtSuggestionIngredientsLabel.setText("Nguyen lieu AI su dung");
+            }
+            RecyclerView dialogRecyclerView = dialogView.findViewById(R.id.rvSuggestionDishes);
+            dialogRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            dialogRecyclerView.setAdapter(suggestionDialogAdapter);
+            View closeButton = dialogView.findViewById(R.id.btnSuggestionDialogClose);
+            closeButton.setOnClickListener(v -> dismissSuggestionDialog());
+            suggestionDialog.setOnDismissListener(dialog -> updateScanStatus(
+                    "Huong camera vao thuc pham roi bam chup"));
+        }
+
+        renderSuggestionIngredientChips();
+        applyDishFilter();
+        if (!suggestionDialog.isShowing()) {
+            suggestionDialog.show();
+            BottomSheetBehavior<FrameLayout> behavior = suggestionDialog.getBehavior();
+            behavior.setHideable(false);
+            behavior.setSkipCollapsed(true);
+            behavior.setDraggable(false);
+            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+    }
+
+    @NonNull
+    private List<ScanDishItem> rankAndLimitDishItems(@NonNull List<ScanDishItem> dishItems) {
+        List<ScanDishItem> rankedItems = new ArrayList<>(dishItems);
+        rankedItems.sort(Comparator
+                .comparingInt((ScanDishItem item) -> item.getUsedIngredients().size()).reversed()
+                .thenComparing(ScanDishItem::isLocal, Comparator.reverseOrder())
+                .thenComparing(item -> ScanHealthFilters.matches(item.getHealthTags(), selectedHealthFilter), Comparator.reverseOrder())
+                .thenComparingDouble(ScanDishItem::getConfidence).reversed()
+                .thenComparing(ScanDishItem::getName, String.CASE_INSENSITIVE_ORDER));
+        if (rankedItems.size() <= SUGGESTION_LIMIT) {
+            return rankedItems;
+        }
+        return new ArrayList<>(rankedItems.subList(0, SUGGESTION_LIMIT));
     }
 
     private void prepareRecognitionResultUiForLoading(@NonNull byte[] imageBytes) {
@@ -1554,19 +1924,10 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
         groupDetectedIngredients.removeAllViews();
         for (DetectedIngredient ingredient : ingredients) {
-            Chip chip = new Chip(this);
-            chip.setText(ingredient.getName());
-            chip.setCheckable(false);
-            chip.setClickable(false);
-            chip.setTypeface(getResources().getFont(R.font.be_vietnam_pro_medium));
-            chip.setTextColor(Color.WHITE);
-            chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#223A3A3A")));
-            chip.setChipStrokeColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#334B4B4B")));
-            chip.setChipStrokeWidth(dp(1f));
-            chip.setChipMinHeight(dp(34f));
-            chip.setEnsureMinTouchTargetSize(false);
-            groupDetectedIngredients.addView(chip);
+            groupDetectedIngredients.addView(createIngredientChip(ingredient));
         }
+        renderSuggestedExtraIngredients();
+        renderSelectedExtraIngredients();
         if (txtDetectedIngredientsEmpty != null) {
             txtDetectedIngredientsEmpty.setVisibility(ingredients.isEmpty() ? View.VISIBLE : View.GONE);
             if (ingredients.isEmpty()) {
@@ -1575,14 +1936,221 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
     }
 
+    private void renderSuggestionIngredientChips() {
+        if (suggestionIngredientGroup == null) {
+            return;
+        }
+        suggestionIngredientGroup.removeAllViews();
+        for (DetectedIngredient ingredient : buildEffectiveIngredients(currentDetectedIngredients)) {
+            suggestionIngredientGroup.addView(createIngredientChip(ingredient));
+        }
+    }
+
+    private void renderSuggestedExtraIngredients() {
+        if (groupSuggestedExtraIngredients == null) {
+            return;
+        }
+        groupSuggestedExtraIngredients.removeAllViews();
+        if (scanFoodLocalMatcher == null) {
+            if (txtExtraIngredientsHint != null) {
+                txtExtraIngredientsHint.setText("Dang khoi tao danh sach nguyen lieu goi y...");
+            }
+            return;
+        }
+        List<String> suggestions = scanFoodLocalMatcher.suggestComplementaryIngredients(
+                currentDetectedIngredients,
+                currentExtraIngredients,
+                8);
+        for (String suggestion : suggestions) {
+            groupSuggestedExtraIngredients.addView(createSuggestedExtraChip(suggestion));
+        }
+        if (txtExtraIngredientsHint != null) {
+            txtExtraIngredientsHint.setText(suggestions.isEmpty()
+                    ? "Khong co nguyen lieu goi y them. Ban co the tu nhap de AI ket hop."
+                    : "Chon them nguyen lieu de AI ket hop thanh 1 mon phu hop hon.");
+        }
+    }
+
+    private void renderSelectedExtraIngredients() {
+        if (groupSelectedExtraIngredients == null) {
+            return;
+        }
+        groupSelectedExtraIngredients.removeAllViews();
+        for (String ingredient : currentExtraIngredients) {
+            groupSelectedExtraIngredients.addView(createSelectedExtraChip(ingredient));
+        }
+    }
+
+    @NonNull
+    private Chip createIngredientChip(@NonNull DetectedIngredient ingredient) {
+        Chip chip = new Chip(this);
+        chip.setText(ingredient.getName());
+        chip.setCheckable(false);
+        chip.setClickable(true);
+        chip.setCloseIconVisible(true);
+        chip.setCloseIconTint(android.content.res.ColorStateList.valueOf(Color.parseColor("#7A5C45")));
+        chip.setOnCloseIconClickListener(v -> removeIngredientFromSelection(ingredient.getName()));
+        chip.setOnClickListener(v -> openDishIngredientRemovalHint());
+        chip.setTypeface(getResources().getFont(R.font.be_vietnam_pro_medium));
+        chip.setTextColor(Color.parseColor("#4D3B2E"));
+        chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#F7EEE5")));
+        chip.setChipStrokeColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#E4D6C6")));
+        chip.setChipStrokeWidth(dp(1f));
+        chip.setChipMinHeight(dp(34f));
+        chip.setEnsureMinTouchTargetSize(false);
+        return chip;
+    }
+
+    private void removeIngredientFromSelection(@NonNull String ingredientName) {
+        String stableId = scanFoodLocalMatcher.createStableId(ingredientName, false);
+        for (DetectedIngredient ingredient : currentDetectedIngredients) {
+            if (scanFoodLocalMatcher.createStableId(ingredient.getName(), false).equals(stableId)) {
+                removeDetectedIngredient(ingredient);
+                return;
+            }
+        }
+        removeExtraIngredient(ingredientName);
+    }
+
+    @NonNull
+    private Chip createSuggestedExtraChip(@NonNull String ingredientName) {
+        Chip chip = new Chip(this);
+        chip.setText("+ " + ingredientName);
+        chip.setCheckable(false);
+        chip.setClickable(true);
+        chip.setTypeface(getResources().getFont(R.font.be_vietnam_pro_medium));
+        chip.setTextColor(Color.parseColor("#8F5A14"));
+        chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#FFF3E0")));
+        chip.setChipStrokeColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#E7C79F")));
+        chip.setChipStrokeWidth(dp(1f));
+        chip.setChipMinHeight(dp(34f));
+        chip.setEnsureMinTouchTargetSize(false);
+        chip.setOnClickListener(v -> addExtraIngredient(ingredientName));
+        return chip;
+    }
+
+    @NonNull
+    private Chip createSelectedExtraChip(@NonNull String ingredientName) {
+        Chip chip = new Chip(this);
+        chip.setText(ingredientName);
+        chip.setCheckable(false);
+        chip.setClickable(false);
+        chip.setCloseIconVisible(true);
+        chip.setCloseIconTint(android.content.res.ColorStateList.valueOf(Color.parseColor("#7A5C45")));
+        chip.setOnCloseIconClickListener(v -> removeExtraIngredient(ingredientName));
+        chip.setTypeface(getResources().getFont(R.font.be_vietnam_pro_medium));
+        chip.setTextColor(Color.parseColor("#4D3B2E"));
+        chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#FCEFD8")));
+        chip.setChipStrokeColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#E7C79F")));
+        chip.setChipStrokeWidth(dp(1f));
+        chip.setChipMinHeight(dp(34f));
+        chip.setEnsureMinTouchTargetSize(false);
+        return chip;
+    }
+
+    private void openDishIngredientRemovalHint() {
+        Toast.makeText(this, "Nhan dau X de xoa nguyen lieu dang duoc AI su dung.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void addManualExtraIngredient() {
+        if (edtManualExtraIngredient == null) {
+            return;
+        }
+        String rawValue = edtManualExtraIngredient.getText() == null
+                ? ""
+                : edtManualExtraIngredient.getText().toString().trim();
+        if (rawValue.isEmpty()) {
+            Toast.makeText(this, "Nhap them mot nguyen lieu truoc.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        edtManualExtraIngredient.setText("");
+        addExtraIngredient(rawValue);
+    }
+
+    private void addExtraIngredient(@NonNull String ingredientName) {
+        String normalizedName = scanFoodLocalMatcher.normalizeIngredientName(ingredientName);
+        if (normalizedName.isEmpty()) {
+            return;
+        }
+        String stableId = scanFoodLocalMatcher.createStableId(normalizedName, false);
+        for (DetectedIngredient ingredient : currentDetectedIngredients) {
+            if (scanFoodLocalMatcher.createStableId(ingredient.getName(), false).equals(stableId)) {
+                Toast.makeText(this, "Nguyen lieu nay da co trong danh sach nhan dien.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        for (String existing : currentExtraIngredients) {
+            if (scanFoodLocalMatcher.createStableId(existing, false).equals(stableId)) {
+                Toast.makeText(this, "Nguyen lieu bo sung nay da duoc chon.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        currentExtraIngredients.add(normalizedName);
+        renderSelectedExtraIngredients();
+        renderSuggestedExtraIngredients();
+        renderSuggestionIngredientChips();
+        requestDishSuggestions("cap nhat");
+    }
+
+    private void removeExtraIngredient(@NonNull String ingredientName) {
+        String stableId = scanFoodLocalMatcher.createStableId(ingredientName, false);
+        List<String> updated = new ArrayList<>();
+        for (String existing : currentExtraIngredients) {
+            if (!scanFoodLocalMatcher.createStableId(existing, false).equals(stableId)) {
+                updated.add(existing);
+            }
+        }
+        currentExtraIngredients.clear();
+        currentExtraIngredients.addAll(updated);
+        renderSelectedExtraIngredients();
+        renderSuggestedExtraIngredients();
+        renderSuggestionIngredientChips();
+        if (currentDetectedIngredients.isEmpty() && currentExtraIngredients.isEmpty()) {
+            allSuggestedDishItems.clear();
+            renderSuggestedDishes(allSuggestedDishItems);
+            dismissSuggestionDialog();
+            updateScanStatus("Ban co the chup hoac them nguyen lieu de AI goi y 1 mon.");
+            return;
+        }
+        requestDishSuggestions("cap nhat");
+    }
+
+    private void removeDetectedIngredient(@NonNull DetectedIngredient ingredient) {
+        String stableId = scanFoodLocalMatcher.createStableId(ingredient.getName(), false);
+        List<DetectedIngredient> updated = new ArrayList<>();
+        for (DetectedIngredient item : currentDetectedIngredients) {
+            String currentStableId = scanFoodLocalMatcher.createStableId(item.getName(), false);
+            if (!currentStableId.equals(stableId)) {
+                updated.add(item);
+            }
+        }
+        currentDetectedIngredients.clear();
+        currentDetectedIngredients.addAll(updated);
+        renderDetectedIngredients(currentDetectedIngredients);
+        renderSuggestionIngredientChips();
+        if (currentDetectedIngredients.isEmpty() && currentExtraIngredients.isEmpty()) {
+            allSuggestedDishItems.clear();
+            selectedDishItem = null;
+            renderSuggestedDishes(allSuggestedDishItems);
+            dismissSuggestionDialog();
+            updateSelectedDishState();
+            updateScanStatus("Da xoa het nhan dien truoc do. Ban co the chup lai.");
+            return;
+        }
+        requestDishSuggestions("cap nhat");
+    }
+
     private void renderSuggestedDishes(@NonNull List<ScanDishItem> dishItems) {
         if (scanDishSuggestionAdapter != null) {
             scanDishSuggestionAdapter.submitItems(dishItems);
         }
         if (txtDishSuggestionsEmpty != null) {
-            txtDishSuggestionsEmpty.setVisibility(dishItems.isEmpty() ? View.VISIBLE : View.GONE);
-            if (dishItems.isEmpty() && !isRecognitionInProgress) {
-                txtDishSuggestionsEmpty.setText("Chua co mon goi y phu hop.");
+            txtDishSuggestionsEmpty.setVisibility(View.GONE);
+        }
+        if (txtSuggestionEmpty != null) {
+            txtSuggestionEmpty.setVisibility(dishItems.isEmpty() ? View.VISIBLE : View.GONE);
+            if (dishItems.isEmpty()) {
+                txtSuggestionEmpty.setText("Chua co mon goi y phu hop.");
             }
         }
     }
@@ -1685,11 +2253,10 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private boolean hasRecognitionResults() {
-        return (scanResultContainer != null && scanResultContainer.getVisibility() == View.VISIBLE)
-                && (lastRecognitionImageBytes != null
+        return lastRecognitionImageBytes != null
                 || !currentDetectedIngredients.isEmpty()
                 || !allSuggestedDishItems.isEmpty()
-                || isRecognitionInProgress);
+                || isRecognitionInProgress;
     }
 
     @NonNull
@@ -1737,63 +2304,47 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private String buildDishSuggestionPrompt(@NonNull List<DetectedIngredient> ingredients) {
+    private String buildDishSuggestionPrompt(
+            @NonNull List<DetectedIngredient> ingredients,
+            @NonNull List<ScanDishItem> localSuggestions) {
         JSONArray ingredientArray = new JSONArray();
         for (DetectedIngredient ingredient : ingredients) {
             ingredientArray.put(ingredient.getName());
         }
 
-        StringBuilder prompt = new StringBuilder();
-        prompt.append("Dua tren danh sach nguyen lieu sau: ").append(ingredientArray).append('.').append("\n");
-        prompt.append("Hay goi y cac mon an co the nau, uu tien mon Viet Nam, phu hop voi du lieu foods.json neu co.").append("\n");
-        prompt.append("Chi tra ve JSON hop le.").append("\n\n");
-        prompt.append("Schema:").append("\n");
-        prompt.append('{').append("\n");
-        prompt.append("  \"suggestedDishes\": [").append("\n");
-        prompt.append("    {").append("\n");
-        prompt.append("      \"name\": \"Ten mon an\",").append("\n");
-        prompt.append("      \"usedIngredients\": [\"nguyen lieu da dung\"],").append("\n");
-        prompt.append("      \"missingIngredients\": [\"nguyen lieu con thieu neu co\"],").append("\n");
-        prompt.append("      \"healthTags\": [\"tang co bap\", \"mo nhiem mau\", \"da day\", \"tieu duong\", \"nguoi an nhe bung\"],").append("\n");
-        prompt.append("      \"reason\": \"Ly do ngan vi sao mon nay phu hop\",").append("\n");
-        prompt.append("      \"confidence\": 0.0").append("\n");
-        prompt.append("    }").append("\n");
-        prompt.append("  ]").append("\n");
-        prompt.append('}');
-        return prompt.toString();
-    }
-
-    @NonNull
-    private String buildAiDishGenerationPrompt(@NonNull List<SuggestedDish> unmatchedDishes) {
-        JSONArray dishesArray = new JSONArray();
-        for (SuggestedDish dish : unmatchedDishes) {
-            try {
-                JSONObject payload = new JSONObject();
-                payload.put("name", dish.getName());
-                payload.put("usedIngredients", new JSONArray(dish.getUsedIngredients()));
-                payload.put("missingIngredients", new JSONArray(dish.getMissingIngredients()));
-                payload.put("healthTags", new JSONArray(dish.getHealthTags()));
-                payload.put("reason", dish.getReason());
-                dishesArray.put(payload);
-            } catch (Exception ignored) {
-                // Skip malformed payloads and continue building the remaining prompt.
-            }
+        JSONArray localDishArray = new JSONArray();
+        for (ScanDishItem item : localSuggestions) {
+            localDishArray.put(item.getName());
         }
 
         StringBuilder prompt = new StringBuilder();
-        prompt.append("Dua tren cac mon goi y chua co trong foods.json sau: ").append(dishesArray).append('.').append("\n");
-        prompt.append("Hay tao du lieu hien thi cho tung mon va uu tien mon Viet Nam.").append("\n");
-        prompt.append("Chi tra ve JSON hop le.").append("\n\n");
-        prompt.append("Schema:").append("\n");
+        prompt.append("Nguyen lieu da nhan dien: ").append(ingredientArray).append('.').append("\n");
+        prompt.append("Nguyen lieu bo sung nguoi dung chon: ").append(new JSONArray(currentExtraIngredients)).append('.').append("\n");
+        prompt.append("Mon local tham khao trong app: ").append(localDishArray).append('.').append("\n");
+        prompt.append("Hay goi y DUNG 3 mon phu hop nhat co the nau tu tap nguyen lieu nay.\n");
+        prompt.append("Moi mon duoc goi y phai co gang tan dung day du to hop nguyen lieu dang co, khong duoc bo qua nguyen lieu chinh nhu ga hoac bo.\n");
+        prompt.append("Neu nguoi dung co dong thoi ga va bo thi uu tien mon co ca ga va bo; neu local khong co thi moi duoc de xuat mon moi.\n");
+        prompt.append("Mon duoc goi y phai bam sat nhung gi xuat hien trong anh, khong duoc doi sang mon khong lien quan.\n");
+        prompt.append("Neu anh cho thay 1 mon hoan chinh hoac 1 thuc pham ro rang, uu tien giu dung ten mon/thuc pham do.\n");
+        prompt.append("Vi du neu nhan dien la banh mi thi khong duoc goi y com ga chien hay mon khac khong lien quan.\n");
+        prompt.append("Chi khi khong the goi dung ten mon dang thay moi duoc suy luan 1 mon gan nhat tu tap nguyen lieu.\n");
+        prompt.append("Sap xep 3 mon theo muc do phu hop giam dan, mon dau tien la phu hop nhat.\n");
+        prompt.append("Neu ten mon trung mot mon local trong app, giu dung ten mon local do.\n");
+        prompt.append("Bat buoc tra ve day du cong thuc theo dung format foods.json voi cac heading:\n");
+        prompt.append("### Ten mon | **Khau phan:** | **Nguyen lieu:** | **Cac buoc thuc hien:** | **Meo toi uu:**\n");
+        prompt.append("Chi tra ve JSON hop le theo dung schema sau:\n");
         prompt.append('{').append("\n");
-        prompt.append("  \"generatedDishes\": [").append("\n");
-        prompt.append("    {").append("\n");
-        prompt.append("      \"name\": \"Ten mon an\",").append("\n");
-        prompt.append("      \"healthTags\": [\"tang co bap\", \"mo nhiem mau\", \"da day\", \"tieu duong\", \"nguoi an nhe bung\"],").append("\n");
-        prompt.append("      \"reason\": \"Ly do ngan vi sao mon nay phu hop\",").append("\n");
-        prompt.append("      \"recipe\": \"### Ten mon\\n**Khau phan:** ...\"").append("\n");
-        prompt.append("    }").append("\n");
-        prompt.append("  ]").append("\n");
+        prompt.append("  \"dishes\": [\n");
+        prompt.append("    {\n");
+        prompt.append("      \"name\": \"...\",\n");
+        prompt.append("      \"matchedIngredients\": [\"...\", \"...\"],\n");
+        prompt.append("      \"missingIngredients\": [\"...\"],\n");
+        prompt.append("      \"reason\": \"Vi sao mon nay la ket hop phu hop nhat\",\n");
+        prompt.append("      \"healthTags\": [\"it dau\", \"tang co\", \"de tieu\"],\n");
+        prompt.append("      \"recipe\": \"### ...\",\n");
+        prompt.append("      \"confidence\": 0.0\n");
+        prompt.append("    }\n");
+        prompt.append("  ]\n");
         prompt.append('}');
         return prompt.toString();
     }
@@ -1834,7 +2385,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         List<SuggestedDish> dishes = new ArrayList<>();
         try {
             JSONObject rootObject = new JSONObject(extractJsonPayload(rawText));
-            JSONArray array = rootObject.optJSONArray("suggestedDishes");
+            JSONArray array = rootObject.optJSONArray("dishes");
             if (array == null) {
                 return dishes;
             }
@@ -1849,10 +2400,11 @@ public class ScanFoodActivity extends AppCompatActivity {
                 }
                 dishes.add(new SuggestedDish(
                         name,
-                        toStringList(item.optJSONArray("usedIngredients")),
+                        toStringList(item.optJSONArray("matchedIngredients")),
                         toStringList(item.optJSONArray("missingIngredients")),
                         toStringList(item.optJSONArray("healthTags")),
                         item.optString("reason", "").trim(),
+                        item.optString("recipe", "").trim(),
                         item.optDouble("confidence", 0d)));
             }
         } catch (Exception ignored) {
@@ -2012,3 +2564,4 @@ public class ScanFoodActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
     }
 }
+
