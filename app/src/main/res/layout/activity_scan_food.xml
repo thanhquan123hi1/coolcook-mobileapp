@@ -55,6 +55,7 @@
                 android:paddingTop="12dp"
                 android:paddingEnd="22dp"
                 android:paddingBottom="12dp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -66,6 +67,7 @@
                     android:src="@drawable/ic_camera_groups" />
 
                 <TextView
+                    android:id="@+id/txtRecognitionFriendCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
@@ -882,9 +884,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="@font/material_symbols_outlined"
-                    android:text="account_circle"
+                    android:text="arrow_back_ios_new"
                     android:textColor="@android:color/white"
-                    android:textSize="30sp" />
+                    android:textSize="24sp" />
             </FrameLayout>
 
             <LinearLayout
@@ -912,6 +914,7 @@
                     app:tint="@android:color/white" />
 
                 <TextView
+                    android:id="@+id/txtJournalHistoryFriendsCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/be_vietnam_pro_bold"

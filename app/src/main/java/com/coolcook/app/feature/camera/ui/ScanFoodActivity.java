@@ -166,6 +166,8 @@ public class ScanFoodActivity extends AppCompatActivity {
     private View captureSaveOverlay;
     private View journalHistoryOverlay;
     private View journalHistoryBottomBar;
+    private View btnJournalHistoryProfile;
+    private View btnJournalHistoryFriends;
     private View btnJournalGrid;
     private View btnJournalMore;
     private View btnJournalHistoryShutter;
@@ -192,6 +194,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private TextView txtExtraIngredientsHint;
     private TextView txtCaptureUploadProgress;
     private TextView txtCaptureSaveError;
+    private TextView txtJournalHistoryFriendsCount;
     private TextView tabNhanDien;
     private TextView tabNhatKy;
     private TextView iconFlash;
@@ -244,6 +247,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private BottomSheetDialog suggestionDialog;
     private JournalLocketPagerAdapter journalHistoryAdapter;
     private ListenerRegistration journalHistoryListener;
+    private ListenerRegistration journalProfileListener;
     private JournalFeedItem currentJournalHistoryItem;
     private List<JournalFeedItem> journalHistoryItems = new ArrayList<>();
     private ScanDishSuggestionAdapter suggestionDialogAdapter;
@@ -416,6 +420,8 @@ public class ScanFoodActivity extends AppCompatActivity {
         captureSaveOverlay = findViewById(R.id.captureSaveOverlay);
         journalHistoryOverlay = findViewById(R.id.journalHistoryOverlay);
         journalHistoryBottomBar = findViewById(R.id.journalHistoryBottomBar);
+        btnJournalHistoryProfile = findViewById(R.id.btnJournalHistoryProfile);
+        btnJournalHistoryFriends = findViewById(R.id.btnJournalHistoryFriends);
         btnJournalGrid = findViewById(R.id.btnJournalGrid);
         btnJournalMore = findViewById(R.id.btnJournalMore);
         btnJournalHistoryShutter = findViewById(R.id.btnJournalHistoryShutter);
@@ -427,6 +433,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         txtExtraIngredientsHint = findViewById(R.id.txtExtraIngredientsHint);
         txtCaptureUploadProgress = findViewById(R.id.txtPreviewUploadProgressLegacy);
         txtCaptureSaveError = findViewById(R.id.txtPreviewSaveErrorOld);
+        txtJournalHistoryFriendsCount = findViewById(R.id.txtJournalHistoryFriendsCount);
         tabNhanDien = findViewById(R.id.tabNhanDien);
         tabNhatKy = findViewById(R.id.tabNhatKy);
         iconFlash = findViewById(R.id.iconFlash);
@@ -653,6 +660,7 @@ public class ScanFoodActivity extends AppCompatActivity {
             }
             journalHistoryItems = new ArrayList<>();
             currentJournalHistoryItem = null;
+            updateJournalFriendCount(0L);
             updateJournalHistoryEmptyState(true);
             return;
         }
@@ -687,6 +695,18 @@ public class ScanFoodActivity extends AppCompatActivity {
                 updateJournalHistoryEmptyState(true);
             }
         });
+
+        journalProfileListener = journalFeedRepository.listenToUserProfile(user, new JournalFeedRepository.UserProfileCallback() {
+            @Override
+            public void onProfile(@NonNull JournalFeedRepository.UserProfile profile) {
+                updateJournalFriendCount(profile.friendCount);
+            }
+
+            @Override
+            public void onError(@NonNull Exception error) {
+                updateJournalFriendCount(0L);
+            }
+        });
     }
 
     private void stopJournalHistoryListener() {
@@ -694,6 +714,17 @@ public class ScanFoodActivity extends AppCompatActivity {
             journalHistoryListener.remove();
             journalHistoryListener = null;
         }
+        if (journalProfileListener != null) {
+            journalProfileListener.remove();
+            journalProfileListener = null;
+        }
+    }
+
+    private void updateJournalFriendCount(long friendCount) {
+        if (txtJournalHistoryFriendsCount == null) {
+            return;
+        }
+        txtJournalHistoryFriendsCount.setText(friendCount + " Bạn bè");
     }
 
     private void updateJournalHistoryEmptyState(boolean empty) {
@@ -1000,6 +1031,8 @@ public class ScanFoodActivity extends AppCompatActivity {
                 tabNhatKy,
                 btnCaptureSaveCancel,
                 btnCaptureSaveConfirm,
+                btnJournalHistoryProfile,
+                btnJournalHistoryFriends,
                 btnJournalGrid,
                 btnJournalMore,
                 btnJournalHistoryShutter);
@@ -1367,6 +1400,9 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> navigateBackHome());
         }
+        if (btnJournalHistoryProfile != null) {
+            btnJournalHistoryProfile.setOnClickListener(v -> navigateBackHome());
+        }
         if (btnFlash != null) {
             btnFlash.setOnClickListener(v -> toggleFlash());
         }
@@ -1416,6 +1452,15 @@ public class ScanFoodActivity extends AppCompatActivity {
             btnJournalMore.setOnClickListener(v -> {
                 if (!isRecognitionMode && vpJournalHistory != null && vpJournalHistory.getCurrentItem() > 0) {
                     showJournalHistoryActions();
+                }
+            });
+        }
+        if (btnJournalHistoryFriends != null) {
+            btnJournalHistoryFriends.setOnClickListener(v -> {
+                if (!isRecognitionMode) {
+                    Toast.makeText(this, txtJournalHistoryFriendsCount == null
+                            ? "0 Bạn bè"
+                            : txtJournalHistoryFriendsCount.getText(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
