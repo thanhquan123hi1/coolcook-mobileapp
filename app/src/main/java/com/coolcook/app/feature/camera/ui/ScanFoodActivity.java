@@ -338,11 +338,12 @@ public class ScanFoodActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         dismissSuggestionDialog();
-        if (recognitionExecutor != null) {
+        if (recognitionExecutor != null && !recognitionExecutor.isShutdown()) {
             recognitionExecutor.shutdownNow();
         }
         if (cameraProvider != null) {
             cameraProvider.unbindAll();
+            cameraProvider = null;
         }
     }
 
@@ -2516,6 +2517,12 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void navigateBackHome() {
+        if (cameraProvider != null) {
+            cameraProvider.unbindAll();
+        }
+        if (recognitionExecutor != null) {
+            recognitionExecutor.shutdownNow();
+        }
         if (isTaskRoot()) {
             Intent intent = new Intent(this, HomeActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
