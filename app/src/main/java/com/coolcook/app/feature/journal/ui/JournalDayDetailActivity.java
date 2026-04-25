@@ -183,7 +183,7 @@ public class JournalDayDetailActivity extends AppCompatActivity {
 
     private void openScanInJournalMode() {
         startActivity(ScanFoodActivity.createJournalIntent(this));
-        overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+        overridePendingTransition(R.anim.slide_in_right_scale, 0);
     }
 
     private void showDeleteConfirmation(@NonNull JournalEntry entry) {

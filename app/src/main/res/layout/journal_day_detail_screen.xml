@@ -118,6 +118,8 @@
         app:maxImageSize="26dp"
         app:rippleColor="@color/home_nav_center_ripple"
         app:tint="@color/on_primary"
+        app:showMotionSpec="@null"
+        app:hideMotionSpec="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
