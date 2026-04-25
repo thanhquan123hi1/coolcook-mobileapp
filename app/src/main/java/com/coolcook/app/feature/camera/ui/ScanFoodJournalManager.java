@@ -1,6 +1,9 @@
 package com.coolcook.app.feature.camera.ui;
 
 import android.content.Intent;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
@@ -26,6 +29,7 @@ import com.coolcook.app.feature.social.data.MediaUploadRepository;
 import com.coolcook.app.feature.social.model.FriendInvite;
 import com.coolcook.app.feature.social.model.JournalFeedItem;
 import com.coolcook.app.feature.social.model.MediaUploadResult;
+import com.coolcook.app.feature.social.ui.FriendInviteActivity;
 import com.coolcook.app.feature.social.ui.adapter.JournalFeedAdapter;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
@@ -316,8 +320,14 @@ final class ScanFoodJournalManager {
 
         TextView txtTitle = sheet.findViewById(R.id.txtFriendSheetTitle);
         TextView txtSubtitle = sheet.findViewById(R.id.txtFriendSheetSubtitle);
+        TextView txtInviteLink = sheet.findViewById(R.id.txtInviteLink);
+        EditText edtInviteInput = sheet.findViewById(R.id.edtFriendInviteInput);
         View btnCreateInviteLink = sheet.findViewById(R.id.btnCreateInviteLink);
+        View btnOpenInviteInput = sheet.findViewById(R.id.btnOpenInviteInput);
+        View btnCopyInviteLink = sheet.findViewById(R.id.btnCopyInviteLink);
+        View btnShareInviteLink = sheet.findViewById(R.id.btnShareInviteLink);
         View btnClose = sheet.findViewById(R.id.btnFriendSheetClose);
+        final FriendInvite[] createdInvite = new FriendInvite[1];
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (txtTitle != null) {
@@ -325,6 +335,22 @@ final class ScanFoodJournalManager {
         }
         if (txtSubtitle != null && user == null) {
             txtSubtitle.setText("Đăng nhập để tạo link mời bạn vào journal feed.");
+        }
+
+        if (btnOpenInviteInput != null) {
+            btnOpenInviteInput.setOnClickListener(v -> {
+                String inviteId = FriendInviteRepository.parseInviteInput(
+                        edtInviteInput == null ? "" : edtInviteInput.getText().toString());
+                if (TextUtils.isEmpty(inviteId)) {
+                    Toast.makeText(activity, "Dan link hoac ma moi cua ban vao o tren.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intent = new Intent(activity, FriendInviteActivity.class);
+                intent.putExtra("inviteId", inviteId);
+                activity.startActivity(intent);
+                dialog.dismiss();
+            });
         }
 
         if (btnCreateInviteLink != null) {
@@ -342,8 +368,28 @@ final class ScanFoodJournalManager {
                     @Override
                     public void onSuccess(@NonNull FriendInvite invite) {
                         activity.runOnUiThread(() -> {
-                            dialog.dismiss();
-                            shareInvite(invite);
+                            createdInvite[0] = invite;
+                            v.setEnabled(true);
+                            v.setAlpha(1f);
+                            if (txtSubtitle != null) {
+                                txtSubtitle.setText("Link đã sẵn sàng. Copy hoặc chia sẻ cho bạn bè nhé.");
+                            }
+                            if (txtInviteLink != null) {
+                                txtInviteLink.setText("Ma moi: " + invite.getInviteId()
+                                        + "\nLink app: " + invite.buildDeepLink()
+                                        + "\nLink web: " + invite.buildWebLink());
+                                txtInviteLink.setVisibility(View.VISIBLE);
+                            }
+                            if (edtInviteInput != null) {
+                                edtInviteInput.setText(invite.getInviteId());
+                                edtInviteInput.setSelection(edtInviteInput.getText().length());
+                            }
+                            if (btnCopyInviteLink != null) {
+                                btnCopyInviteLink.setVisibility(View.VISIBLE);
+                            }
+                            if (btnShareInviteLink != null) {
+                                btnShareInviteLink.setVisibility(View.VISIBLE);
+                            }
                         });
                     }
 
@@ -356,6 +402,24 @@ final class ScanFoodJournalManager {
                         });
                     }
                 });
+            });
+        }
+
+        if (btnCopyInviteLink != null) {
+            btnCopyInviteLink.setOnClickListener(v -> {
+                if (createdInvite[0] == null) {
+                    return;
+                }
+                copyInvite(createdInvite[0]);
+            });
+        }
+
+        if (btnShareInviteLink != null) {
+            btnShareInviteLink.setOnClickListener(v -> {
+                if (createdInvite[0] == null) {
+                    return;
+                }
+                shareInvite(createdInvite[0]);
             });
         }
 
@@ -483,13 +547,28 @@ final class ScanFoodJournalManager {
     }
 
     private void shareInvite(@NonNull FriendInvite invite) {
-        String shareText = "Kết bạn với mình trên CoolCook nhé.\n"
-                + invite.buildDeepLink()
-            + "\nNếu app link web đã được cấu hình trên domain, bạn cũng có thể thử:\n"
-                + invite.buildWebLink();
+        String shareText = "Ket ban voi minh tren CoolCook nhe.\n"
+                + "Ma moi: " + invite.getInviteId()
+                + "\nVao app > Ban be > dan link/ma moi de ket ban."
+                + "\nLink app: " + invite.buildDeepLink()
+                + "\nLink web: " + invite.buildWebLink();
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, shareText);
-        activity.startActivity(Intent.createChooser(intent, "Chia sẻ lời mời"));
+        activity.startActivity(Intent.createChooser(intent, "Chia se loi moi"));
+    }
+
+    private void copyInvite(@NonNull FriendInvite invite) {
+        ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard == null) {
+            Toast.makeText(activity, "Khong copy duoc link. Vui long thu chia se.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String inviteText = "Ma moi: " + invite.getInviteId()
+                + "\nLink app: " + invite.buildDeepLink()
+                + "\nLink web: " + invite.buildWebLink();
+        clipboard.setPrimaryClip(ClipData.newPlainText("CoolCook invite", inviteText));
+        Toast.makeText(activity, "Da copy ma moi va link.", Toast.LENGTH_SHORT).show();
     }
 }
+

@@ -43,6 +43,12 @@ public class FriendInviteRepository {
         void onError(@NonNull String message);
     }
 
+    public interface RejectInviteCallback {
+        void onSuccess(@NonNull String message);
+
+        void onError(@NonNull String message);
+    }
+
     private static final String USERS_COLLECTION = "users";
     private static final String FRIENDS_COLLECTION = "friends";
     private static final String INVITES_COLLECTION = "friendInvites";
@@ -65,16 +71,21 @@ public class FriendInviteRepository {
 
         Map<String, Object> invitePayload = new HashMap<>();
         invitePayload.put("inviteId", inviteRef.getId());
+        invitePayload.put("fromUserId", user.getUid());
+        invitePayload.put("fromUserName", name);
+        invitePayload.put("fromAvatarUrl", avatarUrl);
         invitePayload.put("createdByUid", user.getUid());
         invitePayload.put("createdByName", name);
         invitePayload.put("createdByAvatarUrl", avatarUrl);
-        invitePayload.put("status", FriendInvite.STATUS_ACTIVE);
+        invitePayload.put("status", FriendInvite.STATUS_PENDING);
         invitePayload.put("createdAt", createdAt);
         invitePayload.put("expiresAt", expiresAt);
 
         Map<String, Object> userPayload = new HashMap<>();
+        userPayload.put("uid", user.getUid());
         userPayload.put("displayName", name);
         userPayload.put("avatarUrl", avatarUrl);
+        userPayload.put("email", stringValue(user.getEmail()));
         userPayload.put("updatedAt", new Date());
         userPayload.put("createdAt", FieldValue.serverTimestamp());
 
@@ -87,7 +98,7 @@ public class FriendInviteRepository {
                         user.getUid(),
                         name,
                         avatarUrl,
-                        FriendInvite.STATUS_ACTIVE,
+                        FriendInvite.STATUS_PENDING,
                         createdAt,
                         expiresAt)))
                 .addOnFailureListener(error -> callback.onError("Không tạo được link mời bạn."));
@@ -136,11 +147,6 @@ public class FriendInviteRepository {
                     }
 
                     FriendInvite invite = FriendInvite.fromSnapshot(inviteSnapshot);
-                    if (!invite.isActive()) {
-                        throw new InviteFlowException(invite.isExpired()
-                                ? "Link mời đã hết hạn."
-                                : "Link mời đã được sử dụng.");
-                    }
                     if (invite.getCreatedByUid().equals(currentUser.getUid())) {
                         throw new InviteFlowException("Bạn không thể tự kết bạn với chính mình.");
                     }
@@ -160,6 +166,10 @@ public class FriendInviteRepository {
                     if (existingFriend.exists()
                             && "accepted".equals(existingFriend.getString("status"))) {
                         throw new InviteFlowException("Hai bạn đã là bạn bè.");
+                    }
+
+                    if (!invite.isActive()) {
+                        throw new InviteFlowException(statusMessage(invite));
                     }
 
                     String currentName = userDisplayName(currentUser);
@@ -190,7 +200,9 @@ public class FriendInviteRepository {
                     transaction.set(inviteeUserRef, inviteeProfile, SetOptions.merge());
 
                     Map<String, Object> inviteUpdate = new HashMap<>();
-                    inviteUpdate.put("status", FriendInvite.STATUS_USED);
+                    inviteUpdate.put("status", FriendInvite.STATUS_ACCEPTED);
+                    inviteUpdate.put("acceptedByUid", currentUser.getUid());
+                    inviteUpdate.put("acceptedAt", now);
                     inviteUpdate.put("usedByUid", currentUser.getUid());
                     inviteUpdate.put("usedAt", now);
                     transaction.set(inviteRef, inviteUpdate, SetOptions.merge());
@@ -202,6 +214,41 @@ public class FriendInviteRepository {
                         syncRecentMomentsBetweenFriends(inviterUid, currentUser.getUid());
                     }
                 })
+                .addOnFailureListener(error -> callback.onError(readableError(error)));
+    }
+
+    public void rejectInvite(
+            @NonNull String inviteId,
+            @NonNull FirebaseUser currentUser,
+            @NonNull RejectInviteCallback callback) {
+        if (TextUtils.isEmpty(inviteId)) {
+            callback.onError("Link mời không hợp lệ.");
+            return;
+        }
+
+        DocumentReference inviteRef = firestore.collection(INVITES_COLLECTION).document(inviteId);
+        firestore.runTransaction(transaction -> {
+                    DocumentSnapshot inviteSnapshot = transaction.get(inviteRef);
+                    if (!inviteSnapshot.exists()) {
+                        throw new InviteFlowException("Link mời không tồn tại.");
+                    }
+
+                    FriendInvite invite = FriendInvite.fromSnapshot(inviteSnapshot);
+                    if (invite.getCreatedByUid().equals(currentUser.getUid())) {
+                        throw new InviteFlowException("Bạn không thể tự kết bạn với chính mình.");
+                    }
+                    if (!invite.isActive()) {
+                        throw new InviteFlowException(statusMessage(invite));
+                    }
+
+                    Map<String, Object> inviteUpdate = new HashMap<>();
+                    inviteUpdate.put("status", FriendInvite.STATUS_REJECTED);
+                    inviteUpdate.put("rejectedByUid", currentUser.getUid());
+                    inviteUpdate.put("rejectedAt", new Date());
+                    transaction.set(inviteRef, inviteUpdate, SetOptions.merge());
+                    return null;
+                })
+                .addOnSuccessListener(unused -> callback.onSuccess("Đã từ chối lời mời."))
                 .addOnFailureListener(error -> callback.onError(readableError(error)));
     }
 
@@ -221,12 +268,42 @@ public class FriendInviteRepository {
     }
 
     @NonNull
+    public static String parseInviteInput(@Nullable String rawInput) {
+        if (rawInput == null) {
+            return "";
+        }
+
+        String normalized = rawInput.trim();
+        if (normalized.isEmpty()) {
+            return "";
+        }
+
+        String inviteId = parseInviteId(Uri.parse(normalized));
+        if (!TextUtils.isEmpty(inviteId)) {
+            return inviteId.trim();
+        }
+
+        int slashIndex = normalized.lastIndexOf('/');
+        if (slashIndex >= 0 && slashIndex < normalized.length() - 1) {
+            normalized = normalized.substring(slashIndex + 1);
+        }
+
+        int queryIndex = normalized.indexOf('?');
+        if (queryIndex >= 0) {
+            normalized = normalized.substring(0, queryIndex);
+        }
+
+        return normalized.trim();
+    }
+
+    @NonNull
     private Map<String, Object> friendPayload(
             @NonNull String uid,
             @NonNull String displayName,
             @NonNull String avatarUrl,
             @NonNull Date now) {
         Map<String, Object> payload = new HashMap<>();
+        payload.put("friendId", uid);
         payload.put("uid", uid);
         payload.put("displayName", displayName);
         payload.put("avatarUrl", avatarUrl);
@@ -349,6 +426,20 @@ public class FriendInviteRepository {
     @NonNull
     private static String stringValue(@Nullable String raw) {
         return raw == null ? "" : raw.trim();
+    }
+
+    @NonNull
+    private String statusMessage(@NonNull FriendInvite invite) {
+        if (invite.isExpired() || FriendInvite.STATUS_EXPIRED.equals(invite.getStatus())) {
+            return "Link mời đã hết hạn.";
+        }
+        if (FriendInvite.STATUS_REJECTED.equals(invite.getStatus())) {
+            return "Link mời đã bị từ chối.";
+        }
+        if (FriendInvite.STATUS_ACCEPTED.equals(invite.getStatus())) {
+            return "Link mời đã được sử dụng.";
+        }
+        return "Link mời không còn hiệu lực.";
     }
 
     @NonNull

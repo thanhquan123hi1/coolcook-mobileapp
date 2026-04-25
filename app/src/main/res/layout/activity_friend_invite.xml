@@ -15,7 +15,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="24dp"
         android:stateListAnimator="@null"
-        app:cardBackgroundColor="#FF121214"
+        app:cardBackgroundColor="#FFFFFCF5"
         app:cardCornerRadius="34dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -39,7 +39,7 @@
                 android:layout_width="88dp"
                 android:layout_height="88dp"
                 android:stateListAnimator="@null"
-                app:cardBackgroundColor="#FF2A2A2E"
+                app:cardBackgroundColor="#FFFFE3A3"
                 app:cardCornerRadius="999dp"
                 app:cardElevation="0dp">
 
@@ -59,7 +59,7 @@
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/manrope"
                 android:text="Lời mời kết bạn"
-                android:textColor="#FFFFFFFF"
+                android:textColor="#FF2B2118"
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
@@ -71,7 +71,7 @@
                 android:fontFamily="@font/be_vietnam_pro"
                 android:gravity="center"
                 android:text="Đang tải thông tin lời mời..."
-                android:textColor="#B3FFFFFF"
+                android:textColor="#FF7B6048"
                 android:textSize="15sp" />
 
             <TextView
@@ -81,7 +81,7 @@
                 android:layout_marginTop="12dp"
                 android:fontFamily="@font/be_vietnam_pro_medium"
                 android:gravity="center"
-                android:textColor="#FFF7B500"
+                android:textColor="#FFE29A16"
                 android:textSize="14sp" />
 
             <ProgressBar
@@ -103,17 +103,17 @@
                 android:paddingTop="14dp"
                 android:paddingEnd="20dp"
                 android:paddingBottom="14dp"
-                android:text="Xác nhận kết bạn"
+                android:text="Chấp nhận"
                 android:textColor="#FF111111"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/btnInviteClose"
+                android:id="@+id/btnRejectInvite"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:background="@drawable/bg_locket_secondary_button"
+                android:background="@drawable/bg_locket_secondary_light_button"
                 android:fontFamily="@font/manrope"
                 android:gravity="center"
                 android:minHeight="56dp"
@@ -121,8 +121,25 @@
                 android:paddingTop="14dp"
                 android:paddingEnd="20dp"
                 android:paddingBottom="14dp"
+                android:text="Từ chối"
+                android:textColor="#FF5F4937"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnInviteClose"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/manrope"
+                android:gravity="center"
+                android:minHeight="48dp"
+                android:paddingStart="20dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="12dp"
                 android:text="Đóng"
-                android:textColor="#FFFFFFFF"
+                android:textColor="#FF9A7A5F"
                 android:textSize="17sp"
                 android:textStyle="bold" />
         </LinearLayout>

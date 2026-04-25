@@ -171,6 +171,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private View btnJournalGrid;
     private View btnJournalMore;
     private View btnJournalHistoryShutter;
+    private View btnJournalHistoryInviteEmpty;
     private View journalPreviewFooterContainer;
     private View btnBack;
     private View btnFlash;
@@ -425,6 +426,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         btnJournalGrid = findViewById(R.id.btnJournalGrid);
         btnJournalMore = findViewById(R.id.btnJournalMore);
         btnJournalHistoryShutter = findViewById(R.id.btnJournalHistoryShutter);
+        btnJournalHistoryInviteEmpty = findViewById(R.id.btnJournalHistoryInviteEmpty);
         journalPreviewFooterContainer = findViewById(R.id.journalPreviewFooterContainer);
         txtScanStatus = findViewById(R.id.txtScanStatus);
         txtDetectedIngredientsEmpty = findViewById(R.id.txtDetectedIngredientsEmpty);
@@ -729,10 +731,10 @@ public class ScanFoodActivity extends AppCompatActivity {
 
     private void updateJournalHistoryEmptyState(boolean empty) {
         if (vpJournalHistory != null) {
-            vpJournalHistory.setVisibility(!isRecognitionMode ? View.VISIBLE : View.GONE);
+            vpJournalHistory.setVisibility((!isRecognitionMode && !empty) ? View.VISIBLE : View.GONE);
         }
         if (journalHistoryEmptyFrame != null) {
-            journalHistoryEmptyFrame.setVisibility(View.GONE);
+            journalHistoryEmptyFrame.setVisibility((empty && !isRecognitionMode) ? View.VISIBLE : View.GONE);
         }
         if (txtJournalHistoryActivityPill != null) {
             txtJournalHistoryActivityPill.setVisibility(View.GONE);
@@ -1457,10 +1459,15 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
         if (btnJournalHistoryFriends != null) {
             btnJournalHistoryFriends.setOnClickListener(v -> {
-                if (!isRecognitionMode) {
-                    Toast.makeText(this, txtJournalHistoryFriendsCount == null
-                            ? "0 Bạn bè"
-                            : txtJournalHistoryFriendsCount.getText(), Toast.LENGTH_SHORT).show();
+                if (!isRecognitionMode && journalManager != null) {
+                    journalManager.openFriendInviteSheet();
+                }
+            });
+        }
+        if (btnJournalHistoryInviteEmpty != null) {
+            btnJournalHistoryInviteEmpty.setOnClickListener(v -> {
+                if (journalManager != null) {
+                    journalManager.openFriendInviteSheet();
                 }
             });
         }

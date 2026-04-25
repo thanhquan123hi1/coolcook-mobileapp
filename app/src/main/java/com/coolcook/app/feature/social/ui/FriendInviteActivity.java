@@ -40,6 +40,7 @@ public class FriendInviteActivity extends AppCompatActivity {
     private TextView txtInviteSubtitle;
     private TextView txtInviteStatus;
     private TextView btnAcceptInvite;
+    private TextView btnRejectInvite;
     private TextView btnInviteClose;
     private ProgressBar inviteLoading;
 
@@ -98,6 +99,7 @@ public class FriendInviteActivity extends AppCompatActivity {
         txtInviteSubtitle = findViewById(R.id.txtInviteSubtitle);
         txtInviteStatus = findViewById(R.id.txtInviteStatus);
         btnAcceptInvite = findViewById(R.id.btnAcceptInvite);
+        btnRejectInvite = findViewById(R.id.btnRejectInvite);
         btnInviteClose = findViewById(R.id.btnInviteClose);
         inviteLoading = findViewById(R.id.inviteLoading);
     }
@@ -122,6 +124,7 @@ public class FriendInviteActivity extends AppCompatActivity {
     private void setupActions() {
         btnInviteClose.setOnClickListener(v -> finish());
         btnAcceptInvite.setOnClickListener(v -> acceptInvite());
+        btnRejectInvite.setOnClickListener(v -> rejectInvite());
     }
 
     private void loadInvite() {
@@ -140,6 +143,7 @@ public class FriendInviteActivity extends AppCompatActivity {
                 currentInvite = invite;
                 setLoading(false);
                 renderInvite(invite);
+                redirectToLoginIfNeeded();
             }
 
             @Override
@@ -153,10 +157,12 @@ public class FriendInviteActivity extends AppCompatActivity {
 
     private void renderInvite(@NonNull FriendInvite invite) {
         txtInviteTitle.setText(invite.getCreatedByName());
-        txtInviteSubtitle.setText("muốn kết bạn với bạn trên CoolCook.");
+        txtInviteSubtitle.setText(invite.getCreatedByName() + " muốn kết bạn với bạn trên CoolCook.");
         txtInviteStatus.setText(invite.isActive() ? "Link còn hiệu lực" : "Link không còn hiệu lực");
         btnAcceptInvite.setEnabled(true);
         btnAcceptInvite.setAlpha(1f);
+        btnRejectInvite.setEnabled(true);
+        btnRejectInvite.setAlpha(1f);
 
         Glide.with(this)
                 .load(invite.getCreatedByAvatarUrl())
@@ -172,8 +178,19 @@ public class FriendInviteActivity extends AppCompatActivity {
         txtInviteStatus.setText("");
         btnAcceptInvite.setEnabled(false);
         btnAcceptInvite.setAlpha(0.55f);
+        btnRejectInvite.setEnabled(false);
+        btnRejectInvite.setAlpha(0.55f);
         imgInviteAvatar.setImageResource(R.drawable.img_home_profile);
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void redirectToLoginIfNeeded() {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            return;
+        }
+        savePendingInvite(this, inviteId);
+        Toast.makeText(this, "Vui lòng đăng nhập để xác nhận lời mời.", Toast.LENGTH_SHORT).show();
+        startActivity(AuthActivity.createIntent(this, AuthActivity.MODE_LOGIN));
     }
 
     private void acceptInvite() {
@@ -187,9 +204,7 @@ public class FriendInviteActivity extends AppCompatActivity {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            savePendingInvite(this, inviteId);
-            Toast.makeText(this, "Vui lòng đăng nhập để xác nhận lời mời.", Toast.LENGTH_SHORT).show();
-            startActivity(AuthActivity.createIntent(this, AuthActivity.MODE_LOGIN));
+            redirectToLoginIfNeeded();
             return;
         }
 
@@ -215,6 +230,40 @@ public class FriendInviteActivity extends AppCompatActivity {
         });
     }
 
+    private void rejectInvite() {
+        if (isLoading) {
+            return;
+        }
+        if (currentInvite == null) {
+            renderError("Link mời không còn dùng được.");
+            return;
+        }
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            redirectToLoginIfNeeded();
+            return;
+        }
+
+        setLoading(true);
+        txtInviteStatus.setText("Đang từ chối...");
+        friendInviteRepository.rejectInvite(inviteId, user, new FriendInviteRepository.RejectInviteCallback() {
+            @Override
+            public void onSuccess(@NonNull String message) {
+                setLoading(false);
+                Toast.makeText(FriendInviteActivity.this, message, Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onError(@NonNull String message) {
+                setLoading(false);
+                txtInviteStatus.setText(message);
+                Toast.makeText(FriendInviteActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void setLoading(boolean loading) {
         isLoading = loading;
         inviteLoading.setVisibility(loading ? View.VISIBLE : View.GONE);
@@ -222,6 +271,8 @@ public class FriendInviteActivity extends AppCompatActivity {
         btnInviteClose.setAlpha(loading ? 0.65f : 1f);
         btnAcceptInvite.setEnabled(!loading && currentInvite != null);
         btnAcceptInvite.setAlpha((loading || currentInvite == null) ? 0.65f : 1f);
+        btnRejectInvite.setEnabled(!loading && currentInvite != null);
+        btnRejectInvite.setAlpha((loading || currentInvite == null) ? 0.65f : 1f);
     }
 
     @NonNull

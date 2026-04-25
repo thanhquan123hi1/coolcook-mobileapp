@@ -373,12 +373,33 @@ final class HomeProfileController {
     void loadStats(@NonNull FirebaseFirestore firestore) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+        TextView txtFriends = activity.findViewById(R.id.txtStatFriends);
         TextView txtSavedDishes = activity.findViewById(R.id.txtStatSavedDishes);
         TextView txtPhotos = activity.findViewById(R.id.txtStatPhotos);
+
+        if (txtFriends != null) {
+            txtFriends.setText("0");
+        }
 
         if (txtSavedDishes != null) {
             int savedCount = new ScanSavedDishStore(activity).getSavedDishes().size();
             txtSavedDishes.setText(String.valueOf(savedCount));
+        }
+
+        if (txtFriends != null && user != null) {
+            firestore.collection(PROFILE_COLLECTION)
+                    .document(user.getUid())
+                    .get()
+                    .addOnSuccessListener(activity, snapshot -> {
+                        if (!isActivityAliveForUi()) {
+                            return;
+                        }
+                        Long rawFriendCount = snapshot.getLong("friendCount");
+                        long friendCount = rawFriendCount == null ? 0L : rawFriendCount;
+                        activity.runOnUiThread(() -> txtFriends.setText(String.valueOf(friendCount)));
+                    })
+                    .addOnFailureListener(activity,
+                            error -> Log.w(TAG, "Khong the tai so ban be tu Firestore", error));
         }
 
         if (txtPhotos != null && user != null) {

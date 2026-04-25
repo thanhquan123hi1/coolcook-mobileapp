@@ -109,7 +109,6 @@ public class JournalFeedAdapter extends RecyclerView.Adapter<JournalFeedAdapter.
         final TextView txtCaption;
         final TextView txtOwner;
         final TextView txtMeta;
-
         FeedViewHolder(@NonNull View itemView) {
             super(itemView);
             imgMoment = itemView.findViewById(R.id.imgFeedMoment);
