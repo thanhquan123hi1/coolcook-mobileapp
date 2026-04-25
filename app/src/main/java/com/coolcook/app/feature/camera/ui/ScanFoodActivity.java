@@ -2522,7 +2522,7 @@ public class ScanFoodActivity extends AppCompatActivity {
             startActivity(intent);
         }
         finish();
-        overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+        overridePendingTransition(0, R.anim.slide_out_right_scale);
     }
 }
 
