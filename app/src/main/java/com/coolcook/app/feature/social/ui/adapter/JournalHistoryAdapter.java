@@ -53,6 +53,13 @@ public class JournalHistoryAdapter extends RecyclerView.Adapter<JournalHistoryAd
                 .centerCrop()
                 .into(holder.image);
 
+        Glide.with(holder.itemView)
+                .load(item.getOwnerAvatarUrl())
+                .placeholder(R.drawable.img_home_profile)
+                .error(R.drawable.img_home_profile)
+                .circleCrop()
+                .into(holder.avatar);
+
         holder.ownerName.setText(item.isOwnMoment() ? "Bạn" : item.getOwnerName());
         holder.time.setText(formatRelativeTime(item.getCreatedAt()));
         if (TextUtils.isEmpty(item.getCaption())) {
@@ -107,6 +114,7 @@ public class JournalHistoryAdapter extends RecyclerView.Adapter<JournalHistoryAd
 
     static class HistoryViewHolder extends RecyclerView.ViewHolder {
         final ImageView image;
+        final ImageView avatar;
         final TextView caption;
         final TextView ownerName;
         final TextView time;
@@ -114,6 +122,7 @@ public class JournalHistoryAdapter extends RecyclerView.Adapter<JournalHistoryAd
         HistoryViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.journalHistoryImage);
+            avatar = itemView.findViewById(R.id.journalHistoryAvatar);
             caption = itemView.findViewById(R.id.journalHistoryCaption);
             ownerName = itemView.findViewById(R.id.journalHistoryOwnerName);
             time = itemView.findViewById(R.id.journalHistoryTime);

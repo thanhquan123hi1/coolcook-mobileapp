@@ -32,6 +32,11 @@
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
+    <style name="ShapeAppearance.Coolcook.JournalCapturedPreview" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">46dp</item>
+    </style>
+
     <style name="ShapeAppearanceOverlay" />
 
     <style name="ShapeAppearanceOverlay.Coolcook" parent="ShapeAppearanceOverlay" />

@@ -94,6 +94,13 @@ public class JournalLocketPagerAdapter extends RecyclerView.Adapter<RecyclerView
                 .centerCrop()
                 .into(historyHolder.image);
 
+        Glide.with(historyHolder.itemView)
+                .load(item.getOwnerAvatarUrl())
+                .placeholder(R.drawable.img_home_profile)
+                .error(R.drawable.img_home_profile)
+                .circleCrop()
+                .into(historyHolder.avatar);
+
         historyHolder.ownerName.setText(item.isOwnMoment() ? "Bạn" : item.getOwnerName());
         historyHolder.time.setText(formatRelativeTime(item.getCreatedAt()));
         historyHolder.separator.setVisibility(View.VISIBLE);
@@ -177,6 +184,7 @@ public class JournalLocketPagerAdapter extends RecyclerView.Adapter<RecyclerView
 
     static class HistoryViewHolder extends RecyclerView.ViewHolder {
         final ImageView image;
+        final ImageView avatar;
         final TextView caption;
         final TextView ownerName;
         final TextView separator;
@@ -185,6 +193,7 @@ public class JournalLocketPagerAdapter extends RecyclerView.Adapter<RecyclerView
         HistoryViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.journalHistoryImage);
+            avatar = itemView.findViewById(R.id.journalHistoryAvatar);
             caption = itemView.findViewById(R.id.journalHistoryCaption);
             ownerName = itemView.findViewById(R.id.journalHistoryOwnerName);
             separator = itemView.findViewById(R.id.journalHistoryMetaSeparator);

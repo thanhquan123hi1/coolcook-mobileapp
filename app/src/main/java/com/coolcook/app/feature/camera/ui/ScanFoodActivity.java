@@ -319,7 +319,7 @@ public class ScanFoodActivity extends AppCompatActivity {
                 txtCaptureSaveError,
                 edtCaptureCaption,
                 imgCapturePreview,
-                captureSaveOverlay,
+                journalPreviewFooterContainer,
                 btnCaptureSaveCancel,
                  btnCaptureSaveConfirm,
                 captureSaveLoading,
@@ -425,8 +425,8 @@ public class ScanFoodActivity extends AppCompatActivity {
         txtDishSuggestionsEmpty = findViewById(R.id.txtDishSuggestionsEmpty);
         txtSelectedDishHint = findViewById(R.id.txtSelectedDishHint);
         txtExtraIngredientsHint = findViewById(R.id.txtExtraIngredientsHint);
-        txtCaptureUploadProgress = findViewById(R.id.txtPreviewUploadProgress);
-        txtCaptureSaveError = findViewById(R.id.txtPreviewSaveError);
+        txtCaptureUploadProgress = findViewById(R.id.txtPreviewUploadProgressLegacy);
+        txtCaptureSaveError = findViewById(R.id.txtPreviewSaveErrorOld);
         tabNhanDien = findViewById(R.id.tabNhanDien);
         tabNhatKy = findViewById(R.id.tabNhatKy);
         iconFlash = findViewById(R.id.iconFlash);
@@ -435,14 +435,14 @@ public class ScanFoodActivity extends AppCompatActivity {
         btnGallery = findViewById(R.id.btnGallery);
         btnShutter = findViewById(R.id.btnShutter);
         btnFlipCamera = findViewById(R.id.btnFlipCamera);
-        btnCaptureSaveCancel = findViewById(R.id.btnPreviewCancel);
-        btnCaptureSaveConfirm = findViewById(R.id.btnPreviewSend);
+        btnCaptureSaveCancel = findViewById(R.id.btnPreviewCancelOld);
+        btnCaptureSaveConfirm = findViewById(R.id.btnPreviewSendOld);
         btnPreviewDownload = findViewById(R.id.btnPreviewDownload);
-        btnPreviewEffects = findViewById(R.id.btnPreviewEffects);
-        captureSaveLoading = findViewById(R.id.capturePreviewLoading);
-        edtCaptureCaption = findViewById(R.id.edtJournalPreviewCaption);
+        btnPreviewEffects = findViewById(R.id.btnPreviewEffectsOld);
+        captureSaveLoading = findViewById(R.id.capturePreviewLoadingOldInline);
+        edtCaptureCaption = findViewById(R.id.edtJournalPreviewCaptionOld);
         edtManualExtraIngredient = findViewById(R.id.edtManualExtraIngredient);
-        imgCapturePreview = findViewById(R.id.imgJournalPreviewInline);
+        imgCapturePreview = findViewById(R.id.imgJournalPreviewInlineOld);
         imgCapturedRecognition = findViewById(R.id.imgCapturedRecognition);
         recognitionPreviewView = findViewById(R.id.previewView);
         vpJournalHistory = findViewById(R.id.vpJournalHistory);
@@ -1200,7 +1200,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private void setJournalPreviewUiVisible(boolean visible) {
         updateCameraPreviewConstraintsForState(visible);
         if (captureSaveOverlay != null) {
-            captureSaveOverlay.setVisibility(visible ? View.VISIBLE : View.GONE);
+            captureSaveOverlay.setVisibility(View.GONE);
         }
         if (journalPreviewFooterContainer != null) {
             journalPreviewFooterContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -1216,6 +1216,9 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
         if (footerContainer != null) {
             footerContainer.setVisibility(visible ? View.GONE : View.VISIBLE);
+        }
+        if (cameraPreviewCard != null && !isRecognitionMode) {
+            cameraPreviewCard.setVisibility(View.VISIBLE);
         }
         if (btnFlash != null) {
             btnFlash.setVisibility(visible ? View.GONE : View.VISIBLE);
