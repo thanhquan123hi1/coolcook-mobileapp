@@ -17,6 +17,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -33,11 +34,19 @@ import com.coolcook.app.feature.journal.ui.JournalCalendarFragment;
 import com.coolcook.app.feature.camera.ui.ScanFoodActivity;
 import com.coolcook.app.feature.profile.ui.HealthTrackingActivity;
 import com.coolcook.app.feature.social.ui.FriendInviteActivity;
+import com.coolcook.app.feature.search.data.FoodJsonRepository;
+import com.coolcook.app.feature.search.model.FoodCatalogFilter;
+import com.coolcook.app.feature.search.model.FoodItem;
+import com.coolcook.app.feature.search.ui.FoodDetailActivity;
+import com.coolcook.app.feature.search.ui.FoodCatalogActivity;
 import com.coolcook.app.feature.search.ui.FoodCatalogFragment;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.List;
+import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -86,13 +95,27 @@ public class HomeActivity extends AppCompatActivity {
     private View homeQuickSuggestCard;
     private View homeQuickHealthCard;
     private View homeQuickAiCard;
+    private View btnHomeSeeAllFoods;
+    private View homeTodayFoodCard1;
+    private View homeTodayFoodCard2;
+    private View homeGoalLowFatCard;
+    private View homeGoalStomachCard;
+    private View homeGoalProteinCard;
     private View btnProfileEdit;
     private View btnProfileLogout;
+    private TextView homeTodayFoodTitle1;
+    private TextView homeTodayFoodTitle2;
+    private TextView homeTodayFoodTag1;
+    private TextView homeTodayFoodTag2;
+    private TextView homeTodayFoodTime1;
+    private TextView homeTodayFoodTime2;
     private TextView txtHomeUserName;
     private TextView txtProfileName;
     private TextView txtProfileEmail;
     private ShapeableImageView imgHomeAvatar;
     private ShapeableImageView imgProfileAvatar;
+    private ShapeableImageView homeTodayFoodImage1;
+    private ShapeableImageView homeTodayFoodImage2;
     private FirebaseFirestore firestore;
     private HomeProfileController profileController;
 
@@ -123,13 +146,27 @@ public class HomeActivity extends AppCompatActivity {
         homeQuickSuggestCard = findViewById(R.id.homeQuickSuggestCard);
         homeQuickHealthCard = findViewById(R.id.homeQuickHealthCard);
         homeQuickAiCard = findViewById(R.id.homeQuickAiCard);
+        btnHomeSeeAllFoods = findViewById(R.id.btnHomeSeeAllFoods);
+        homeTodayFoodCard1 = findViewById(R.id.homeTodayFoodCard1);
+        homeTodayFoodCard2 = findViewById(R.id.homeTodayFoodCard2);
+        homeGoalLowFatCard = findViewById(R.id.homeGoalLowFatCard);
+        homeGoalStomachCard = findViewById(R.id.homeGoalStomachCard);
+        homeGoalProteinCard = findViewById(R.id.homeGoalProteinCard);
         btnProfileEdit = findViewById(R.id.btnProfileEdit);
         btnProfileLogout = findViewById(R.id.btnProfileLogout);
+        homeTodayFoodTitle1 = findViewById(R.id.homeTodayFoodTitle1);
+        homeTodayFoodTitle2 = findViewById(R.id.homeTodayFoodTitle2);
+        homeTodayFoodTag1 = findViewById(R.id.homeTodayFoodTag1);
+        homeTodayFoodTag2 = findViewById(R.id.homeTodayFoodTag2);
+        homeTodayFoodTime1 = findViewById(R.id.homeTodayFoodTime1);
+        homeTodayFoodTime2 = findViewById(R.id.homeTodayFoodTime2);
         txtHomeUserName = findViewById(R.id.txtHomeUserName);
         txtProfileName = findViewById(R.id.txtProfileName);
         txtProfileEmail = findViewById(R.id.txtProfileEmail);
         imgHomeAvatar = findViewById(R.id.imgHomeAvatar);
         imgProfileAvatar = findViewById(R.id.imgProfileAvatar);
+        homeTodayFoodImage1 = findViewById(R.id.homeTodayFoodImage1);
+        homeTodayFoodImage2 = findViewById(R.id.homeTodayFoodImage2);
         firestore = FirebaseFirestore.getInstance();
         profileController = new HomeProfileController(
                 this,
@@ -149,6 +186,7 @@ public class HomeActivity extends AppCompatActivity {
         profileController.displayUserInfo();
         profileController.loadProfileFromFirestore(firestore);
         profileController.loadStats(firestore);
+        bindTodayFoodCards();
         showInitialTab(getIntent());
         applyInsets();
         openPendingInviteIfNeeded();
@@ -204,6 +242,31 @@ public class HomeActivity extends AppCompatActivity {
         setupQuickActionCard(homeQuickSuggestCard, this::launchFoodCatalogScreen);
         setupQuickActionCard(homeQuickHealthCard, () -> startActivity(HealthTrackingActivity.createIntent(this)));
         setupQuickActionCard(homeQuickAiCard, () -> startActivity(ChatBotActivity.createIntent(this)));
+        setupGoalFilterCards();
+        setupSeeAllFoodsAction();
+    }
+
+    private void setupGoalFilterCards() {
+        setupQuickActionCard(homeGoalLowFatCard, () -> openFoodCatalogWithFilter(FoodCatalogFilter.LOW_FAT));
+        setupQuickActionCard(homeGoalStomachCard, () -> openFoodCatalogWithFilter(FoodCatalogFilter.STOMACH));
+        setupQuickActionCard(homeGoalProteinCard, () -> openFoodCatalogWithFilter(FoodCatalogFilter.PROTEIN));
+    }
+
+    private void setupSeeAllFoodsAction() {
+        if (btnHomeSeeAllFoods == null) {
+            return;
+        }
+        btnHomeSeeAllFoods.setOnClickListener(v -> {
+            Intent intent = FoodCatalogActivity.createIntent(this);
+            startActivity(intent);
+        });
+    }
+
+    private void openFoodCatalogWithFilter(@NonNull FoodCatalogFilter filter) {
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+        startActivity(FoodCatalogActivity.createIntent(this, filter.name()));
     }
 
     private void setupSearchEntryAction(View entryView) {
@@ -267,6 +330,45 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
         showTab(TAB_SEARCH);
+    }
+
+    private void bindTodayFoodCards() {
+        List<FoodItem> foods = new FoodJsonRepository(this).getFoods();
+        bindTodayFoodCard(homeTodayFoodCard1, homeTodayFoodImage1, homeTodayFoodTitle1, homeTodayFoodTag1, homeTodayFoodTime1, foods, 0);
+        bindTodayFoodCard(homeTodayFoodCard2, homeTodayFoodImage2, homeTodayFoodTitle2, homeTodayFoodTag2, homeTodayFoodTime2, foods, 1);
+    }
+
+    private void bindTodayFoodCard(
+            View card,
+            ShapeableImageView imageView,
+            TextView titleView,
+            TextView tagView,
+            TextView timeView,
+            List<FoodItem> foods,
+            int index) {
+        if (card == null || imageView == null || titleView == null || tagView == null || timeView == null) {
+            return;
+        }
+        if (foods == null || index < 0 || index >= foods.size()) {
+            card.setVisibility(View.GONE);
+            return;
+        }
+
+        FoodItem food = foods.get(index);
+        card.setVisibility(View.VISIBLE);
+        imageView.setImageResource(food.resolveImageResId(this));
+        titleView.setText(food.getName());
+        tagView.setText(food.getHomeCardTag());
+        timeView.setText(String.format(Locale.US, "%d MIN", food.getCookTimeMinutes()));
+        card.setOnClickListener(v -> openFoodDetail(food));
+    }
+
+    private void openFoodDetail(@NonNull FoodItem food) {
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+        startActivity(FoodDetailActivity.createIntent(this, food.getId()));
+        overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
     }
 
     private void setupQuickActionCard(View card, Runnable action) {
