@@ -5,10 +5,9 @@
     <style name="Theme.Coolcook" parent="Base.Theme.Coolcook">
     </style>
 
-    <style name="Theme.Coolcook.Splash" parent="Base.Theme.Coolcook">
-        <item name="android:windowBackground">#fff8f3</item>
-        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowDisablePreview">true</item>
+    <style name="Theme.Coolcook.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#feedda</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.Coolcook</item>
     </style>
 </resources>
