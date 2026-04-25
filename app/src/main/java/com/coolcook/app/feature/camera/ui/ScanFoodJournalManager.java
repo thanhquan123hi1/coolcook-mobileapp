@@ -390,6 +390,11 @@ final class ScanFoodJournalManager {
             return;
         }
         boolean showEmpty = count <= 0;
+        if (showEmpty && "Chưa có hoạt động nào!".contentEquals(emptyText)) {
+            txtJournalEmptyState.setVisibility(View.GONE);
+            txtJournalEmptyState.setText("");
+            return;
+        }
         txtJournalEmptyState.setVisibility(showEmpty ? View.VISIBLE : View.GONE);
         if (showEmpty) {
             txtJournalEmptyState.setText(emptyText);

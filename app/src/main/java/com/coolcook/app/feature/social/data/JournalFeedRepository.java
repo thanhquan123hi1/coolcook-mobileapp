@@ -47,6 +47,12 @@ public class JournalFeedRepository {
         void onError(@NonNull Exception error);
     }
 
+    public interface DeleteCallback {
+        void onSuccess();
+
+        void onError(@NonNull Exception error);
+    }
+
     private static final String USERS_COLLECTION = "users";
     private static final String FRIENDS_COLLECTION = "friends";
     private static final String FEED_COLLECTION = "feed";
@@ -262,6 +268,37 @@ public class JournalFeedRepository {
                 .document(userId)
                 .collection(JOURNAL_COLLECTION)
                 .document(momentId);
+    }
+
+    public void deleteOwnMoment(
+            @NonNull String userId,
+            @NonNull String momentId,
+            @NonNull DeleteCallback callback) {
+        DocumentReference momentRef = firestore.collection(MOMENTS_COLLECTION).document(momentId);
+        momentRef.get()
+                .addOnSuccessListener(snapshot -> {
+                    String ownerUid = snapshot.getString("ownerUid");
+                    if (ownerUid == null || !ownerUid.equals(userId)) {
+                        callback.onError(new SecurityException("Only the owner can delete this moment"));
+                        return;
+                    }
+                    firestore.collectionGroup(FEED_COLLECTION)
+                            .whereEqualTo("momentId", momentId)
+                            .get()
+                            .addOnSuccessListener(feedSnapshot -> {
+                                WriteBatch batch = firestore.batch();
+                                batch.delete(momentRef);
+                                batch.delete(legacyJournalRef(userId, momentId));
+                                for (DocumentSnapshot feedDoc : feedSnapshot.getDocuments()) {
+                                    batch.delete(feedDoc.getReference());
+                                }
+                                batch.commit()
+                                        .addOnSuccessListener(unused -> callback.onSuccess())
+                                        .addOnFailureListener(callback::onError);
+                            })
+                            .addOnFailureListener(callback::onError);
+                })
+                .addOnFailureListener(callback::onError);
     }
 
     @NonNull

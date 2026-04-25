@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="journal_camera_page_card_ratio" translatable="false">424:430</string>
+    <string name="journal_history_page_card_ratio" translatable="false">424:430</string>
+    <dimen name="journal_history_pager_top_padding">0dp</dimen>
+    <dimen name="journal_history_pager_bottom_padding">0dp</dimen>
+    <dimen name="journal_history_card_margin_horizontal">0dp</dimen>
+    <dimen name="journal_history_card_margin_top">92dp</dimen>
+    <dimen name="journal_history_card_corner_radius">60dp</dimen>
+    <dimen name="journal_history_card_horizontal_margin">0dp</dimen>
+    <dimen name="journal_history_meta_top_margin">14dp</dimen>
+    <dimen name="journal_history_bottom_margin">12dp</dimen>
+    <dimen name="journal_history_shutter_outer_size">74dp</dimen>
+    <dimen name="journal_history_shutter_inner_size">58dp</dimen>
+    <dimen name="journal_history_bottom_icon_size">46dp</dimen>
+    <dimen name="journal_history_grid_icon_size">29sp</dimen>
+    <dimen name="journal_history_more_icon_size">24sp</dimen>
+    <dimen name="journal_history_item_bottom_safe_padding">156dp</dimen>
+    <dimen name="journal_locket_top_bar_horizontal_margin">20dp</dimen>
+    <dimen name="journal_locket_top_bar_top_margin">29dp</dimen>
+    <dimen name="journal_locket_top_bar_height">56dp</dimen>
+    <dimen name="journal_locket_top_icon_size">54dp</dimen>
+    <dimen name="journal_locket_top_pill_height">58dp</dimen>
+
+    <dimen name="journal_camera_locket_pill_min_width">178dp</dimen>
+    <dimen name="journal_camera_page_card_horizontal_margin">0dp</dimen>
+    <dimen name="journal_camera_page_card_top_margin">148dp</dimen>
+    <dimen name="journal_camera_page_card_radius">60dp</dimen>
+    <dimen name="journal_camera_locket_flash_size">42dp</dimen>
+    <dimen name="journal_camera_locket_control_row_height">108dp</dimen>
+    <dimen name="journal_camera_locket_controls_top_margin">58dp</dimen>
+    <dimen name="journal_camera_locket_side_icon_size">58dp</dimen>
+    <dimen name="journal_camera_locket_shutter_outer_size">98dp</dimen>
+    <dimen name="journal_camera_locket_shutter_inner_size">76dp</dimen>
+    <dimen name="journal_camera_locket_history_label_top_margin">96dp</dimen>
+
+    <dimen name="journal_history_locket_pill_min_width">216dp</dimen>
+    <dimen name="journal_history_page_card_horizontal_margin">0dp</dimen>
+    <dimen name="journal_history_page_card_top_margin">196dp</dimen>
+    <dimen name="journal_history_page_card_radius">60dp</dimen>
+    <dimen name="journal_history_page_meta_top_margin">22dp</dimen>
+    <dimen name="journal_history_page_bottom_safe_padding">170dp</dimen>
+    <dimen name="journal_history_locket_shutter_outer_size">72dp</dimen>
+    <dimen name="journal_history_locket_shutter_inner_size">56dp</dimen>
+    <dimen name="journal_history_locket_bottom_icon_size">48dp</dimen>
+</resources>

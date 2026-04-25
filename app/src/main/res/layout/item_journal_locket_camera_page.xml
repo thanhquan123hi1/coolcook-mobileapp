@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/journalCameraPageRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/journalCameraTopBar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/journal_locket_top_bar_height"
+        android:layout_marginStart="@dimen/journal_locket_top_bar_horizontal_margin"
+        android:layout_marginTop="@dimen/journal_locket_top_bar_top_margin"
+        android:layout_marginEnd="@dimen/journal_locket_top_bar_horizontal_margin"
+        android:elevation="24dp"
+        android:translationZ="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <FrameLayout
+            android:id="@+id/btnJournalCameraProfile"
+            android:layout_width="@dimen/journal_locket_top_icon_size"
+            android:layout_height="@dimen/journal_locket_top_icon_size"
+            android:background="@drawable/bg_journal_camera_locket_top_icon"
+            android:foreground="@drawable/fg_ripple_circle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:text="account_circle"
+                android:textColor="@android:color/white"
+                android:textSize="30sp" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/journalCameraFriendsPill"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/journal_locket_top_pill_height"
+            android:background="@drawable/bg_journal_camera_locket_pill"
+            android:gravity="center"
+            android:minWidth="@dimen/journal_camera_locket_pill_min_width"
+            android:orientation="horizontal"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_camera_groups"
+                app:tint="@android:color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:text="1 Bạn bè"
+                android:textColor="@android:color/white"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/btnJournalCameraChat"
+            android:layout_width="@dimen/journal_locket_top_icon_size"
+            android:layout_height="@dimen/journal_locket_top_icon_size"
+            android:background="@drawable/bg_journal_camera_locket_top_icon"
+            android:foreground="@drawable/fg_ripple_circle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_camera_chat" />
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/journalCameraPreviewCard"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/journal_camera_page_card_horizontal_margin"
+        android:layout_marginTop="@dimen/journal_camera_page_card_top_margin"
+        android:layout_marginEnd="@dimen/journal_camera_page_card_horizontal_margin"
+        android:background="@drawable/bg_journal_camera_locket_card"
+        android:clipToOutline="true"
+        app:layout_constraintDimensionRatio="@string/journal_camera_page_card_ratio"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.camera.view.PreviewView
+            android:id="@+id/journalCameraPreviewView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:keepScreenOn="true"
+            app:implementationMode="compatible"
+            app:scaleType="fillCenter" />
+
+        <View
+            android:id="@+id/journalCameraPreviewInnerFrame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/transparent_drawable" />
+
+        <FrameLayout
+            android:id="@+id/btnJournalCameraFlash"
+            android:layout_width="@dimen/journal_camera_locket_flash_size"
+            android:layout_height="@dimen/journal_camera_locket_flash_size"
+            android:layout_gravity="top|start"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_scan_camera_flash_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="@drawable/fg_ripple_circle">
+
+            <TextView
+                android:id="@+id/iconJournalCameraFlash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:text="flash_off"
+                android:textColor="@android:color/white"
+                android:textSize="22sp" />
+        </FrameLayout>
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/journalCameraControlRow"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/journal_camera_locket_control_row_height"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="@dimen/journal_camera_locket_controls_top_margin"
+        android:layout_marginEnd="56dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/journalCameraPreviewCard">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btnJournalCameraGallery"
+            android:layout_width="@dimen/journal_camera_locket_side_icon_size"
+            android:layout_height="@dimen/journal_camera_locket_side_icon_size"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="@drawable/fg_ripple_circle"
+            android:padding="4dp"
+            android:src="@drawable/ic_camera_gallery"
+            app:layout_constraintBottom_toBottomOf="@id/btnJournalCameraShutter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btnJournalCameraShutter" />
+
+        <FrameLayout
+            android:id="@+id/btnJournalCameraShutter"
+            android:layout_width="@dimen/journal_camera_locket_shutter_outer_size"
+            android:layout_height="@dimen/journal_camera_locket_shutter_outer_size"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="@drawable/fg_ripple_circle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <View
+                android:layout_width="@dimen/journal_camera_locket_shutter_outer_size"
+                android:layout_height="@dimen/journal_camera_locket_shutter_outer_size"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_journal_camera_locket_shutter_outer" />
+
+            <View
+                android:layout_width="@dimen/journal_camera_locket_shutter_inner_size"
+                android:layout_height="@dimen/journal_camera_locket_shutter_inner_size"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_journal_camera_locket_shutter_inner" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/btnJournalCameraFlip"
+            android:layout_width="@dimen/journal_camera_locket_side_icon_size"
+            android:layout_height="@dimen/journal_camera_locket_side_icon_size"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="@font/material_symbols_outlined"
+            android:foreground="@drawable/fg_ripple_circle"
+            android:gravity="center"
+            android:text="flip_camera_ios"
+            android:textColor="@android:color/white"
+            android:textSize="34sp"
+            app:layout_constraintBottom_toBottomOf="@id/btnJournalCameraShutter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btnJournalCameraShutter" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/txtJournalCameraHistoryTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/journal_camera_locket_history_label_top_margin"
+        android:drawableEnd="@drawable/ic_chevron_down"
+        android:drawablePadding="6dp"
+        android:fontFamily="@font/be_vietnam_pro_bold"
+        android:text="Lịch sử "
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/journalCameraControlRow" />
+</androidx.constraintlayout.widget.ConstraintLayout>

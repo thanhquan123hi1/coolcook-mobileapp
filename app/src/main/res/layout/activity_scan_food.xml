@@ -125,7 +125,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/transparent_drawable"
-                android:clickable="false"
+                android:clickable="true"
                 android:focusable="false" />
 
             <ImageView
@@ -458,9 +458,26 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/be_vietnam_pro"
                 android:gravity="center"
-                android:text="Hướng camera vào món ăn rồi bấm nút chụp"
+                android:text="@string/journal_history_hint"
                 android:textColor="#D4C5AB"
                 android:textSize="13sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/txtJournalHistoryActivityPill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_locket_empty_pill"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:gravity="center"
+                android:minHeight="56dp"
+                android:paddingStart="24dp"
+                android:paddingTop="14dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="14dp"
+                android:textColor="#C9CDD3"
+                android:textSize="17sp"
                 android:visibility="gone" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -721,7 +738,7 @@
                 android:layout_marginTop="6dp"
                 android:fontFamily="@font/be_vietnam_pro_medium"
                 android:textColor="#FFFF8A80"
-                android:textSize="13sp"
+                android:textSize="14sp"
                 android:visibility="gone" />
 
             <ProgressBar
@@ -789,7 +806,8 @@
                             android:fontFamily="@font/be_vietnam_pro_bold"
                             android:text="MD"
                             android:textColor="#7A7A7A"
-                            android:textSize="22sp" />
+                            android:textSize="22sp"
+                    android:visibility="gone" />
                     </FrameLayout>
 
                     <TextView
@@ -803,6 +821,246 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/journalHistoryOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:visibility="gone">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/journalHistoryTopBar"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="29dp"
+            android:layout_marginEnd="20dp"
+            android:elevation="24dp"
+            android:translationZ="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <FrameLayout
+                android:id="@+id/btnJournalHistoryProfile"
+                android:layout_width="@dimen/journal_locket_top_icon_size"
+                android:layout_height="@dimen/journal_locket_top_icon_size"
+                android:background="@drawable/bg_journal_history_locket_top_icon"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="@drawable/fg_ripple_circle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/material_symbols_outlined"
+                    android:text="account_circle"
+                    android:textColor="@android:color/white"
+                    android:textSize="30sp" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/btnJournalHistoryFriends"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/journal_locket_top_pill_height"
+                android:layout_marginStart="56dp"
+                android:layout_marginEnd="56dp"
+                android:background="@drawable/bg_journal_history_locket_pill"
+                android:gravity="center"
+                android:minWidth="@dimen/journal_history_locket_pill_min_width"
+                android:orientation="horizontal"
+                android:paddingStart="28dp"
+                android:paddingEnd="28dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/ic_camera_groups"
+                    android:visibility="gone"
+                    app:tint="@android:color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text="Tất cả bạn bè"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/material_symbols_outlined"
+                    android:text="keyboard_arrow_down"
+                    android:textColor="@android:color/white"
+                    android:textSize="28sp" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/btnJournalHistoryChat"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_journal_history_locket_top_icon"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="@drawable/fg_ripple_circle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_camera_chat" />
+            </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <FrameLayout
+            android:id="@+id/journalHistoryPagerContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/vpJournalHistory"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:paddingTop="@dimen/journal_history_pager_top_padding"
+                android:paddingBottom="@dimen/journal_history_pager_bottom_padding"
+                android:scrollbars="none"
+                android:visibility="gone" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/journalHistoryEmptyFrame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/journalHistoryEmptyCard"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="@dimen/journal_history_card_margin_horizontal"
+                    android:layout_marginTop="@dimen/journal_history_card_margin_top"
+                    android:layout_marginEnd="@dimen/journal_history_card_margin_horizontal"
+                    android:background="@drawable/bg_journal_history_card"
+                    android:stateListAnimator="@null"
+                    app:cardBackgroundColor="#685757"
+                    app:cardCornerRadius="@dimen/journal_history_card_corner_radius"
+                    app:cardElevation="0dp"
+                    app:cardPreventCornerOverlap="false"
+                    app:cardUseCompatPadding="false"
+                    app:layout_constraintDimensionRatio="424:430"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:strokeColor="@android:color/transparent"
+                    app:strokeWidth="0dp" />
+
+                <TextView
+                    android:id="@+id/txtJournalHistoryEmpty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/journal_history_meta_top_margin"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text="Chưa có ảnh"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="@id/journalHistoryEmptyCard"
+                    app:layout_constraintStart_toStartOf="@id/journalHistoryEmptyCard"
+                    app:layout_constraintTop_toBottomOf="@id/journalHistoryEmptyCard" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </FrameLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/journalHistoryBottomBar"
+            android:layout_width="0dp"
+            android:layout_height="82dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="@dimen/journal_history_bottom_margin"
+            android:elevation="24dp"
+            android:translationZ="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/btnJournalGrid"
+                android:layout_width="@dimen/journal_history_locket_bottom_icon_size"
+                android:layout_height="@dimen/journal_history_locket_bottom_icon_size"
+                android:background="@drawable/bg_journal_history_bottom_icon"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:foreground="@drawable/fg_ripple_circle"
+                android:gravity="center"
+                android:text="grid_view"
+                android:textColor="#C9CDD3"
+                android:textSize="@dimen/journal_history_grid_icon_size"
+                app:layout_constraintBottom_toBottomOf="@id/btnJournalHistoryShutter"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btnJournalHistoryShutter" />
+
+            <FrameLayout
+                android:id="@+id/btnJournalHistoryShutter"
+                android:layout_width="@dimen/journal_history_locket_shutter_outer_size"
+                android:layout_height="@dimen/journal_history_locket_shutter_outer_size"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="@drawable/fg_ripple_circle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <View
+                    android:layout_width="@dimen/journal_history_locket_shutter_outer_size"
+                    android:layout_height="@dimen/journal_history_locket_shutter_outer_size"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_journal_history_locket_shutter_outer" />
+
+                <View
+                    android:layout_width="@dimen/journal_history_locket_shutter_inner_size"
+                    android:layout_height="@dimen/journal_history_locket_shutter_inner_size"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_journal_history_locket_shutter_inner" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/btnJournalMore"
+                android:layout_width="@dimen/journal_history_locket_bottom_icon_size"
+                android:layout_height="@dimen/journal_history_locket_bottom_icon_size"
+                android:background="@drawable/bg_journal_history_bottom_icon"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:foreground="@drawable/fg_ripple_circle"
+                android:gravity="center"
+                android:text="more_horiz"
+                android:textColor="#C9CDD3"
+                android:textSize="@dimen/journal_history_more_icon_size"
+                app:layout_constraintBottom_toBottomOf="@id/btnJournalHistoryShutter"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btnJournalHistoryShutter" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout

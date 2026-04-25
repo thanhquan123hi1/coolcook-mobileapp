@@ -64,9 +64,9 @@
             android:layout_marginBottom="14dp"
             android:fontFamily="@font/be_vietnam_pro"
             android:gravity="center"
-                android:text="Camera sẵn sàng · Vuốt xuống để xem feed"
             android:textColor="@color/journal_text_secondary"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            android:visibility="gone" />
     </FrameLayout>
 
 </com.google.android.material.card.MaterialCardView>

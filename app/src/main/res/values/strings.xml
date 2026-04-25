@@ -106,6 +106,14 @@
     <string name="journal_photo_desc">Ảnh món ăn trong nhật ký</string>
     <string name="journal_placeholder_desc">Ảnh placeholder nhật ký món ăn</string>
     <string name="journal_fullscreen_coming_soon">Xem toàn màn hình sẽ có sớm nha.</string>
+    <string name="journal_history_all_friends">Tất cả bạn bè</string>
+    <string name="journal_history_friends">Bạn bè</string>
+    <string name="journal_history_you">Bạn</string>
+    <string name="journal_history_just_now">Vừa xong</string>
+    <string name="journal_history_empty_image">Chưa có ảnh</string>
+    <string name="journal_history_title_all">Tất cả nhật ký</string>
+    <string name="journal_history_hint">Hướng camera vào món ăn rồi bấm nút chụp</string>
+    <string name="journal_history_meta_format">%1$s  %2$s</string>
 
     <string name="chatbot_back_desc">Quay lại màn hình trước</string>
     <string name="chatbot_grid_desc">Mở danh sách chatbot</string>
