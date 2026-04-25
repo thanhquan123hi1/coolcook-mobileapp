@@ -497,7 +497,7 @@
                     android:clickable="true"
                     android:contentDescription="@null"
                     android:focusable="true"
-                    android:padding="8dp"
+                    android:padding="6dp"
                     android:src="@drawable/ic_camera_gallery"
                     app:layout_constraintBottom_toBottomOf="@id/btnShutter"
                     app:layout_constraintStart_toStartOf="parent"
@@ -528,16 +528,18 @@
                         android:background="@drawable/bg_camera_shutter_inner" />
                 </FrameLayout>
 
-                <androidx.appcompat.widget.AppCompatImageView
+                <TextView
                     android:id="@+id/btnFlipCamera"
                     android:layout_width="@dimen/camera_screen_side_action_size"
                     android:layout_height="@dimen/camera_screen_side_action_size"
                     android:background="@drawable/fg_ripple_circle"
                     android:clickable="true"
-                    android:contentDescription="@null"
                     android:focusable="true"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_camera_flip"
+                    android:fontFamily="@font/material_symbols_outlined"
+                    android:gravity="center"
+                    android:text="flip_camera_ios"
+                    android:textColor="@android:color/white"
+                    android:textSize="30sp"
                     app:layout_constraintBottom_toBottomOf="@id/btnShutter"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/btnShutter" />
@@ -551,7 +553,7 @@
                 android:drawableEnd="@drawable/ic_chevron_down"
                 android:drawablePadding="6dp"
                 android:fontFamily="@font/be_vietnam_pro_bold"
-                android:text="Lịch sử"
+                android:text="     Lịch sử "
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />

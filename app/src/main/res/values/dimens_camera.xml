@@ -14,12 +14,12 @@
     <dimen name="camera_screen_flash_margin_start">16dp</dimen>
     <dimen name="camera_screen_flash_margin_top">16dp</dimen>
     <dimen name="camera_screen_footer_horizontal_padding">20dp</dimen>
-    <dimen name="camera_screen_footer_bottom_padding">34dp</dimen>
-    <dimen name="camera_screen_tabs_top_margin">14dp</dimen>
+    <dimen name="camera_screen_footer_bottom_padding">88dp</dimen>
+    <dimen name="camera_screen_tabs_top_margin">2dp</dimen>
     <dimen name="camera_screen_tabs_gap">20dp</dimen>
-    <dimen name="camera_screen_controls_top_margin">22dp</dimen>
+    <dimen name="camera_screen_controls_top_margin">8dp</dimen>
     <dimen name="camera_screen_side_action_size">48dp</dimen>
-    <dimen name="camera_screen_shutter_outer_size">82dp</dimen>
-    <dimen name="camera_screen_shutter_inner_size">62dp</dimen>
-    <dimen name="camera_screen_history_top_margin">26dp</dimen>
+    <dimen name="camera_screen_shutter_outer_size">96dp</dimen>
+    <dimen name="camera_screen_shutter_inner_size">74dp</dimen>
+    <dimen name="camera_screen_history_top_margin">10dp</dimen>
 </resources>
