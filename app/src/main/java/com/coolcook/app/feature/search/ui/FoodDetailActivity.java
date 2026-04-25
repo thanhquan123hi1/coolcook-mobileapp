@@ -22,6 +22,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.coolcook.app.R;
 import com.coolcook.app.feature.search.data.FavoriteFoodStore;
 import com.coolcook.app.feature.search.data.FoodJsonRepository;
+import com.coolcook.app.core.util.MarkdownRenderer;
 import com.coolcook.app.feature.search.model.FoodItem;
 import com.coolcook.app.feature.search.model.ParsedRecipe;
 import com.coolcook.app.feature.search.parser.RecipeParser;
@@ -202,7 +203,7 @@ public class FoodDetailActivity extends AppCompatActivity {
 
         TextView raw = findViewById(R.id.txtFoodRawRecipe);
         raw.setVisibility(View.VISIBLE);
-        raw.setText(rawRecipe);
+        MarkdownRenderer.render(raw, rawRecipe);
     }
 
     @NonNull

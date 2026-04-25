@@ -39,6 +39,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.coolcook.app.core.util.MarkdownRenderer;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -227,7 +228,7 @@ public class HealthTrackingActivity extends AppCompatActivity {
             return;
         }
 
-        txtHealthSummary.setText(analysis.getSummary());
+        MarkdownRenderer.render(txtHealthSummary, analysis.getSummary());
         txtHealthShouldEat.setText("Nên ưu tiên: " + joinOrFallback(analysis.getShouldEat(), "bữa ăn cân bằng."));
         txtHealthShouldLimit.setText("Nên hạn chế: " + joinOrFallback(analysis.getShouldLimit(), "món quá nhiều dầu và muối."));
 
@@ -235,7 +236,7 @@ public class HealthTrackingActivity extends AppCompatActivity {
             txtHealthWarning.setVisibility(View.GONE);
         } else {
             txtHealthWarning.setVisibility(View.VISIBLE);
-            txtHealthWarning.setText(analysis.getWarning());
+            MarkdownRenderer.render(txtHealthWarning, analysis.getWarning());
         }
 
         recommendationsContainer.removeAllViews();
@@ -288,7 +289,7 @@ public class HealthTrackingActivity extends AppCompatActivity {
             nameView.setText(recommendation.getName());
         }
         if (reasonView != null) {
-            reasonView.setText(recommendation.getReason());
+            MarkdownRenderer.render(reasonView, recommendation.getReason());
         }
         if (chipGroup != null) {
             bindTags(chipGroup, recommendation.getSuitableFor());

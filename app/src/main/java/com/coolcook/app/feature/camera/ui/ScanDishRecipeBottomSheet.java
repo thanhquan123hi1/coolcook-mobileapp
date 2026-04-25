@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.coolcook.app.R;
+import com.coolcook.app.core.util.MarkdownRenderer;
 import com.coolcook.app.feature.camera.model.ScanDishItem;
 import com.coolcook.app.feature.search.model.ParsedRecipe;
 import com.coolcook.app.feature.search.parser.RecipeParser;
@@ -42,7 +43,7 @@ public final class ScanDishRecipeBottomSheet {
         TextView badge = root.findViewById(R.id.txtRecipeSheetBadge);
         badge.setText(item.getBadgeLabel());
         bindBadge(badge, item.isLocal());
-        ((TextView) root.findViewById(R.id.txtRecipeSheetReason)).setText(item.getReason());
+        MarkdownRenderer.render(root.findViewById(R.id.txtRecipeSheetReason), item.getReason());
         bindHealthTags(root.findViewById(R.id.groupRecipeSheetHealthTags), item);
 
         ParsedRecipe parsedRecipe = RecipeParser.parse(item.getRecipe());
@@ -65,7 +66,7 @@ public final class ScanDishRecipeBottomSheet {
             root.findViewById(R.id.sectionRecipeTips).setVisibility(View.GONE);
             TextView rawView = root.findViewById(R.id.txtRecipeSheetRaw);
             rawView.setVisibility(View.VISIBLE);
-            rawView.setText(item.getRecipe().trim().isEmpty()
+            MarkdownRenderer.render(rawView, item.getRecipe().trim().isEmpty()
                     ? "Chưa có công thức chi tiết cho món này."
                     : item.getRecipe());
         }

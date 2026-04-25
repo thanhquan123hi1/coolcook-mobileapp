@@ -17,6 +17,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.coolcook.app.R;
+import com.coolcook.app.core.util.MarkdownRenderer;
 import com.coolcook.app.feature.camera.model.ScanDishItem;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
@@ -67,8 +68,8 @@ public class ScanDishSuggestionAdapter extends RecyclerView.Adapter<ScanDishSugg
                 Locale.US,
                 "Độ phù hợp %.0f%%",
                 Math.max(0d, Math.min(1d, item.getConfidence())) * 100d));
-        holder.txtReason.setText(item.getReason());
-        holder.txtRecipePreview.setText(item.getRecipePreview());
+        MarkdownRenderer.render(holder.txtReason, item.getReason());
+        MarkdownRenderer.render(holder.txtRecipePreview, item.getRecipePreview());
         holder.txtUsedIngredients.setText(joinOrFallback(item.getUsedIngredients(), "Đang cập nhật"));
 
         if (item.getMissingIngredients().isEmpty()) {

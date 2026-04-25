@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.coolcook.app.R;
+import com.coolcook.app.core.util.MarkdownRenderer;
 import com.coolcook.app.feature.camera.ui.ScanFoodActivity;
 import com.coolcook.app.feature.journal.model.JournalEntry;
 import com.coolcook.app.feature.journal.ui.adapter.JournalDayDetailAdapter;
@@ -240,7 +241,7 @@ public class JournalDayDetailActivity extends AppCompatActivity {
         }
         if (txtDialogMeta != null) {
             txtDialogMeta.setVisibility(View.VISIBLE);
-            txtDialogMeta.setText(buildEntryMeta(entry));
+            MarkdownRenderer.render(txtDialogMeta, buildEntryMeta(entry));
         }
 
         View.OnClickListener datePickerClick = v -> showPhotoDatePicker(editableDate[0], pickedDate -> {

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.coolcook.app.R;
+import com.coolcook.app.core.util.MarkdownRenderer;
 import com.coolcook.app.feature.social.model.JournalFeedItem;
 
 import java.text.SimpleDateFormat;
@@ -57,7 +58,7 @@ public class JournalFeedAdapter extends RecyclerView.Adapter<JournalFeedAdapter.
             holder.txtCaption.setVisibility(View.GONE);
         } else {
             holder.txtCaption.setVisibility(View.VISIBLE);
-            holder.txtCaption.setText(item.getCaption());
+            MarkdownRenderer.render(holder.txtCaption, item.getCaption());
         }
     }
 
