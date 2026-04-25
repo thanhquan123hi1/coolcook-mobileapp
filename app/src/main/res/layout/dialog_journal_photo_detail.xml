@@ -69,7 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/be_vietnam_pro_bold"
-            android:text="Thong tin anh"
+            android:text="Thông tin ảnh"
             android:textColor="@color/on_surface"
             android:textSize="16sp" />
 
@@ -88,7 +88,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:hint="Ngay"
+            android:hint="Ngày"
             app:endIconDrawable="@drawable/ic_edit_profile_calendar"
             app:endIconMode="custom">
 
@@ -131,7 +131,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="14dp"
             android:fontFamily="@font/be_vietnam_pro_bold"
-            android:text="Luu thay doi"
+            android:text="Lưu thay đổi"
             android:textAllCaps="false"
             android:textColor="@color/on_primary"
             android:textSize="15sp"

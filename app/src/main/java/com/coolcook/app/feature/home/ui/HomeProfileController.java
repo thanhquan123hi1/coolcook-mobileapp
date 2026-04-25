@@ -169,7 +169,7 @@ final class HomeProfileController {
                 .get()
                 .addOnSuccessListener(activity, snapshot -> applyProfileSnapshot(snapshot))
                 .addOnFailureListener(activity,
-                        error -> Log.w(TAG, "Khong the tai thong tin profile tu Firestore", error));
+                    error -> Log.w(TAG, "Không thể tải thông tin profile từ Firestore", error));
     }
 
     private void applyProfileSnapshot(@NonNull DocumentSnapshot snapshot) {
@@ -345,7 +345,7 @@ final class HomeProfileController {
             try {
                 LoginManager.getInstance().logOut();
             } catch (Exception error) {
-                Log.w(TAG, "Khong the dang xuat phien Facebook", error);
+                Log.w(TAG, "Không thể đăng xuất phiên Facebook", error);
             }
         }, "facebook-logout-worker");
         facebookLogoutThread.start();

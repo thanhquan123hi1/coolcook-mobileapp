@@ -151,11 +151,11 @@
     <string name="profile_edit_saved_success">Đã lưu thành công</string>
     <string name="profile_edit_saving">Đang lưu...</string>
     <string name="profile_edit_preparing_image">Đang tối ưu ảnh trước khi tải lên...</string>
-    <string name="profile_edit_uploading_image">Đang tải ảnh lên Cloudinary...</string>
-    <string name="profile_edit_uploading_image_progress">Đang tải ảnh lên Cloudinary... %1$d%%</string>
+    <string name="profile_edit_uploading_image">Đang tải ảnh lên dịch vụ ảnh...</string>
+    <string name="profile_edit_uploading_image_progress">Đang tải ảnh lên dịch vụ ảnh... %1$d%%</string>
     <string name="profile_edit_save_failed">Lưu thất bại. Vui lòng thử lại.</string>
-    <string name="profile_edit_upload_failed">Tải ảnh lên Cloudinary thất bại.</string>
-    <string name="profile_edit_cloudinary_missing">Thiếu cấu hình Cloudinary trong file .env</string>
+    <string name="profile_edit_upload_failed">Tải ảnh lên dịch vụ ảnh thất bại.</string>
+    <string name="profile_edit_cloudinary_missing">Thiếu cấu hình dịch vụ ảnh trong file .env</string>
     <string name="profile_edit_user_missing">Không tìm thấy người dùng đăng nhập.</string>
 
     <!-- Profile Screen -->

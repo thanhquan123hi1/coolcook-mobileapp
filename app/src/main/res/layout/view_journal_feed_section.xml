@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
         android:fontFamily="@font/manrope"
-        android:text="Moi nhat"
+        android:text="Mới nhất"
         android:textColor="@color/journal_text_primary"
         android:textSize="20sp"
         android:textStyle="bold" />
@@ -51,7 +51,7 @@
         android:paddingTop="14dp"
         android:paddingEnd="22dp"
         android:paddingBottom="14dp"
-        android:text="Chua co hoat dong nao!"
+        android:text="Chưa có hoạt động nào!"
         android:textColor="#C9CDD3"
         android:textSize="16sp"
         android:textStyle="bold"

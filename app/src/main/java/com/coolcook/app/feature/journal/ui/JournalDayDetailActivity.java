@@ -50,8 +50,8 @@ public class JournalDayDetailActivity extends AppCompatActivity {
         return intent;
     }
 
-    private final DateTimeFormatter titleFormatter =
-            DateTimeFormatter.ofPattern("'Ngay' d 'thang' M, uuuu", Locale.forLanguageTag("vi-VN"));
+        private final DateTimeFormatter titleFormatter =
+            DateTimeFormatter.ofPattern("'Ngày' d 'tháng' M, uuuu", Locale.forLanguageTag("vi-VN"));
     private final DateTimeFormatter editDateFormatter =
             DateTimeFormatter.ofPattern("dd/MM/uuuu", Locale.forLanguageTag("vi-VN"));
 
@@ -185,22 +185,22 @@ public class JournalDayDetailActivity extends AppCompatActivity {
     }
 
     private void showDeleteConfirmation(@NonNull JournalEntry entry) {
-        String entryLabel = entry.isFoodEntry() ? "mon an" : "anh nhat ky";
+        String entryLabel = entry.isFoodEntry() ? "món ăn" : "ảnh nhật ký";
         new MaterialAlertDialogBuilder(this)
-                .setTitle("Xoa muc nhat ky?")
-                .setMessage("Ban co chac muon xoa " + entryLabel + " nay khoi nhat ky khong?")
-                .setNegativeButton("Giu lai", null)
-                .setPositiveButton("Xoa", (dialog, which) -> deleteEntry(entry))
+            .setTitle("Xóa mục nhật ký?")
+            .setMessage("Bạn có chắc muốn xóa " + entryLabel + " này khỏi nhật ký không?")
+            .setNegativeButton("Giữ lại", null)
+            .setPositiveButton("Xóa", (dialog, which) -> deleteEntry(entry))
                 .show();
     }
 
     private void deleteEntry(@NonNull JournalEntry entry) {
         viewModel.deleteEntry(entry, success -> runOnUiThread(() -> {
             if (success) {
-                Toast.makeText(this, "Da xoa muc nhat ky", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Đã xóa mục nhật ký", Toast.LENGTH_SHORT).show();
                 viewModel.loadEntriesOfDate(selectedDate);
             } else {
-                Toast.makeText(this, "Khong the xoa muc nhat ky. Vui long thu lai.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Không thể xóa mục nhật ký. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
             }
         }));
     }
@@ -234,7 +234,7 @@ public class JournalDayDetailActivity extends AppCompatActivity {
         edtDate.setText(editableDate[0].format(editDateFormatter));
         edtCaption.setText(entry.getCaption());
         if (txtDialogTitle != null) {
-            txtDialogTitle.setText(entry.isFoodEntry() ? "Thong tin mon an" : "Thong tin anh");
+            txtDialogTitle.setText(entry.isFoodEntry() ? "Thông tin món ăn" : "Thông tin ảnh");
         }
         if (txtDialogMeta != null) {
             txtDialogMeta.setVisibility(View.VISIBLE);
@@ -259,11 +259,11 @@ public class JournalDayDetailActivity extends AppCompatActivity {
             viewModel.updateEntryMetadata(entry, editableDate[0], caption, success -> runOnUiThread(() -> {
                 btnSave.setEnabled(true);
                 if (success) {
-                    Toast.makeText(this, "Da luu thay doi nhat ky", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Đã lưu thay đổi nhật ký", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                     viewModel.loadEntriesOfDate(selectedDate);
                 } else {
-                    Toast.makeText(this, "Khong the luu thay doi. Vui long thu lai.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Không thể lưu thay đổi. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
                 }
             }));
         });
@@ -300,7 +300,7 @@ public class JournalDayDetailActivity extends AppCompatActivity {
     @NonNull
     private String buildEntryMeta(@NonNull JournalEntry entry) {
         if (!entry.isFoodEntry()) {
-            return "Anh mon an da luu trong ngay nay.";
+            return "Ảnh món ăn đã lưu trong ngày này.";
         }
 
         StringBuilder builder = new StringBuilder(entry.getDisplayTitle());
@@ -308,10 +308,10 @@ public class JournalDayDetailActivity extends AppCompatActivity {
             builder.append(" • ").append(entry.getMealType());
         }
         if (!TextUtils.isEmpty(entry.getHealthReason())) {
-            builder.append("\nGoi y tham khao: ").append(entry.getHealthReason());
+            builder.append("\nGợi ý tham khảo: ").append(entry.getHealthReason());
         }
         if (!TextUtils.isEmpty(entry.getSource())) {
-            builder.append("\nNguon: ").append(entry.getSource());
+            builder.append("\nNguồn: ").append(entry.getSource());
         }
         return builder.toString();
     }

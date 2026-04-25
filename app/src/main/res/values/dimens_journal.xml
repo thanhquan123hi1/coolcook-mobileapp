@@ -46,6 +46,7 @@
 
     <dimen name="journal_fab_margin">24dp</dimen>
     <dimen name="journal_fab_size">72dp</dimen>
+    <dimen name="journal_fab_elevation">18dp</dimen>
 
     <dimen name="journal_detail_title_text_size">24sp</dimen>
     <dimen name="journal_detail_grid_margin_top">14dp</dimen>

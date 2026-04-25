@@ -334,7 +334,7 @@ class EditProfileDialogFragment : DialogFragment() {
             uploadRequest
                 .callback(object : UploadCallback {
                     override fun onStart(requestId: String?) {
-                        Log.d(TAG, "Cloudinary upload start: $requestId")
+                        Log.d(TAG, "Avatar upload start: $requestId")
                         runOnUiThreadSafely {
                             showAvatarUploadState(getString(R.string.profile_edit_uploading_image))
                         }
@@ -359,7 +359,7 @@ class EditProfileDialogFragment : DialogFragment() {
                         runOnUiThreadSafely {
                             val secureUrl = resultData?.get("secure_url")?.toString().orEmpty()
                             if (secureUrl.isBlank()) {
-                                Log.e(TAG, "Cloudinary returned an empty secure_url")
+                                Log.e(TAG, "Avatar upload returned an empty secure_url")
                                 onFailure()
                                 return@runOnUiThreadSafely
                             }
@@ -368,12 +368,12 @@ class EditProfileDialogFragment : DialogFragment() {
                     }
 
                     override fun onError(requestId: String?, error: ErrorInfo?) {
-                        Log.e(TAG, "Cloudinary upload error: ${error?.description}")
+                        Log.e(TAG, "Avatar upload error: ${error?.description}")
                         runOnUiThreadSafely { onFailure() }
                     }
 
                     override fun onReschedule(requestId: String?, error: ErrorInfo?) {
-                        Log.w(TAG, "Cloudinary upload rescheduled: ${error?.description}")
+                        Log.w(TAG, "Avatar upload rescheduled: ${error?.description}")
                     }
                 })
                 .dispatch()

@@ -51,7 +51,7 @@ public class JournalDayDetailAdapter extends RecyclerView.Adapter<JournalDayDeta
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
         JournalEntry entry = entries.get(position);
-        holder.badge.setText(entry.isFoodEntry() ? "Mon an" : "Anh");
+        holder.badge.setText(entry.isFoodEntry() ? "Món ăn" : "Ảnh");
         holder.placeholder.setVisibility(entry.hasPreviewImage() ? View.GONE : View.VISIBLE);
 
         if (entry.hasPreviewImage()) {

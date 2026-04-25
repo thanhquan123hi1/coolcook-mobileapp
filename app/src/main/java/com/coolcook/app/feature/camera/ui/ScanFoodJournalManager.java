@@ -113,7 +113,7 @@ final class ScanFoodJournalManager {
         rvJournalMoments.setLayoutManager(new LinearLayoutManager(activity));
         rvJournalMoments.setAdapter(journalFeedAdapter);
         rvJournalMoments.setNestedScrollingEnabled(false);
-        updateJournalEmptyState(0, "ChÆ°a cĂ³ hoáº¡t Ä‘á»™ng nĂ o!");
+        updateJournalEmptyState(0, "Chưa có hoạt động nào!");
     }
 
     void startRealtimeListeners() {
@@ -124,10 +124,10 @@ final class ScanFoodJournalManager {
             if (journalFeedAdapter != null) {
                 journalFeedAdapter.submitItems(new ArrayList<>());
             }
-            updateJournalEmptyState(0, "ÄÄƒng nháº­p Ä‘á»ƒ xem feed cá»§a báº¡n bĂ¨.");
-            host.updateJournalStatus("Vui lĂ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ Ä‘Äƒng moment.");
+            updateJournalEmptyState(0, "Đăng nhập để xem feed của bạn bè.");
+            host.updateJournalStatus("Vui lòng đăng nhập để đăng moment.");
             if (txtJournalFriendCount != null) {
-                txtJournalFriendCount.setText("Táº¥t cáº£ báº¡n bĂ¨");
+                txtJournalFriendCount.setText("Tất cả bạn bè");
             }
             return;
         }
@@ -139,13 +139,13 @@ final class ScanFoodJournalManager {
                         if (journalFeedAdapter != null) {
                             journalFeedAdapter.submitItems(items);
                         }
-                        updateJournalEmptyState(items.size(), "ChÆ°a cĂ³ hoáº¡t Ä‘á»™ng nĂ o!");
+                        updateJournalEmptyState(items.size(), "Chưa có hoạt động nào!");
                     }
 
                     @Override
                     public void onError(@NonNull Exception error) {
-                        updateJournalEmptyState(0, "KhĂ´ng táº£i Ä‘Æ°á»£c feed. Vui lĂ²ng thá»­ láº¡i.");
-                        host.updateJournalStatus("KhĂ´ng táº£i Ä‘Æ°á»£c feed.");
+                        updateJournalEmptyState(0, "Không tải được feed. Vui lòng thử lại.");
+                        host.updateJournalStatus("Không tải được feed.");
                     }
                 });
 
@@ -157,16 +157,16 @@ final class ScanFoodJournalManager {
                             return;
                         }
                         if (profile.friendCount <= 0L) {
-                            txtJournalFriendCount.setText("Táº¥t cáº£ báº¡n bĂ¨");
+                            txtJournalFriendCount.setText("Tất cả bạn bè");
                         } else {
-                            txtJournalFriendCount.setText(profile.friendCount + " Báº¡n bĂ¨");
+                            txtJournalFriendCount.setText(profile.friendCount + " Bạn bè");
                         }
                     }
 
                     @Override
                     public void onError(@NonNull Exception error) {
                         if (txtJournalFriendCount != null) {
-                            txtJournalFriendCount.setText("Báº¡n bĂ¨");
+                            txtJournalFriendCount.setText("Bạn bè");
                         }
                     }
                 });
@@ -211,18 +211,18 @@ final class ScanFoodJournalManager {
             pendingJournalSourceLabel = "camera";
         }
         host.setJournalPreviewUiVisible(false);
-        host.updateJournalStatus("Sáºµn sĂ ng chá»¥p moment má»›i.");
+        host.updateJournalStatus("Sẵn sàng chụp moment mới.");
     }
 
     void publishPendingJournalMoment(boolean isUsingFrontCamera) {
         if (pendingJournalImageBytes == null || pendingJournalImageBytes.length == 0) {
-            showJournalPostError("KhĂ´ng cĂ³ áº£nh Ä‘á»ƒ Ä‘Äƒng.");
+            showJournalPostError("Không có ảnh để đăng.");
             return;
         }
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            Toast.makeText(activity, "Vui lĂ²ng Ä‘Äƒng nháº­p Ä‘á»ƒ Ä‘Äƒng nháº­t kĂ½", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "Vui lòng đăng nhập để đăng nhật ký", Toast.LENGTH_SHORT).show();
             activity.startActivity(AuthActivity.createIntent(activity, AuthActivity.MODE_LOGIN));
             return;
         }
@@ -234,15 +234,15 @@ final class ScanFoodJournalManager {
 
         isJournalSaveInProgress = true;
         host.setProcessingUiEnabled(false);
-        setJournalPostLoading(true, "Äang tá»‘i Æ°u áº£nh...");
+        setJournalPostLoading(true, "Đang tối ưu ảnh...");
         showJournalPostError("");
-        host.updateJournalStatus("Äang Ä‘Äƒng moment...");
+        host.updateJournalStatus("Đang đăng moment...");
 
         mediaUploadRepository.uploadJournalImage(pendingJournalImageBytes,
                 new MediaUploadRepository.UploadCallbackListener() {
                     @Override
                     public void onPreparing() {
-                        activity.runOnUiThread(() -> setJournalPostLoading(true, "Äang tá»‘i Æ°u áº£nh..."));
+                        activity.runOnUiThread(() -> setJournalPostLoading(true, "Đang tối ưu ảnh..."));
                     }
 
                     @Override
@@ -250,13 +250,13 @@ final class ScanFoodJournalManager {
                         activity.runOnUiThread(() -> setJournalPostLoading(
                                 true,
                                 progress <= 0
-                                        ? "Äang táº£i áº£nh lĂªn Cloudinary..."
-                                        : "Äang táº£i áº£nh lĂªn Cloudinary... " + progress + "%"));
+                                        ? "Đang tải ảnh lên dịch vụ ảnh..."
+                                        : "Đang tải ảnh lên dịch vụ ảnh... " + progress + "%"));
                     }
 
                     @Override
                     public void onSuccess(@NonNull MediaUploadResult result) {
-                        activity.runOnUiThread(() -> setJournalPostLoading(true, "Äang cáº­p nháº­t Firestore..."));
+                        activity.runOnUiThread(() -> setJournalPostLoading(true, "Đang cập nhật Firestore..."));
                         journalFeedRepository.publishMoment(
                                 user,
                                 result,
@@ -273,13 +273,13 @@ final class ScanFoodJournalManager {
                                                 journalFeedAdapter.prependIfMissing(item);
                                                 updateJournalEmptyState(
                                                         journalFeedAdapter.getItemCount(),
-                                                        "ChÆ°a cĂ³ hoáº¡t Ä‘á»™ng nĂ o!");
+                                                        "Chưa có hoạt động nào!");
                                             }
                                             hideJournalCapturePreview(true);
-                                            host.updateJournalStatus("ÄĂ£ Ä‘Äƒng moment má»›i.");
+                                            host.updateJournalStatus("Đã đăng moment mới.");
                                             Toast.makeText(
                                                     activity,
-                                                    "ÄĂ£ Ä‘Äƒng moment thĂ nh cĂ´ng",
+                                                    "Đã đăng moment thành công",
                                                     Toast.LENGTH_SHORT).show();
                                         });
                                     }
@@ -287,7 +287,7 @@ final class ScanFoodJournalManager {
                                     @Override
                                     public void onError(@NonNull Exception error) {
                                         activity.runOnUiThread(() -> finishJournalSaveWithError(
-                                                "LÆ°u Firestore tháº¥t báº¡i. Vui lĂ²ng thá»­ láº¡i."));
+                                                "Lưu Firestore thất bại. Vui lòng thử lại."));
                                     }
                                 });
                     }
@@ -311,10 +311,10 @@ final class ScanFoodJournalManager {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (txtTitle != null) {
-            txtTitle.setText(txtJournalFriendCount == null ? "Báº¡n bĂ¨" : txtJournalFriendCount.getText());
+            txtTitle.setText(txtJournalFriendCount == null ? "Bạn bè" : txtJournalFriendCount.getText());
         }
         if (txtSubtitle != null && user == null) {
-            txtSubtitle.setText("ÄÄƒng nháº­p Ä‘á»ƒ táº¡o link má»i báº¡n vĂ o journal feed.");
+            txtSubtitle.setText("Đăng nhập để tạo link mời bạn vào journal feed.");
         }
 
         if (btnCreateInviteLink != null) {
@@ -367,8 +367,8 @@ final class ScanFoodJournalManager {
 
         Bitmap bitmap = ScanFoodImageUtils.decodePreviewBitmap(imageBytes);
         if (bitmap == null) {
-            host.updateJournalStatus("KhĂ´ng má»Ÿ Ä‘Æ°á»£c áº£nh vá»«a chá»¥p.");
-            Toast.makeText(activity, "KhĂ´ng hiá»ƒn thá»‹ Ä‘Æ°á»£c áº£nh", Toast.LENGTH_SHORT).show();
+            host.updateJournalStatus("Không mở được ảnh vừa chụp.");
+            Toast.makeText(activity, "Không hiển thị được ảnh", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -382,7 +382,7 @@ final class ScanFoodJournalManager {
         showJournalPostError("");
         journalCaptureOverlay.setVisibility(View.VISIBLE);
         host.setJournalPreviewUiVisible(true);
-        host.updateJournalStatus("ThĂªm caption rá»“i báº¥m ÄÄƒng.");
+        host.updateJournalStatus("Thêm caption rồi bấm Đăng.");
     }
 
     private void updateJournalEmptyState(int count, @NonNull String emptyText) {
@@ -437,13 +437,13 @@ final class ScanFoodJournalManager {
     }
 
     private void shareInvite(@NonNull FriendInvite invite) {
-        String shareText = "Káº¿t báº¡n vá»›i mĂ¬nh trĂªn CoolCook nhĂ©.\n"
+        String shareText = "Kết bạn với mình trên CoolCook nhé.\n"
                 + invite.buildDeepLink()
-                + "\nNáº¿u app link web Ä‘Ă£ Ä‘Æ°á»£c cáº¥u hĂ¬nh trĂªn domain, báº¡n cÅ©ng cĂ³ thá»ƒ thá»­:\n"
+            + "\nNếu app link web đã được cấu hình trên domain, bạn cũng có thể thử:\n"
                 + invite.buildWebLink();
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, shareText);
-        activity.startActivity(Intent.createChooser(intent, "Chia sáº» lá»i má»i"));
+        activity.startActivity(Intent.createChooser(intent, "Chia sẻ lời mời"));
     }
 }

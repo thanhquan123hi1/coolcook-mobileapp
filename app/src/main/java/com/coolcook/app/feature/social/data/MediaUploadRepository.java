@@ -66,7 +66,7 @@ public class MediaUploadRepository {
             @NonNull ImageSize localSize,
             @NonNull UploadCallbackListener callback) {
         if (!ensureCloudinaryConfigured()) {
-            callback.onError("Thiếu cấu hình Cloudinary để đăng ảnh.");
+            callback.onError("Thiếu cấu hình dịch vụ lưu ảnh để đăng ảnh.");
             return;
         }
 
@@ -103,7 +103,7 @@ public class MediaUploadRepository {
                 MediaUploadResult result = buildResult(resultData, localSize);
                 mainHandler.post(() -> {
                     if (TextUtils.isEmpty(result.getImageUrl())) {
-                        callback.onError("Cloudinary không trả về URL ảnh hợp lệ.");
+                        callback.onError("Dịch vụ lưu ảnh không trả về URL ảnh hợp lệ.");
                         return;
                     }
                     callback.onSuccess(result);

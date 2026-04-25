@@ -448,13 +448,13 @@ public class ScanFoodActivity extends AppCompatActivity {
         boolean saved = scanSavedDishStore != null && scanSavedDishStore.save(item);
         Toast.makeText(
                 this,
-                saved ? "Da luu mon vao ho so" : "Mon nay da co trong danh sach da luu",
+            saved ? "Đã lưu món vào hồ sơ" : "Món này đã có trong danh sách đã lưu",
                 Toast.LENGTH_SHORT).show();
     }
 
     private void openDishRecipe(@NonNull ScanDishItem item) {
         if (item.getRecipe().trim().isEmpty()) {
-            Toast.makeText(this, "Mon nay chua co cong thuc chi tiet.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Món này chưa có công thức chi tiết.", Toast.LENGTH_SHORT).show();
             return;
         }
         ScanDishRecipeBottomSheet.show(this, item);
@@ -1006,13 +1006,13 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (btnPreviewDownload != null) {
             btnPreviewDownload.setOnClickListener(v -> Toast.makeText(
                     this,
-                    "TODO: luu anh vao thiet bi",
+                    "TODO: lưu ảnh vào thiết bị",
                     Toast.LENGTH_SHORT).show());
         }
         if (btnPreviewEffects != null) {
             btnPreviewEffects.setOnClickListener(v -> Toast.makeText(
                     this,
-                    "TODO: hieu ung dang duoc phat trien",
+                    "TODO: hiệu ứng đang được phát triển",
                     Toast.LENGTH_SHORT).show());
         }
         if (btnSaveSelectedDish != null) {
@@ -1082,11 +1082,11 @@ public class ScanFoodActivity extends AppCompatActivity {
                         }
                         if (bytes == null || bytes.length == 0) {
                             runOnUiThread(() -> {
-                                updateScanStatus("Khong doc duoc anh chup, vui long thu lai");
-                                updateEntryStatus("Khong doc duoc anh vua chup.");
+                                updateScanStatus("Không đọc được ảnh chụp, vui lòng thử lại");
+                                updateEntryStatus("Không đọc được ảnh vừa chụp.");
                                 Toast.makeText(
                                         ScanFoodActivity.this,
-                                        "Khong doc duoc anh vua chup",
+                                    "Không đọc được ảnh vừa chụp",
                                         Toast.LENGTH_SHORT).show();
                             });
                             return;
@@ -1116,11 +1116,11 @@ public class ScanFoodActivity extends AppCompatActivity {
                     public void onError(@NonNull ImageCaptureException exception) {
                         super.onError(exception);
                         runOnUiThread(() -> {
-                            updateScanStatus("Chup that bai, vui long thu lai");
-                            updateEntryStatus("Chup that bai, vui long thu lai.");
+                                updateScanStatus("Chụp thất bại, vui lòng thử lại");
+                                updateEntryStatus("Chụp thất bại, vui lòng thử lại.");
                             Toast.makeText(
                                     ScanFoodActivity.this,
-                                    "Khong chup duoc anh",
+                                    "Không chụp được ảnh",
                                     Toast.LENGTH_SHORT).show();
                         });
                     }
@@ -1169,16 +1169,16 @@ public class ScanFoodActivity extends AppCompatActivity {
                         MAX_RECOGNITION_IMAGE_BYTES);
                 if (raw.length > MAX_RECOGNITION_IMAGE_BYTES) {
                     runOnUiThread(() -> {
-                        updateScanStatus("Anh qua lon, vui long chon anh nho hon");
-                        Toast.makeText(this, "Anh vuot qua gioi han nhan dien", Toast.LENGTH_SHORT).show();
+                        updateScanStatus("Ảnh quá lớn, vui lòng chọn ảnh nhỏ hơn");
+                        Toast.makeText(this, "Ảnh vượt quá giới hạn nhận diện", Toast.LENGTH_SHORT).show();
                     });
                     return;
                 }
                 runOnUiThread(() -> processImageBytesForRecognition(raw, mimeType, sourceLabel));
             } catch (IOException ioException) {
                 runOnUiThread(() -> {
-                    updateScanStatus("Khong doc duoc anh, vui long thu lai");
-                    Toast.makeText(this, "Khong the doc anh da chon", Toast.LENGTH_SHORT).show();
+                    updateScanStatus("Không đọc được ảnh, vui lòng thử lại");
+                    Toast.makeText(this, "Không thể đọc ảnh đã chọn", Toast.LENGTH_SHORT).show();
                 });
             }
         });
@@ -1221,7 +1221,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
         isRecognitionInProgress = true;
         setProcessingUiEnabled(false);
-        updateScanStatus("Dang nhan dien thuc pham...");
+        updateScanStatus("Đang nhận diện thực phẩm...");
         selectedDishItem = null;
         dismissSuggestionDialog();
         renderDetectedIngredients(currentDetectedIngredients);
@@ -1240,18 +1240,18 @@ public class ScanFoodActivity extends AppCompatActivity {
 
                 geminiRepository.requestStructuredResponse(
                         INGREDIENT_DETECTION_PROMPT,
-                        "Phan tich anh nay va nhan dien tung thuc pham nhin thay ro trong anh.",
+                        "Phân tích ảnh này và nhận diện từng thực phẩm nhìn thấy rõ trong ảnh.",
                         safeMimeType,
                         imageBase64,
                         new GeminiRepository.StreamCallback() {
                             @Override
                             public void onStart() {
-                                runOnUiThread(() -> updateScanStatus("Dang nhan dien thuc pham..."));
+                                runOnUiThread(() -> updateScanStatus("Đang nhận diện thực phẩm..."));
                             }
 
                             @Override
                             public void onChunk(@NonNull String accumulatedText) {
-                                runOnUiThread(() -> updateScanStatus("Dang nhan dien thuc pham..."));
+                                runOnUiThread(() -> updateScanStatus("Đang nhận diện thực phẩm..."));
                             }
 
                             @Override
@@ -1261,12 +1261,12 @@ public class ScanFoodActivity extends AppCompatActivity {
 
                             @Override
                             public void onError(@NonNull String friendlyError) {
-                                runOnUiThread(() -> finishRecognitionWithError("AI dang ban, vui long thu lai"));
+                                runOnUiThread(() -> finishRecognitionWithError("AI đang bận, vui lòng thử lại"));
                             }
                         });
             } catch (IOException ioException) {
                 runOnUiThread(() -> finishRecognitionWithError(
-                        "Chua nhan dien duoc thuc pham, hay thu chup ro hon"));
+                        "Chưa nhận diện được thực phẩm, hãy thử chụp rõ hơn"));
             }
         });
     }
@@ -1276,7 +1276,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         List<DetectedIngredient> refinedIngredients = refineDetectedIngredients(rawIngredients);
         if (refinedIngredients.isEmpty()) {
             runOnUiThread(() -> finishRecognitionWithError(
-                    "Chua nhan dien duoc thuc pham, hay thu chup ro hon"));
+                    "Chưa nhận diện được thực phẩm, hãy thử chụp rõ hơn"));
             return;
         }
 
@@ -1290,7 +1290,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         List<DetectedIngredient> effectiveIngredients = buildEffectiveIngredients(ingredients);
         if (effectiveIngredients.isEmpty()) {
             runOnUiThread(() -> finishRecognitionWithError(
-                    "Chua nhan dien duoc thuc pham, hay thu chup ro hon"));
+                    "Chưa nhận diện được thực phẩm, hãy thử chụp rõ hơn"));
             return;
         }
 
@@ -1322,12 +1322,12 @@ public class ScanFoodActivity extends AppCompatActivity {
                 new GeminiRepository.StreamCallback() {
                     @Override
                     public void onStart() {
-                        runOnUiThread(() -> updateScanStatus("Dang goi y mon an..."));
+                        runOnUiThread(() -> updateScanStatus("Đang gợi ý món ăn..."));
                     }
 
                     @Override
                     public void onChunk(@NonNull String accumulatedText) {
-                        runOnUiThread(() -> updateScanStatus("Dang goi y mon an..."));
+                        runOnUiThread(() -> updateScanStatus("Đang gợi ý món ăn..."));
                     }
 
                     @Override
@@ -1342,7 +1342,7 @@ public class ScanFoodActivity extends AppCompatActivity {
                                     parseSuggestedDishes(finalText));
                             runOnUiThread(() -> {
                                 if (combinedDishItems.isEmpty()) {
-                                    finishRecognitionWithError("Chua tim thay mon phu hop");
+                                    finishRecognitionWithError("Chưa tìm thấy món phù hợp");
                                 } else {
                                     finishRecognitionSuccess(combinedDishItems, sourceLabel);
                                 }
@@ -1356,7 +1356,7 @@ public class ScanFoodActivity extends AppCompatActivity {
                             if (hasCompleteLocalCoverage && hasLocalCombinationMatch && !localSuggestions.isEmpty()) {
                                 finishRecognitionSuccess(localSuggestions, sourceLabel);
                             } else {
-                                finishRecognitionWithError("AI dang ban, vui long thu lai");
+                                finishRecognitionWithError("AI đang bận, vui lòng thử lại");
                             }
                         });
                     }
@@ -1388,8 +1388,8 @@ public class ScanFoodActivity extends AppCompatActivity {
                         normalizedName,
                         1d,
                         "other",
-                        "tu them",
-                        "Nguoi dung bo sung"));
+                        "tự thêm",
+                        "Người dùng bổ sung"));
             }
         }
         return effectiveIngredients;
@@ -1658,12 +1658,12 @@ public class ScanFoodActivity extends AppCompatActivity {
                 new GeminiRepository.StreamCallback() {
                     @Override
                     public void onStart() {
-                        runOnUiThread(() -> updateScanStatus("Dang bo sung cong thuc mon an..."));
+                        runOnUiThread(() -> updateScanStatus("Đang bổ sung công thức món ăn..."));
                     }
 
                     @Override
                     public void onChunk(@NonNull String accumulatedText) {
-                        runOnUiThread(() -> updateScanStatus("Dang bo sung cong thuc mon an..."));
+                        runOnUiThread(() -> updateScanStatus("Đang bổ sung công thức món ăn..."));
                     }
 
                     @Override
@@ -1710,17 +1710,17 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
 
         StringBuilder prompt = new StringBuilder();
-        prompt.append("Nguyen lieu da nhan dien: ").append(ingredientArray).append('.').append("\n");
-        prompt.append("Can tao cong thuc cho cac mon sau: ").append(dishArray).append('.').append("\n");
-        prompt.append("Cong thuc phai theo dung format recipe local cua CoolCook trong foods.json.\n");
-        prompt.append("Bat buoc dung cac heading sau theo dung thu tu:\n");
-        prompt.append("### Ten mon\n");
-        prompt.append("**Khau phan:**\n");
-        prompt.append("**Nguyen lieu:**\n");
-        prompt.append("**Cac buoc thuc hien:**\n");
-        prompt.append("**Meo toi uu:**\n");
-        prompt.append("Cong thuc phai thuc te, tiếng Việt rõ ràng, uu tien tan dung usedIngredients va chi them missingIngredients khi can.\n");
-        prompt.append("Chi tra ve JSON hop le theo schema sau:\n");
+        prompt.append("Nguyên liệu đã nhận diện: ").append(ingredientArray).append('.').append("\n");
+        prompt.append("Cần tạo công thức cho các món sau: ").append(dishArray).append('.').append("\n");
+        prompt.append("Công thức phải theo đúng format recipe local của CoolCook trong foods.json.\n");
+        prompt.append("Bắt buộc dùng các heading sau theo đúng thứ tự:\n");
+        prompt.append("### Tên món\n");
+        prompt.append("**Khẩu phần:**\n");
+        prompt.append("**Nguyên liệu:**\n");
+        prompt.append("**Các bước thực hiện:**\n");
+        prompt.append("**Mẹo tối ưu:**\n");
+        prompt.append("Công thức phải thực tế, tiếng Việt rõ ràng, ưu tiên tận dụng usedIngredients và chỉ thêm missingIngredients khi cần.\n");
+        prompt.append("Chỉ trả về JSON hợp lệ theo schema sau:\n");
         prompt.append('{').append("\n");
         prompt.append("  \"generatedDishes\": [\n");
         prompt.append("    {\n");
@@ -1782,15 +1782,15 @@ public class ScanFoodActivity extends AppCompatActivity {
         applyDishFilter();
         updateRecognitionPreviewState();
         if (allSuggestedDishItems.isEmpty()) {
-            updateScanStatus("Chua tim thay mon phu hop");
+            updateScanStatus("Chưa tìm thấy món phù hợp");
         } else {
-            updateScanStatus("Mo popup goi y mon an");
+            updateScanStatus("Mở popup gợi ý món ăn");
             showSuggestionDialog();
         }
         if ("cap nhat".equalsIgnoreCase(sourceLabel)) {
-            Toast.makeText(this, "Da cap nhat goi y 1 mon theo tap nguyen lieu hien tai.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Đã cập nhật gợi ý 1 món theo tập nguyên liệu hiện tại.", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "Da nhan dien nguyen lieu tu anh " + sourceLabel, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Đã nhận diện nguyên liệu từ ảnh " + sourceLabel, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1816,15 +1816,15 @@ public class ScanFoodActivity extends AppCompatActivity {
             txtSuggestionEmpty = dialogView.findViewById(R.id.txtSuggestionEmpty);
             TextView txtSuggestionIngredientsLabel = dialogView.findViewById(R.id.txtSuggestionIngredientsLabel);
             if (txtSuggestionIngredientsLabel != null) {
-                txtSuggestionIngredientsLabel.setText("Nguyen lieu AI su dung");
+                txtSuggestionIngredientsLabel.setText("Nguyên liệu AI sử dụng");
             }
             RecyclerView dialogRecyclerView = dialogView.findViewById(R.id.rvSuggestionDishes);
             dialogRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             dialogRecyclerView.setAdapter(suggestionDialogAdapter);
             View closeButton = dialogView.findViewById(R.id.btnSuggestionDialogClose);
             closeButton.setOnClickListener(v -> dismissSuggestionDialog());
-            suggestionDialog.setOnDismissListener(dialog -> updateScanStatus(
-                    "Huong camera vao thuc pham roi bam chup"));
+                suggestionDialog.setOnDismissListener(dialog -> updateScanStatus(
+                    "Hướng camera vào thực phẩm rồi bấm chụp"));
         }
 
         renderSuggestionIngredientChips();
@@ -1866,10 +1866,10 @@ public class ScanFoodActivity extends AppCompatActivity {
         updateSelectedDishState();
         updateRecognitionPreviewState();
         if (txtDetectedIngredientsEmpty != null) {
-            txtDetectedIngredientsEmpty.setText("Dang nhan dien nguyen lieu...");
+            txtDetectedIngredientsEmpty.setText("Đang nhận diện nguyên liệu...");
         }
         if (txtDishSuggestionsEmpty != null) {
-            txtDishSuggestionsEmpty.setText("Dang goi y mon co the nau...");
+            txtDishSuggestionsEmpty.setText("Đang gợi ý món có thể nấu...");
         }
     }
 
@@ -1886,7 +1886,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (txtDetectedIngredientsEmpty != null) {
             txtDetectedIngredientsEmpty.setVisibility(ingredients.isEmpty() ? View.VISIBLE : View.GONE);
             if (ingredients.isEmpty()) {
-                txtDetectedIngredientsEmpty.setText("Chua co nguyen lieu nhan dien duoc.");
+                txtDetectedIngredientsEmpty.setText("Chưa có nguyên liệu nhận diện được.");
             }
         }
     }
@@ -1908,7 +1908,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         groupSuggestedExtraIngredients.removeAllViews();
         if (scanFoodLocalMatcher == null) {
             if (txtExtraIngredientsHint != null) {
-                txtExtraIngredientsHint.setText("Dang khoi tao danh sach nguyen lieu goi y...");
+                txtExtraIngredientsHint.setText("Đang khởi tạo danh sách nguyên liệu gợi ý...");
             }
             return;
         }
@@ -1920,9 +1920,9 @@ public class ScanFoodActivity extends AppCompatActivity {
             groupSuggestedExtraIngredients.addView(createSuggestedExtraChip(suggestion));
         }
         if (txtExtraIngredientsHint != null) {
-            txtExtraIngredientsHint.setText(suggestions.isEmpty()
-                    ? "Khong co nguyen lieu goi y them. Ban co the tu nhap de AI ket hop."
-                    : "Chon them nguyen lieu de AI ket hop thanh 1 mon phu hop hon.");
+                txtExtraIngredientsHint.setText(suggestions.isEmpty()
+                    ? "Không có nguyên liệu gợi ý thêm. Bạn có thể tự nhập để AI kết hợp."
+                    : "Chọn thêm nguyên liệu để AI kết hợp thành 1 món phù hợp hơn.");
         }
     }
 
@@ -2004,7 +2004,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void openDishIngredientRemovalHint() {
-        Toast.makeText(this, "Nhan dau X de xoa nguyen lieu dang duoc AI su dung.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Nhấn dấu X để xóa nguyên liệu đang được AI sử dụng.", Toast.LENGTH_SHORT).show();
     }
 
     private void addManualExtraIngredient() {
@@ -2015,7 +2015,7 @@ public class ScanFoodActivity extends AppCompatActivity {
                 ? ""
                 : edtManualExtraIngredient.getText().toString().trim();
         if (rawValue.isEmpty()) {
-            Toast.makeText(this, "Nhap them mot nguyen lieu truoc.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Nhập thêm một nguyên liệu trước.", Toast.LENGTH_SHORT).show();
             return;
         }
         edtManualExtraIngredient.setText("");
@@ -2030,13 +2030,13 @@ public class ScanFoodActivity extends AppCompatActivity {
         String stableId = scanFoodLocalMatcher.createStableId(normalizedName, false);
         for (DetectedIngredient ingredient : currentDetectedIngredients) {
             if (scanFoodLocalMatcher.createStableId(ingredient.getName(), false).equals(stableId)) {
-                Toast.makeText(this, "Nguyen lieu nay da co trong danh sach nhan dien.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Nguyên liệu này đã có trong danh sách nhận diện.", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
         for (String existing : currentExtraIngredients) {
             if (scanFoodLocalMatcher.createStableId(existing, false).equals(stableId)) {
-                Toast.makeText(this, "Nguyen lieu bo sung nay da duoc chon.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Nguyên liệu bổ sung này đã được chọn.", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -2064,7 +2064,7 @@ public class ScanFoodActivity extends AppCompatActivity {
             allSuggestedDishItems.clear();
             renderSuggestedDishes(allSuggestedDishItems);
             dismissSuggestionDialog();
-            updateScanStatus("Ban co the chup hoac them nguyen lieu de AI goi y 1 mon.");
+            updateScanStatus("Bạn có thể chụp hoặc thêm nguyên liệu để AI gợi ý 1 món.");
             return;
         }
         requestDishSuggestions("cap nhat");
@@ -2089,7 +2089,7 @@ public class ScanFoodActivity extends AppCompatActivity {
             renderSuggestedDishes(allSuggestedDishItems);
             dismissSuggestionDialog();
             updateSelectedDishState();
-            updateScanStatus("Da xoa het nhan dien truoc do. Ban co the chup lai.");
+            updateScanStatus("Đã xóa hết nhận diện trước đó. Bạn có thể chụp lại.");
             return;
         }
         requestDishSuggestions("cap nhat");
@@ -2105,7 +2105,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (txtSuggestionEmpty != null) {
             txtSuggestionEmpty.setVisibility(dishItems.isEmpty() ? View.VISIBLE : View.GONE);
             if (dishItems.isEmpty()) {
-                txtSuggestionEmpty.setText("Chua co mon goi y phu hop.");
+                txtSuggestionEmpty.setText("Chưa có món gợi ý phù hợp.");
             }
         }
     }
@@ -2120,21 +2120,21 @@ public class ScanFoodActivity extends AppCompatActivity {
 
     private void saveSelectedDish() {
         if (selectedDishItem == null) {
-            Toast.makeText(this, "Ban can chon mot mon truoc khi luu.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Bạn cần chọn một món trước khi lưu.", Toast.LENGTH_SHORT).show();
             return;
         }
         boolean saved = scanSavedDishStore != null && scanSavedDishStore.save(selectedDishItem);
         Toast.makeText(
                 this,
-                saved ? "Da luu mon da chon vao danh sach nhan dien." : "Mon nay da co trong danh sach nhan dien.",
+                saved ? "Đã lưu món đã chọn vào danh sách nhận diện." : "Món này đã có trong danh sách nhận diện.",
                 Toast.LENGTH_SHORT).show();
     }
 
     private void updateSelectedDishState() {
         if (txtSelectedDishHint != null) {
             txtSelectedDishHint.setText(selectedDishItem == null
-                    ? "Chua chon mon nao de luu"
-                    : "Da chon: " + selectedDishItem.getName());
+                    ? "Chưa chọn món nào để lưu"
+                    : "Đã chọn: " + selectedDishItem.getName());
         }
         if (btnSaveSelectedDish != null) {
             btnSaveSelectedDish.setEnabled(selectedDishItem != null);
@@ -2188,7 +2188,7 @@ public class ScanFoodActivity extends AppCompatActivity {
 
         renderSuggestedDishes(filteredItems);
         if (txtDishSuggestionsEmpty != null && !allSuggestedDishItems.isEmpty() && filteredItems.isEmpty()) {
-            txtDishSuggestionsEmpty.setText("Khong co mon phu hop voi bo loc suc khoe dang chon.");
+            txtDishSuggestionsEmpty.setText("Không có món phù hợp với bộ lọc sức khỏe đang chọn.");
         }
         updateSelectedDishState();
     }
@@ -2278,29 +2278,29 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
 
         StringBuilder prompt = new StringBuilder();
-        prompt.append("Nguyen lieu da nhan dien: ").append(ingredientArray).append('.').append("\n");
-        prompt.append("Nguyen lieu bo sung nguoi dung chon: ").append(new JSONArray(currentExtraIngredients)).append('.').append("\n");
-        prompt.append("Danh sach nguyen lieu hop le de dua vao matchedIngredients: ").append(allowedIngredientArray).append('.').append("\n");
-        prompt.append("Mon local tham khao trong app: ").append(localDishArray).append('.').append("\n");
-        prompt.append("Hay goi y DUNG 3 mon phu hop nhat co the nau tu tap nguyen lieu nay.\n");
-        prompt.append("Moi mon duoc goi y phai bam sat tap nguyen lieu dang co, khong duoc doi sang mot mon khac chi vi thieu nguyen lieu.\n");
-        prompt.append("matchedIngredients BAT BUOC phai copy dung nguyen van tung ten tu danh sach nguyen lieu hop le. Khong duoc doi ten, viet lai ten, hay tu them ten moi.\n");
-        prompt.append("missingIngredients chi duoc phep la gia vi hoac nguyen lieu phu nho. Neu thieu nguyen lieu chinh cua mon thi KHONG duoc de xuat mon do.\n");
-        prompt.append("Neu nguoi dung co dong thoi ga va bo thi uu tien mon co ca ga va bo; neu local khong co thi moi duoc de xuat mon moi, nhung van phai giu dung cac nguyen lieu chinh dang co.\n");
-        prompt.append("Mon duoc goi y phai bam sat nhung gi xuat hien trong anh, khong duoc doi sang mon khong lien quan.\n");
-        prompt.append("Neu anh cho thay 1 mon hoan chinh hoac 1 thuc pham ro rang, uu tien giu dung ten mon/thuc pham do.\n");
-        prompt.append("Vi du neu nhan dien la banh mi thi khong duoc goi y com ga chien hay mon khac khong lien quan.\n");
-        prompt.append("Chi khi khong the goi dung ten mon dang thay moi duoc suy luan 1 mon gan nhat tu tap nguyen lieu, va mon do phai co matchedIngredients bao phu phan lon nguyen lieu dang co.\n");
-        prompt.append("Neu khong tim duoc mon phu hop, tra ve dishes rong []. Khong duoc co gang tra ve du 3 mon bang cach doan mon lech nguyen lieu.\n");
-        prompt.append("Sap xep 3 mon theo muc do phu hop giam dan, mon dau tien la phu hop nhat.\n");
-        prompt.append("Neu ten mon trung mot mon local trong app, giu dung ten mon local do.\n");
-        prompt.append("Bat buoc tra ve day du cong thuc theo dung format foods.json voi cac heading:\n");
-        prompt.append("### Ten mon | **Khau phan:** | **Nguyen lieu:** | **Cac buoc thuc hien:** | **Meo toi uu:**\n");
-        prompt.append("Quy tac hop le:\n");
-        prompt.append("- Neu input co tu 2 nguyen lieu tro len, moi mon goi y phai dung it nhat 2 matchedIngredients.\n");
-        prompt.append("- Khong de xuat mon neu matchedIngredients it hon missingIngredients.\n");
-        prompt.append("- Khong duoc de xuat mon ma nguyen lieu chinh khong nam trong matchedIngredients.\n");
-        prompt.append("- Neu mot ten trong matchedIngredients khong nam trong danh sach hop le thi output do la sai.\n");
+        prompt.append("Nguyên liệu đã nhận diện: ").append(ingredientArray).append('.').append("\n");
+        prompt.append("Nguyên liệu bổ sung người dùng chọn: ").append(new JSONArray(currentExtraIngredients)).append('.').append("\n");
+        prompt.append("Danh sách nguyên liệu hợp lệ để đưa vào matchedIngredients: ").append(allowedIngredientArray).append('.').append("\n");
+        prompt.append("Món local tham khảo trong app: ").append(localDishArray).append('.').append("\n");
+        prompt.append("Hãy gợi ý ĐÚNG 3 món phù hợp nhất có thể nấu từ tập nguyên liệu này.\n");
+        prompt.append("Mỗi món được gợi ý phải bám sát tập nguyên liệu đang có, không được đổi sang một món khác chỉ vì thiếu nguyên liệu.\n");
+        prompt.append("matchedIngredients BẮT BUỘC phải copy đúng nguyên văn từng tên từ danh sách nguyên liệu hợp lệ. Không được đổi tên, viết lại tên, hay tự thêm tên mới.\n");
+        prompt.append("missingIngredients chỉ được phép là gia vị hoặc nguyên liệu phụ nhỏ. Nếu thiếu nguyên liệu chính của món thì KHÔNG được đề xuất món đó.\n");
+        prompt.append("Nếu người dùng có đồng thời gà và bò thì ưu tiên món có cả gà và bò; nếu local không có thì mới được đề xuất món mới, nhưng vẫn phải giữ đúng các nguyên liệu chính đang có.\n");
+        prompt.append("Món được gợi ý phải bám sát những gì xuất hiện trong ảnh, không được đổi sang món không liên quan.\n");
+        prompt.append("Nếu ảnh cho thấy 1 món hoàn chỉnh hoặc 1 thực phẩm rõ ràng, ưu tiên giữ đúng tên món/thực phẩm đó.\n");
+        prompt.append("Ví dụ nếu nhận diện là bánh mì thì không được gợi ý cơm gà chiên hay món khác không liên quan.\n");
+        prompt.append("Chỉ khi không thể gọi đúng tên món đang thấy mới được suy luận 1 món gần nhất từ tập nguyên liệu, và món đó phải có matchedIngredients bao phủ phần lớn nguyên liệu đang có.\n");
+        prompt.append("Nếu không tìm được món phù hợp, trả về dishes rỗng []. Không được cố gắng trả về đủ 3 món bằng cách đoán món lệch nguyên liệu.\n");
+        prompt.append("Sắp xếp 3 món theo mức độ phù hợp giảm dần, món đầu tiên là phù hợp nhất.\n");
+        prompt.append("Nếu tên món trùng một món local trong app, giữ đúng tên món local đó.\n");
+        prompt.append("Bắt buộc trả về đầy đủ công thức theo đúng format foods.json với các heading:\n");
+        prompt.append("### Tên món | **Khẩu phần:** | **Nguyên liệu:** | **Các bước thực hiện:** | **Mẹo tối ưu:**\n");
+        prompt.append("Quy tắc hợp lệ:\n");
+        prompt.append("- Nếu input có từ 2 nguyên liệu trở lên, mỗi món gợi ý phải dùng ít nhất 2 matchedIngredients.\n");
+        prompt.append("- Không đề xuất món nếu matchedIngredients ít hơn missingIngredients.\n");
+        prompt.append("- Không được đề xuất món mà nguyên liệu chính không nằm trong matchedIngredients.\n");
+        prompt.append("- Nếu một tên trong matchedIngredients không nằm trong danh sách hợp lệ thì output đó là sai.\n");
         prompt.append("Chi tra ve JSON hop le theo dung schema sau:\n");
         prompt.append('{').append("\n");
         prompt.append("  \"dishes\": [\n");
@@ -2308,7 +2308,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         prompt.append("      \"name\": \"...\",\n");
         prompt.append("      \"matchedIngredients\": [\"...\", \"...\"],\n");
         prompt.append("      \"missingIngredients\": [\"...\"],\n");
-        prompt.append("      \"reason\": \"Vi sao mon nay la ket hop phu hop nhat\",\n");
+        prompt.append("      \"reason\": \"Vì sao món này là kết hợp phù hợp nhất\",\n");
         prompt.append("      \"healthTags\": [\"it dau\", \"tang co\", \"de tieu\"],\n");
         prompt.append("      \"recipe\": \"### ...\",\n");
         prompt.append("      \"confidence\": 0.0\n");
@@ -2340,7 +2340,7 @@ public class ScanFoodActivity extends AppCompatActivity {
                         name,
                         item.optDouble("confidence", 0d),
                         item.optString("category", "other").trim(),
-                        item.optString("visibleAmount", "khong ro").trim(),
+                        item.optString("visibleAmount", "không rõ").trim(),
                         item.optString("notes", "").trim()));
             }
         } catch (Exception ignored) {

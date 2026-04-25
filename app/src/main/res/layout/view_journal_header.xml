@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:fontFamily="@font/manrope"
-                android:text="Tat ca ban be"
+                android:text="Tất cả bạn bè"
                 android:textColor="@color/journal_text_primary"
                 android:textSize="15sp"
                 android:textStyle="bold" />

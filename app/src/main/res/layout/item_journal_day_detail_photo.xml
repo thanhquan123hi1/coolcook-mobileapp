@@ -44,7 +44,7 @@
             android:paddingTop="4dp"
             android:paddingEnd="8dp"
             android:paddingBottom="4dp"
-            android:text="Mon an"
+                android:text="Món ăn"
             android:textColor="@color/on_surface"
             android:textSize="11sp" />
     </FrameLayout>

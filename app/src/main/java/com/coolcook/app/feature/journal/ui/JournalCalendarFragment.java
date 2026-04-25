@@ -98,6 +98,8 @@ public class JournalCalendarFragment extends Fragment {
         fabAddPhoto = view.findViewById(R.id.fabJournalAddPhoto);
         calendarRecycler = view.findViewById(R.id.rvJournalCalendarDays);
 
+        elevateFabAboveContent();
+
         if (bottomNav != null) {
             bottomNav.setVisibility(View.GONE);
         }
@@ -298,10 +300,21 @@ public class JournalCalendarFragment extends Fragment {
                         (ViewGroup.MarginLayoutParams) fabAddPhoto.getLayoutParams();
                 updatedFabParams.rightMargin = baseFabEnd + bars.right;
                 fabAddPhoto.setLayoutParams(updatedFabParams);
+                elevateFabAboveContent();
             }
 
             return insets;
         });
         ViewCompat.requestApplyInsets(root);
+    }
+
+    private void elevateFabAboveContent() {
+        if (fabAddPhoto == null) {
+            return;
+        }
+        fabAddPhoto.bringToFront();
+        float elevation = getResources().getDimension(R.dimen.journal_fab_elevation);
+        ViewCompat.setElevation(fabAddPhoto, elevation);
+        ViewCompat.setTranslationZ(fabAddPhoto, 0f);
     }
 }

@@ -200,7 +200,7 @@ public class JournalEntry {
         if (!caption.isEmpty()) {
             return caption;
         }
-        return "Nhat ky mon an";
+        return "Nhật ký món ăn";
     }
 
     @NonNull

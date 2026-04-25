@@ -131,6 +131,8 @@ public class JournalCalendarActivity extends AppCompatActivity {
         navLabelHistory = findViewById(R.id.homeNavLabelHistory);
         navLabelProfile = findViewById(R.id.homeNavLabelProfile);
         navCameraButton = findViewById(R.id.homeNavCameraButton);
+
+        elevateFabAboveContent();
     }
 
     private void setupRecycler() {
@@ -499,10 +501,21 @@ public class JournalCalendarActivity extends AppCompatActivity {
                 updatedFabParams.bottomMargin = baseFabBottom;
                 updatedFabParams.rightMargin = baseFabEnd + bars.right;
                 fabAddPhoto.setLayoutParams(updatedFabParams);
+                elevateFabAboveContent();
             }
 
             return insets;
         });
         ViewCompat.requestApplyInsets(root);
+    }
+
+    private void elevateFabAboveContent() {
+        if (fabAddPhoto == null) {
+            return;
+        }
+        fabAddPhoto.bringToFront();
+        float elevation = getResources().getDimension(R.dimen.journal_fab_elevation);
+        ViewCompat.setElevation(fabAddPhoto, elevation);
+        ViewCompat.setTranslationZ(fabAddPhoto, 0f);
     }
 }

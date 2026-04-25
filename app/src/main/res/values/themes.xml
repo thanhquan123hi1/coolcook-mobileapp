@@ -32,6 +32,15 @@
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
+    <style name="ShapeAppearanceOverlay" />
+
+    <style name="ShapeAppearanceOverlay.Coolcook" parent="ShapeAppearanceOverlay" />
+
+    <style name="ShapeAppearanceOverlay.Coolcook.CircleFab" parent="ShapeAppearanceOverlay.Coolcook">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
     <style name="Theme.Coolcook.Splash" parent="Base.Theme.Coolcook">
         <!-- Match splash layout background so launch feels like a single screen. -->
         <item name="android:windowBackground">#fff8f3</item>

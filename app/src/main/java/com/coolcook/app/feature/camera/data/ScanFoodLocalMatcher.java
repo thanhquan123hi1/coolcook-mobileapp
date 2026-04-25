@@ -365,7 +365,7 @@ public class ScanFoodLocalMatcher {
 
     @NonNull
     private static String buildDirectReason(@NonNull String detectedName, @NonNull String dishName) {
-        return "Nhan dien truc tiep \"" + detectedName + "\" nen uu tien lay mon local " + dishName + ".";
+        return "Nhận diện trực tiếp \"" + detectedName + "\" nên ưu tiên lấy món local " + dishName + ".";
     }
 
     @NonNull
