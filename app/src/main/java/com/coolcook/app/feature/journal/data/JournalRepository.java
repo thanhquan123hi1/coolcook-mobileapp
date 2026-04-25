@@ -126,6 +126,28 @@ public class JournalRepository {
                 .addOnFailureListener(callback::onComplete);
     }
 
+    public interface CountCallback {
+        void onComplete(int count, @Nullable Exception error);
+    }
+
+    public void countPhotoEntries(@NonNull String userId, @NonNull CountCallback callback) {
+        if (TextUtils.isEmpty(userId)) {
+            callback.onComplete(0, new IllegalArgumentException("userId is required"));
+            return;
+        }
+        journalCollection(userId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    int count = 0;
+                    for (com.google.firebase.firestore.DocumentSnapshot doc : snapshot.getDocuments()) {
+                        JournalEntry entry = JournalEntry.fromSnapshot(doc);
+                        if (!entry.isFoodEntry()) count++;
+                    }
+                    callback.onComplete(count, null);
+                })
+                .addOnFailureListener(error -> callback.onComplete(0, error));
+    }
+
     private CollectionReference journalCollection(@NonNull String userId) {
         return firestore.collection(USERS_COLLECTION)
                 .document(userId)

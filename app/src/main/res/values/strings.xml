@@ -162,9 +162,9 @@
     <string name="profile_avatar_desc">Ảnh đại diện hồ sơ</string>
     <string name="profile_default_name">Người dùng</string>
     <string name="profile_edit_desc">Chỉnh sửa hồ sơ</string>
-    <string name="profile_stats_cooked">Món đã nấu</string>
-    <string name="profile_stats_saved">Đã lưu</string>
-    <string name="profile_stats_posts">Bài viết</string>
+    <string name="profile_stats_cooked">Số bạn bè</string>
+    <string name="profile_stats_saved">Món đã lưu</string>
+    <string name="profile_stats_posts">Ảnh chụp</string>
     <string name="profile_section_activity">Hoạt động</string>
     <string name="profile_action_saved">Món ăn đã lưu</string>
     <string name="profile_action_journal">Nhật ký món ăn</string>

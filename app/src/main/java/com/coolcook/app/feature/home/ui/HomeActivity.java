@@ -148,6 +148,7 @@ public class HomeActivity extends AppCompatActivity {
         profileController.observeProfileUpdates();
         profileController.displayUserInfo();
         profileController.loadProfileFromFirestore(firestore);
+        profileController.loadStats(firestore);
         showInitialTab(getIntent());
         applyInsets();
         openPendingInviteIfNeeded();

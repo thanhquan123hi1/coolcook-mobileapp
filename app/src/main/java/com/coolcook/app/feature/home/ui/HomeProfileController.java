@@ -9,13 +9,19 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.coolcook.app.R;
 import com.coolcook.app.core.theme.ThemeManager;
 import com.coolcook.app.core.util.AvatarImageUtils;
+import com.coolcook.app.feature.camera.data.ScanSavedDishStore;
 import com.coolcook.app.feature.camera.ui.SavedScanDishesActivity;
+import com.coolcook.app.feature.journal.data.JournalRepository;
+import com.coolcook.app.feature.journal.model.JournalEntry;
 import com.coolcook.app.feature.journal.ui.JournalCalendarActivity;
+
 import com.coolcook.app.feature.main.ui.MainActivity;
 import com.coolcook.app.feature.profile.ui.EditProfileDialogFragment;
 import com.coolcook.app.feature.profile.ui.HealthTrackingActivity;
@@ -362,6 +368,25 @@ final class HomeProfileController {
         activity.startActivity(intent);
         activity.overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
         activity.finish();
+    }
+
+    void loadStats(@NonNull FirebaseFirestore firestore) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        TextView txtSavedDishes = activity.findViewById(R.id.txtStatSavedDishes);
+        TextView txtPhotos = activity.findViewById(R.id.txtStatPhotos);
+
+        if (txtSavedDishes != null) {
+            int savedCount = new ScanSavedDishStore(activity).getSavedDishes().size();
+            txtSavedDishes.setText(String.valueOf(savedCount));
+        }
+
+        if (txtPhotos != null && user != null) {
+            new JournalRepository(firestore).countPhotoEntries(user.getUid(), (count, error) -> {
+                if (!isActivityAliveForUi()) return;
+                activity.runOnUiThread(() -> txtPhotos.setText(String.valueOf(count)));
+            });
+        }
     }
 
     private boolean isActivityAliveForUi() {

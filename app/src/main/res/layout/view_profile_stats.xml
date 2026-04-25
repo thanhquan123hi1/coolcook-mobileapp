@@ -21,10 +21,11 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/txtStatFriends"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/be_vietnam_pro"
-            android:text="24"
+            android:text="0"
             android:textColor="@color/primary"
             android:textSize="@dimen/profile_stats_value_text_size"
             android:textStyle="bold" />
@@ -56,10 +57,11 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/txtStatSavedDishes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/be_vietnam_pro"
-            android:text="12"
+            android:text="0"
             android:textColor="@color/primary"
             android:textSize="@dimen/profile_stats_value_text_size"
             android:textStyle="bold" />
@@ -91,10 +93,11 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/txtStatPhotos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/be_vietnam_pro"
-            android:text="8"
+            android:text="0"
             android:textColor="@color/primary"
             android:textSize="@dimen/profile_stats_value_text_size"
             android:textStyle="bold" />
