@@ -12,67 +12,115 @@
         android:layout_height="match_parent"
         android:background="#000000">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/topBar"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="#990A0A0A"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="24dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="24dp"
-            android:paddingBottom="16dp"
+            android:layout_height="@dimen/camera_screen_top_bar_height"
+            android:layout_marginStart="@dimen/camera_screen_top_bar_horizontal_margin"
+            android:layout_marginTop="@dimen/camera_screen_top_bar_top_margin"
+            android:layout_marginEnd="@dimen/camera_screen_top_bar_horizontal_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.card.MaterialCardView
+            <FrameLayout
                 android:id="@+id/btnBack"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="@dimen/camera_screen_top_back_size"
+                android:layout_height="@dimen/camera_screen_top_back_size"
+                android:background="@drawable/bg_scan_camera_control_dark"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="@drawable/fg_ripple_circle"
-                android:stateListAnimator="@null"
-                app:cardBackgroundColor="@android:color/transparent"
-                app:cardCornerRadius="999dp"
-                app:cardElevation="0dp">
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="center"
-                    android:fontFamily="@font/material_symbols_outlined"
-                    android:text="arrow_back"
-                    android:textColor="#E2E2E2"
-                    android:textSize="24sp" />
-            </com.google.android.material.card.MaterialCardView>
+                    android:src="@drawable/ic_arrow_back_24"
+                    app:tint="@android:color/white" />
+            </FrameLayout>
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:fontFamily="@font/manrope"
-                android:gravity="center"
-                android:letterSpacing="0.14"
-                android:text="COOLCOOK"
-                android:textAllCaps="true"
-                android:textColor="#E2E2E2"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+            <FrameLayout
+                android:id="@+id/topCenterAction"
+                android:layout_width="@dimen/camera_screen_top_center_width"
+                android:layout_height="@dimen/camera_screen_top_center_height"
+                android:background="@drawable/bg_scan_camera_control_dark"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.card.MaterialCardView
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_camera_groups" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/topRightDecor"
+                android:layout_width="@dimen/camera_screen_top_right_size"
+                android:layout_height="@dimen/camera_screen_top_right_size"
+                android:background="@drawable/bg_scan_camera_control_dark"
+                android:foreground="@drawable/fg_ripple_circle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_camera_chat" />
+            </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <FrameLayout
+            android:id="@+id/cameraPreviewCard"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/camera_screen_preview_horizontal_margin"
+            android:layout_marginTop="@dimen/camera_screen_preview_top_gap"
+            android:layout_marginEnd="@dimen/camera_screen_preview_horizontal_margin"
+            android:background="@drawable/bg_scan_camera_preview"
+            android:clipToOutline="true"
+            app:layout_constraintBottom_toTopOf="@id/footerContainer"
+            app:layout_constraintDimensionRatio="424:430"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/topBar"
+            app:layout_constraintVertical_bias="0">
+
+            <androidx.camera.view.PreviewView
+                android:id="@+id/previewView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:keepScreenOn="true"
+                app:implementationMode="compatible"
+                app:scaleType="fillCenter" />
+
+            <View
+                android:id="@+id/previewInnerFrame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/transparent_drawable"
+                android:clickable="false"
+                android:focusable="false" />
+
+            <FrameLayout
                 android:id="@+id/btnFlash"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="@dimen/camera_screen_flash_button_size"
+                android:layout_height="@dimen/camera_screen_flash_button_size"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="@dimen/camera_screen_flash_margin_start"
+                android:layout_marginTop="@dimen/camera_screen_flash_margin_top"
+                android:background="@drawable/bg_scan_camera_flash_button"
                 android:clickable="true"
                 android:focusable="true"
-                android:foreground="@drawable/fg_ripple_circle"
-                android:stateListAnimator="@null"
-                app:cardBackgroundColor="@android:color/transparent"
-                app:cardCornerRadius="999dp"
-                app:cardElevation="0dp">
+                android:foreground="@drawable/fg_ripple_circle">
 
                 <TextView
                     android:id="@+id/iconFlash"
@@ -80,50 +128,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="@font/material_symbols_outlined"
-                    android:text="flash_on"
-                    android:textColor="#FABD00"
-                    android:textSize="24sp" />
-            </com.google.android.material.card.MaterialCardView>
-        </LinearLayout>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cameraPreviewCard"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="24dp"
-            android:clipToPadding="false"
-            android:stateListAnimator="@null"
-            app:cardBackgroundColor="#1F1F1F"
-            app:cardCornerRadius="48dp"
-            app:cardElevation="0dp"
-            app:layout_constraintBottom_toTopOf="@id/footerContainer"
-            app:layout_constraintDimensionRatio="3:4"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topBar"
-            app:layout_constraintVertical_bias="0.5"
-            app:strokeColor="#264F4632"
-            app:strokeWidth="1dp">
-
-            <androidx.camera.view.PreviewView
-                android:id="@+id/previewView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:keepScreenOn="true"
-                app:implementationMode="performance"
-                app:scaleType="fillCenter" />
-
-            <View
-                android:id="@+id/previewInnerFrame"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="48dp"
-                android:background="@drawable/bg_scan_preview_frame"
-                android:clickable="false"
-                android:focusable="false" />
+                    android:text="flash_off"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+            </FrameLayout>
 
             <View
                 android:id="@+id/detectionBox"
@@ -375,7 +383,7 @@
                         android:textSize="15sp" />
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
-        </com.google.android.material.card.MaterialCardView>
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/footerContainer"
@@ -383,10 +391,10 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:paddingStart="24dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="24dp"
-            android:paddingBottom="48dp"
+            android:paddingStart="@dimen/camera_screen_footer_horizontal_padding"
+            android:paddingTop="0dp"
+            android:paddingEnd="@dimen/camera_screen_footer_horizontal_padding"
+            android:paddingBottom="@dimen/camera_screen_footer_bottom_padding"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -395,18 +403,18 @@
                 android:id="@+id/txtScanStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
                 android:fontFamily="@font/be_vietnam_pro"
                 android:gravity="center"
                 android:text="Hướng camera vào món ăn rồi bấm nút chụp"
                 android:textColor="#D4C5AB"
-                android:textSize="13sp" />
+                android:textSize="13sp"
+                android:visibility="gone" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/tabsContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp">
+                android:layout_marginTop="@dimen/camera_screen_tabs_top_margin">
 
                 <TextView
                     android:id="@+id/tabNhanDien"
@@ -414,20 +422,15 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
-                    android:fontFamily="@font/manrope"
+                    android:fontFamily="@font/be_vietnam_pro_medium"
                     android:foreground="@drawable/fg_ripple_rounded_medium"
                     android:gravity="center"
-                    android:letterSpacing="0.06"
-                    android:minHeight="36dp"
-                    android:paddingStart="12dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="12dp"
-                    android:paddingBottom="8dp"
+                    android:letterSpacing="0.05"
+                    android:minHeight="20dp"
                     android:text="NHẬN DIỆN"
                     android:textAllCaps="true"
-                    android:textColor="#FABD00"
+                    android:textColor="#D4C5AB"
                     android:textSize="14sp"
-                    android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -435,23 +438,18 @@
                     android:id="@+id/tabNhatKy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
+                    android:layout_marginStart="@dimen/camera_screen_tabs_gap"
                     android:clickable="true"
                     android:focusable="true"
-                    android:fontFamily="@font/manrope"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
                     android:foreground="@drawable/fg_ripple_rounded_medium"
                     android:gravity="center"
-                    android:letterSpacing="0.06"
-                    android:minHeight="36dp"
-                    android:paddingStart="12dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="12dp"
-                    android:paddingBottom="8dp"
+                    android:letterSpacing="0.05"
+                    android:minHeight="20dp"
                     android:text="NHẬT KÝ"
                     android:textAllCaps="true"
-                    android:textColor="#99D4C5AB"
+                    android:textColor="#FABD00"
                     android:textSize="14sp"
-                    android:textStyle="bold"
                     app:layout_constraintStart_toEndOf="@id/tabNhanDien"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -459,7 +457,9 @@
                     android:id="@+id/tabIndicator"
                     android:layout_width="34dp"
                     android:layout_height="2dp"
+                    android:alpha="0"
                     android:background="#FABD00"
+                    android:visibility="invisible"
                     app:layout_constraintEnd_toEndOf="@id/tabNhanDien"
                     app:layout_constraintStart_toStartOf="@id/tabNhanDien"
                     app:layout_constraintTop_toBottomOf="@id/tabNhanDien" />
@@ -468,36 +468,27 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/bottomActionRow"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="@dimen/camera_screen_shutter_outer_size"
+                android:layout_marginTop="@dimen/camera_screen_controls_top_margin">
 
-                <com.google.android.material.card.MaterialCardView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/btnGallery"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
+                    android:layout_width="@dimen/camera_screen_side_action_size"
+                    android:layout_height="@dimen/camera_screen_side_action_size"
+                    android:background="@drawable/fg_ripple_circle"
                     android:clickable="true"
+                    android:contentDescription="@null"
                     android:focusable="true"
-                    android:foreground="@drawable/fg_ripple_circle"
-                    android:stateListAnimator="@null"
-                    app:cardBackgroundColor="@android:color/transparent"
-                    app:cardCornerRadius="999dp"
-                    app:cardElevation="0dp"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_camera_gallery"
                     app:layout_constraintBottom_toBottomOf="@id/btnShutter"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/btnShutter"
-                    app:strokeColor="#4D4F4632"
-                    app:strokeWidth="1dp">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/img_scan_food_salad" />
-                </com.google.android.material.card.MaterialCardView>
+                    app:layout_constraintTop_toTopOf="@id/btnShutter" />
 
                 <FrameLayout
                     android:id="@+id/btnShutter"
-                    android:layout_width="88dp"
-                    android:layout_height="88dp"
+                    android:layout_width="@dimen/camera_screen_shutter_outer_size"
+                    android:layout_height="@dimen/camera_screen_shutter_outer_size"
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="@drawable/fg_ripple_circle"
@@ -507,84 +498,48 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <View
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="@dimen/camera_screen_shutter_outer_size"
+                        android:layout_height="@dimen/camera_screen_shutter_outer_size"
                         android:layout_gravity="center"
                         android:background="@drawable/bg_camera_shutter_outer" />
 
                     <View
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
+                        android:layout_width="@dimen/camera_screen_shutter_inner_size"
+                        android:layout_height="@dimen/camera_screen_shutter_inner_size"
                         android:layout_gravity="center"
                         android:background="@drawable/bg_camera_shutter_inner" />
                 </FrameLayout>
 
-                <com.google.android.material.card.MaterialCardView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/btnFlipCamera"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
+                    android:layout_width="@dimen/camera_screen_side_action_size"
+                    android:layout_height="@dimen/camera_screen_side_action_size"
+                    android:background="@drawable/fg_ripple_circle"
                     android:clickable="true"
+                    android:contentDescription="@null"
                     android:focusable="true"
-                    android:foreground="@drawable/fg_ripple_circle"
-                    android:stateListAnimator="@null"
-                    app:cardBackgroundColor="#1F1F1F"
-                    app:cardCornerRadius="999dp"
-                    app:cardElevation="0dp"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_camera_flip"
                     app:layout_constraintBottom_toBottomOf="@id/btnShutter"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/btnShutter">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:fontFamily="@font/material_symbols_outlined"
-                        android:text="flip_camera_ios"
-                        android:textColor="#D4C5AB"
-                        android:textSize="22sp" />
-                </com.google.android.material.card.MaterialCardView>
-
+                    app:layout_constraintTop_toTopOf="@id/btnShutter" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/txtHistoryTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/camera_screen_history_top_margin"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:text="Lịch sử"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <FrameLayout
-        android:id="@+id/journalModeContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/journal_camera_bg"
-        android:visibility="gone">
-
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/journalSurface"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:fillViewport="true"
-            android:overScrollMode="never"
-            android:scrollbars="none">
-
-            <include layout="@layout/view_journal_feed_section" />
-        </androidx.core.widget.NestedScrollView>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/journalCameraShell"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:elevation="4dp">
-
-            <include layout="@layout/view_journal_header" />
-
-            <include layout="@layout/view_journal_camera_card" />
-
-            <include
-                layout="@layout/view_journal_bottom_bar"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/journalCaptureOverlay"
+        android:id="@+id/captureSaveOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#E6000000"
@@ -612,7 +567,7 @@
                 app:cardElevation="0dp">
 
                 <ImageView
-                    android:id="@+id/imgJournalCapturedPreview"
+                    android:id="@+id/imgCapturePreview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:adjustViewBounds="false"
@@ -621,7 +576,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <EditText
-                android:id="@+id/edtJournalCaption"
+                android:id="@+id/edtCaptureCaption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
@@ -640,7 +595,7 @@
                 android:textColorHint="#80FFFFFF" />
 
             <TextView
-                android:id="@+id/txtJournalUploadProgress"
+                android:id="@+id/txtCaptureUploadProgress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -649,7 +604,7 @@
                 android:textSize="13sp" />
 
             <TextView
-                android:id="@+id/txtJournalPostError"
+                android:id="@+id/txtCaptureSaveError"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
@@ -666,7 +621,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/btnJournalPostCancel"
+                    android:id="@+id/btnCaptureSaveCancel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
@@ -685,7 +640,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/btnJournalPostPublish"
+                    android:id="@+id/btnCaptureSaveConfirm"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
@@ -705,7 +660,7 @@
             </LinearLayout>
 
             <ProgressBar
-                android:id="@+id/journalPostLoading"
+                android:id="@+id/captureSaveLoading"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginTop="14dp"
@@ -714,5 +669,3 @@
     </FrameLayout>
 
 </FrameLayout>
-
-

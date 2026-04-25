@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="camera_screen_top_bar_horizontal_margin">20dp</dimen>
+    <dimen name="camera_screen_top_bar_top_margin">12dp</dimen>
+    <dimen name="camera_screen_top_bar_height">56dp</dimen>
+    <dimen name="camera_screen_top_back_size">44dp</dimen>
+    <dimen name="camera_screen_top_center_width">148dp</dimen>
+    <dimen name="camera_screen_top_center_height">54dp</dimen>
+    <dimen name="camera_screen_top_right_size">48dp</dimen>
+    <dimen name="camera_screen_preview_horizontal_margin">3dp</dimen>
+    <dimen name="camera_screen_preview_top_gap">28dp</dimen>
+    <dimen name="camera_screen_preview_corner_radius">60dp</dimen>
+    <dimen name="camera_screen_flash_button_size">36dp</dimen>
+    <dimen name="camera_screen_flash_margin_start">37dp</dimen>
+    <dimen name="camera_screen_flash_margin_top">22dp</dimen>
+    <dimen name="camera_screen_footer_horizontal_padding">20dp</dimen>
+    <dimen name="camera_screen_footer_bottom_padding">28dp</dimen>
+    <dimen name="camera_screen_tabs_top_margin">24dp</dimen>
+    <dimen name="camera_screen_tabs_gap">24dp</dimen>
+    <dimen name="camera_screen_controls_top_margin">40dp</dimen>
+    <dimen name="camera_screen_side_action_size">48dp</dimen>
+    <dimen name="camera_screen_shutter_outer_size">86dp</dimen>
+    <dimen name="camera_screen_shutter_inner_size">68dp</dimen>
+    <dimen name="camera_screen_history_top_margin">34dp</dimen>
+</resources>
