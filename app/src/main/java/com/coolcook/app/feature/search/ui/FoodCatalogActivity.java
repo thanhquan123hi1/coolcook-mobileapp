@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.coolcook.app.R;
 import com.coolcook.app.feature.search.data.FavoriteFoodStore;
 import com.coolcook.app.feature.search.data.FoodJsonRepository;
-import com.coolcook.app.feature.search.model.FoodCategory;
+import com.coolcook.app.feature.search.model.FoodCatalogFilter;
 import com.coolcook.app.feature.search.model.FoodItem;
 import com.coolcook.app.feature.search.model.ParsedRecipe;
 import com.coolcook.app.feature.search.parser.RecipeParser;
@@ -40,6 +40,7 @@ import java.util.Locale;
 public class FoodCatalogActivity extends AppCompatActivity {
 
     private static final String EXTRA_SHOW_FAVORITES_ONLY = "extra_show_favorites_only";
+    public static final String EXTRA_FILTER = "extra_filter";
 
     private FoodJsonRepository repository;
     private FavoriteFoodStore favoriteFoodStore;
@@ -48,14 +49,24 @@ public class FoodCatalogActivity extends AppCompatActivity {
     private TextView chipAll;
     private TextView chipDry;
     private TextView chipSoup;
+    private TextView chipLowFat;
+    private TextView chipStomach;
+    private TextView chipProtein;
     private TextView txtEmpty;
-    private FoodCategory selectedCategory;
+    private FoodCatalogFilter selectedFilter = FoodCatalogFilter.ALL;
     private String query = "";
     private boolean showFavoritesOnly;
 
     @NonNull
     public static Intent createIntent(@NonNull Context context) {
         return new Intent(context, FoodCatalogActivity.class);
+    }
+
+    @NonNull
+    public static Intent createIntent(@NonNull Context context, @NonNull String filter) {
+        Intent intent = createIntent(context);
+        intent.putExtra(EXTRA_FILTER, filter);
+        return intent;
     }
 
     @NonNull
@@ -80,7 +91,11 @@ public class FoodCatalogActivity extends AppCompatActivity {
         chipAll = findViewById(R.id.chipFoodAll);
         chipDry = findViewById(R.id.chipFoodDry);
         chipSoup = findViewById(R.id.chipFoodSoup);
+        chipLowFat = findViewById(R.id.chipFoodLowFat);
+        chipStomach = findViewById(R.id.chipFoodStomach);
+        chipProtein = findViewById(R.id.chipFoodProtein);
         txtEmpty = findViewById(R.id.txtFoodEmpty);
+        selectedFilter = FoodCatalogFilter.fromExtra(getIntent().getStringExtra(EXTRA_FILTER));
 
         setupRecyclerView();
         setupSearch();
@@ -124,15 +139,27 @@ public class FoodCatalogActivity extends AppCompatActivity {
 
     private void setupFilterChips() {
         chipAll.setOnClickListener(v -> {
-            selectedCategory = null;
+            selectedFilter = FoodCatalogFilter.ALL;
             renderFoods();
         });
         chipDry.setOnClickListener(v -> {
-            selectedCategory = FoodCategory.DRY;
+            selectedFilter = FoodCatalogFilter.DRY;
             renderFoods();
         });
         chipSoup.setOnClickListener(v -> {
-            selectedCategory = FoodCategory.SOUP;
+            selectedFilter = FoodCatalogFilter.SOUP;
+            renderFoods();
+        });
+        chipLowFat.setOnClickListener(v -> {
+            selectedFilter = FoodCatalogFilter.LOW_FAT;
+            renderFoods();
+        });
+        chipStomach.setOnClickListener(v -> {
+            selectedFilter = FoodCatalogFilter.STOMACH;
+            renderFoods();
+        });
+        chipProtein.setOnClickListener(v -> {
+            selectedFilter = FoodCatalogFilter.PROTEIN;
             renderFoods();
         });
     }
@@ -150,7 +177,7 @@ public class FoodCatalogActivity extends AppCompatActivity {
             if (showFavoritesOnly && !favoriteFoodStore.isFavorite(food.getId())) {
                 continue;
             }
-            if (selectedCategory != null && food.getCategory() != selectedCategory) {
+            if (!selectedFilter.matches(food)) {
                 continue;
             }
             if (!matchesQuery(food, normalizedQuery)) {
@@ -207,9 +234,12 @@ public class FoodCatalogActivity extends AppCompatActivity {
     }
 
     private void updateChipState() {
-        setChipSelected(chipAll, selectedCategory == null);
-        setChipSelected(chipDry, selectedCategory == FoodCategory.DRY);
-        setChipSelected(chipSoup, selectedCategory == FoodCategory.SOUP);
+        setChipSelected(chipAll, selectedFilter == FoodCatalogFilter.ALL);
+        setChipSelected(chipDry, selectedFilter == FoodCatalogFilter.DRY);
+        setChipSelected(chipSoup, selectedFilter == FoodCatalogFilter.SOUP);
+        setChipSelected(chipLowFat, selectedFilter == FoodCatalogFilter.LOW_FAT);
+        setChipSelected(chipStomach, selectedFilter == FoodCatalogFilter.STOMACH);
+        setChipSelected(chipProtein, selectedFilter == FoodCatalogFilter.PROTEIN);
     }
 
     private void setChipSelected(@NonNull TextView chip, boolean selected) {

@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:fontFamily="@font/manrope"
-                android:text="Tất cả bạn bè"
+                android:text="@string/journal_history_all_friends"
                 android:textColor="@color/journal_text_primary"
                 android:textSize="15sp"
                 android:textStyle="bold" />

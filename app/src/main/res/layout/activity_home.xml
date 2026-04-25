@@ -675,8 +675,11 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/btnHomeSeeAllFoods"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:fontFamily="@font/be_vietnam_pro_medium"
                     android:text="@string/home_see_all"
                     android:textColor="@color/home_link_pink"
@@ -698,6 +701,7 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/homeTodayFoodCard1"
                     style="@style/Widget.Coolcook.Home.SurfaceCard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -718,6 +722,7 @@
                             android:layout_height="112dp">
 
                             <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/homeTodayFoodImage1"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:contentDescription="@string/home_recipe_1"
@@ -759,6 +764,7 @@
                             android:padding="10dp">
 
                             <TextView
+                                android:id="@+id/homeTodayFoodTitle1"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/be_vietnam_pro_bold"
@@ -789,6 +795,7 @@
                                         app:srcCompat="@drawable/ic_home_time_figma" />
 
                                     <TextView
+                                        android:id="@+id/homeTodayFoodTime1"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="4dp"
@@ -815,6 +822,7 @@
                                         app:srcCompat="@drawable/ic_home_difficulty_figma" />
 
                                     <TextView
+                                        android:id="@+id/homeTodayFoodTag1"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="4dp"
@@ -833,6 +841,7 @@
                     android:layout_height="1dp" />
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/homeTodayFoodCard2"
                     style="@style/Widget.Coolcook.Home.SurfaceCard"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -853,6 +862,7 @@
                             android:layout_height="112dp">
 
                             <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/homeTodayFoodImage2"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:contentDescription="@string/home_recipe_2"
@@ -894,6 +904,7 @@
                             android:padding="10dp">
 
                             <TextView
+                                android:id="@+id/homeTodayFoodTitle2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/be_vietnam_pro_bold"
@@ -924,6 +935,7 @@
                                         app:srcCompat="@drawable/ic_home_time_figma" />
 
                                     <TextView
+                                        android:id="@+id/homeTodayFoodTime2"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="4dp"
@@ -950,6 +962,7 @@
                                         app:srcCompat="@drawable/ic_home_difficulty_figma" />
 
                                     <TextView
+                                        android:id="@+id/homeTodayFoodTag2"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginStart="4dp"
@@ -1001,9 +1014,12 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/homeGoalLowFatCard"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:background="@drawable/bg_home_goal_card"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingStart="10dp"
@@ -1059,9 +1075,12 @@
                     android:layout_height="8dp" />
 
                 <LinearLayout
+                    android:id="@+id/homeGoalStomachCard"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:background="@drawable/bg_home_goal_card"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingStart="10dp"
@@ -1117,9 +1136,12 @@
                     android:layout_height="8dp" />
 
                 <LinearLayout
+                    android:id="@+id/homeGoalProteinCard"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:background="@drawable/bg_home_goal_card"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingStart="10dp"

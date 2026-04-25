@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
-import com.coolcook.app.R;
+import com.coolcook.app.feature.search.util.FoodImageResolver;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,6 +75,39 @@ public class FoodItem {
     }
 
     @NonNull
+    public String getHomeCardTag() {
+        String tag = getPrimarySuitableTag().trim();
+        if (tag.isEmpty()) {
+            return "Gợi ý hôm nay";
+        }
+
+        String normalized = tag.toLowerCase();
+        if (normalized.contains("tang co")) {
+            return "Tăng cơ";
+        }
+        if (normalized.contains("it dau") || normalized.contains("han che dau") || normalized.contains("dau mo")) {
+            return "Ít dầu";
+        }
+        if (normalized.contains("thanh dam")) {
+            return "Thanh đạm";
+        }
+        if (normalized.contains("de tieu") || normalized.contains("nhe bung") || normalized.contains("da day")) {
+            return "Dễ tiêu";
+        }
+        if (normalized.contains("can bang")) {
+            return "Cân bằng";
+        }
+        if (normalized.contains("kiem soat can")) {
+            return "Giữ dáng";
+        }
+        if (normalized.contains("nang luong")) {
+            return "Nhiều năng lượng";
+        }
+
+        return tag.length() > 14 ? tag.substring(0, 14).trim() : tag;
+    }
+
+    @NonNull
     public String getRecipe() {
         return recipe;
     }
@@ -85,17 +118,6 @@ public class FoodItem {
 
     @DrawableRes
     public int resolveImageResId(@NonNull Context context) {
-        int drawableId = context.getResources().getIdentifier(image, "drawable", context.getPackageName());
-        if (drawableId != 0) {
-            return drawableId;
-        }
-
-        if ("food_pho_bo".equals(image)) {
-            return R.drawable.img_home_recipe_pho;
-        }
-        if ("food_goi_cuon".equals(image)) {
-            return R.drawable.img_home_recipe_goi_cuon;
-        }
-        return R.drawable.img_scan_food_salad;
+        return FoodImageResolver.resolveImageResId(context, image, name);
     }
 }

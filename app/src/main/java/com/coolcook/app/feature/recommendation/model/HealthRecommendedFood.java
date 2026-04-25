@@ -5,9 +5,9 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.coolcook.app.R;
 import com.coolcook.app.feature.camera.model.ScanDishItem;
 import com.coolcook.app.feature.search.model.FoodItem;
+import com.coolcook.app.feature.search.util.FoodImageResolver;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -97,7 +97,7 @@ public class HealthRecommendedFood {
         if (localFood != null) {
             return localFood.resolveImageResId(context);
         }
-        return R.drawable.img_scan_food_salad;
+        return FoodImageResolver.resolveImageResId(context, getImageName(), name);
     }
 
     @NonNull

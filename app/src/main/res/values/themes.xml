@@ -32,6 +32,11 @@
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
 
+    <style name="ShapeAppearance.Coolcook.JournalCapturedPreview" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">46dp</item>
+    </style>
+
     <style name="ShapeAppearanceOverlay" />
 
     <style name="ShapeAppearanceOverlay.Coolcook" parent="ShapeAppearanceOverlay" />
@@ -39,14 +44,6 @@
     <style name="ShapeAppearanceOverlay.Coolcook.CircleFab" parent="ShapeAppearanceOverlay.Coolcook">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
-    </style>
-
-    <style name="Theme.Coolcook.Splash" parent="Base.Theme.Coolcook">
-        <!-- Match splash layout background so launch feels like a single screen. -->
-        <item name="android:windowBackground">#fff8f3</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
-        <item name="android:windowDisablePreview">true</item>
     </style>
 
     <style name="Animation.Coolcook.EditProfileDialog" parent="@android:style/Animation.Dialog">
@@ -98,5 +95,15 @@
         <item name="cardElevation">@dimen/chatbot_button_soft_elevation</item>
         <item name="strokeColor">@color/chatbot_button_stroke</item>
         <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="JournalHistoryActionText" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">@font/be_vietnam_pro_bold</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">54dp</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
     </style>
 </resources>

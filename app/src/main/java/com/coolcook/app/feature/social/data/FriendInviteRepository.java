@@ -2,6 +2,7 @@ package com.coolcook.app.feature.social.data;
 
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,6 +13,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 
@@ -21,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FriendInviteRepository {
+    private static final String TAG = "FriendInviteRepository";
 
     public interface CreateInviteCallback {
         void onSuccess(@NonNull FriendInvite invite);
@@ -43,6 +46,9 @@ public class FriendInviteRepository {
     private static final String USERS_COLLECTION = "users";
     private static final String FRIENDS_COLLECTION = "friends";
     private static final String INVITES_COLLECTION = "friendInvites";
+    private static final String FEED_COLLECTION = "feed";
+    private static final String JOURNAL_COLLECTION = "journal";
+    private static final int RECENT_MOMENT_SYNC_LIMIT = 60;
 
     private final FirebaseFirestore firestore;
 
@@ -188,9 +194,14 @@ public class FriendInviteRepository {
                     inviteUpdate.put("usedByUid", currentUser.getUid());
                     inviteUpdate.put("usedAt", now);
                     transaction.set(inviteRef, inviteUpdate, SetOptions.merge());
-                    return null;
+                    return invite.getCreatedByUid();
                 })
-                .addOnSuccessListener(unused -> callback.onSuccess("Đã kết bạn thành công."))
+                .addOnSuccessListener(inviterUid -> {
+                    callback.onSuccess("Đã kết bạn thành công.");
+                    if (!TextUtils.isEmpty(inviterUid)) {
+                        syncRecentMomentsBetweenFriends(inviterUid, currentUser.getUid());
+                    }
+                })
                 .addOnFailureListener(error -> callback.onError(readableError(error)));
     }
 
@@ -225,6 +236,90 @@ public class FriendInviteRepository {
         return payload;
     }
 
+    private void syncRecentMomentsBetweenFriends(
+            @NonNull String inviterUid,
+            @NonNull String inviteeUid) {
+        copyRecentMomentsToFriendFeed(inviterUid, inviteeUid);
+        copyRecentMomentsToFriendFeed(inviteeUid, inviterUid);
+    }
+
+    private void copyRecentMomentsToFriendFeed(
+            @NonNull String ownerUid,
+            @NonNull String friendUid) {
+        firestore.collection(USERS_COLLECTION)
+                .document(ownerUid)
+                .collection(JOURNAL_COLLECTION)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .limit(RECENT_MOMENT_SYNC_LIMIT)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    WriteBatch batch = firestore.batch();
+                    int writeCount = 0;
+                    for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                        String momentId = stringValue(doc.getString("momentId"));
+                        if (TextUtils.isEmpty(momentId)) {
+                            momentId = doc.getId();
+                        }
+                        Map<String, Object> feedPayload = buildFeedPayloadFromJournal(doc, momentId);
+                        if (feedPayload.isEmpty()) {
+                            continue;
+                        }
+                        batch.set(firestore.collection(USERS_COLLECTION)
+                                        .document(friendUid)
+                                        .collection(FEED_COLLECTION)
+                                        .document(momentId),
+                                feedPayload,
+                                SetOptions.merge());
+                        writeCount++;
+                    }
+                    if (writeCount <= 0) {
+                        return;
+                    }
+                    batch.commit().addOnFailureListener(error ->
+                            Log.w(TAG, "Unable to sync friend feed for " + ownerUid + " -> " + friendUid, error));
+                })
+                .addOnFailureListener(error ->
+                        Log.w(TAG, "Unable to load recent journal moments for " + ownerUid, error));
+    }
+
+    @NonNull
+    private Map<String, Object> buildFeedPayloadFromJournal(
+            @NonNull DocumentSnapshot snapshot,
+            @NonNull String momentId) {
+        String imageUrl = stringValue(snapshot.getString("imageUrl"));
+        String thumbUrl = stringValue(snapshot.getString("thumbUrl"));
+        String thumbnailUrl = stringValue(snapshot.getString("thumbnailUrl"));
+        if (TextUtils.isEmpty(imageUrl) && TextUtils.isEmpty(thumbUrl) && TextUtils.isEmpty(thumbnailUrl)) {
+            return new HashMap<>();
+        }
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("momentId", momentId);
+        payload.put("ownerUid", stringValue(snapshot.getString("ownerUid")));
+        payload.put("ownerName", stringValue(snapshot.getString("ownerName")));
+        payload.put("ownerAvatarUrl", stringValue(snapshot.getString("ownerAvatarUrl")));
+        payload.put("imageUrl", imageUrl);
+        payload.put("thumbUrl", TextUtils.isEmpty(thumbUrl) ? thumbnailUrl : thumbUrl);
+        payload.put("thumbnailUrl", TextUtils.isEmpty(thumbnailUrl) ? thumbUrl : thumbnailUrl);
+        payload.put("cloudinaryPublicId", stringValue(snapshot.getString("cloudinaryPublicId")));
+        payload.put("caption", stringValue(snapshot.getString("caption")));
+        payload.put("createdAt", snapshot.get("createdAt"));
+        payload.put("serverCreatedAt", FieldValue.serverTimestamp());
+        payload.put("visibility", TextUtils.isEmpty(snapshot.getString("visibility"))
+                ? "friends"
+                : snapshot.getString("visibility"));
+
+        Long width = snapshot.getLong("width");
+        Long height = snapshot.getLong("height");
+        if (width != null) {
+            payload.put("width", width);
+        }
+        if (height != null) {
+            payload.put("height", height);
+        }
+        return payload;
+    }
+
     @NonNull
     private Date expiresInDays(int days) {
         Calendar calendar = Calendar.getInstance();
@@ -249,6 +344,11 @@ public class FriendInviteRepository {
     private static String userAvatarUrl(@NonNull FirebaseUser user) {
         Uri photoUrl = user.getPhotoUrl();
         return photoUrl == null ? "" : photoUrl.toString();
+    }
+
+    @NonNull
+    private static String stringValue(@Nullable String raw) {
+        return raw == null ? "" : raw.trim();
     }
 
     @NonNull

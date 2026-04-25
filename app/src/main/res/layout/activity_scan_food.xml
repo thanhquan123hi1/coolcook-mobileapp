@@ -125,11 +125,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/transparent_drawable"
-                android:clickable="false"
+                android:clickable="true"
                 android:focusable="false" />
 
             <ImageView
-                android:id="@+id/imgJournalPreviewInline"
+                android:id="@+id/imgJournalPreviewInlineOld"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adjustViewBounds="false"
@@ -138,7 +138,7 @@
                 android:visibility="gone" />
 
             <EditText
-                android:id="@+id/edtJournalPreviewCaption"
+                android:id="@+id/edtJournalPreviewCaptionOld"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center_horizontal"
@@ -458,9 +458,26 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/be_vietnam_pro"
                 android:gravity="center"
-                android:text="Hướng camera vào món ăn rồi bấm nút chụp"
+                android:text="@string/journal_history_hint"
                 android:textColor="#D4C5AB"
                 android:textSize="13sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/txtJournalHistoryActivityPill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_locket_empty_pill"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:gravity="center"
+                android:minHeight="56dp"
+                android:paddingStart="24dp"
+                android:paddingTop="14dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="14dp"
+                android:textColor="#C9CDD3"
+                android:textSize="17sp"
                 android:visibility="gone" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -654,7 +671,7 @@
                 android:layout_marginTop="18dp">
 
                 <TextView
-                    android:id="@+id/btnPreviewCancel"
+                    android:id="@+id/btnPreviewCancelOld"
                     android:layout_width="52dp"
                     android:layout_height="52dp"
                     android:fontFamily="@font/material_symbols_outlined"
@@ -663,12 +680,12 @@
                     android:text="close"
                     android:textColor="@android:color/white"
                     android:textSize="38sp"
-                    app:layout_constraintBottom_toBottomOf="@id/btnPreviewSend"
+                    app:layout_constraintBottom_toBottomOf="@id/btnPreviewSendOld"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/btnPreviewSend" />
+                    app:layout_constraintTop_toTopOf="@id/btnPreviewSendOld" />
 
                 <FrameLayout
-                    android:id="@+id/btnPreviewSend"
+                    android:id="@+id/btnPreviewSendOld"
                     android:layout_width="112dp"
                     android:layout_height="112dp"
                     android:background="@drawable/bg_journal_preview_send_button"
@@ -680,6 +697,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
+                        android:id="@+id/iconPreviewSendOld"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -688,10 +706,31 @@
                         android:text="send"
                         android:textColor="@android:color/white"
                         android:textSize="52sp" />
+
+                    <ProgressBar
+                        android:id="@+id/capturePreviewLoadingOldInline"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_gravity="center"
+                        android:indeterminate="true"
+                        android:indeterminateTint="@android:color/white"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/iconPreviewSuccessOld"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/material_symbols_outlined"
+                        android:gravity="center"
+                        android:text="check"
+                        android:textColor="@android:color/white"
+                        android:textSize="56sp"
+                        android:visibility="gone" />
                 </FrameLayout>
 
                 <TextView
-                    android:id="@+id/btnPreviewEffects"
+                    android:id="@+id/btnPreviewEffectsOld"
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:fontFamily="@font/material_symbols_outlined"
@@ -700,9 +739,9 @@
                     android:text="auto_awesome"
                     android:textColor="@android:color/white"
                     android:textSize="34sp"
-                    app:layout_constraintBottom_toBottomOf="@id/btnPreviewSend"
+                    app:layout_constraintBottom_toBottomOf="@id/btnPreviewSendOld"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/btnPreviewSend" />
+                    app:layout_constraintTop_toTopOf="@id/btnPreviewSendOld" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
@@ -715,17 +754,17 @@
                 android:textSize="13sp" />
 
             <TextView
-                android:id="@+id/txtPreviewSaveError"
+                android:id="@+id/txtPreviewSaveErrorOld"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:fontFamily="@font/be_vietnam_pro_medium"
                 android:textColor="#FFFF8A80"
-                android:textSize="13sp"
+                android:textSize="14sp"
                 android:visibility="gone" />
 
             <ProgressBar
-                android:id="@+id/capturePreviewLoading"
+                android:id="@+id/capturePreviewLoadingOld"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginTop="12dp"
@@ -789,7 +828,8 @@
                             android:fontFamily="@font/be_vietnam_pro_bold"
                             android:text="MD"
                             android:textColor="#7A7A7A"
-                            android:textSize="22sp" />
+                            android:textSize="22sp"
+                    android:visibility="gone" />
                     </FrameLayout>
 
                     <TextView
@@ -805,11 +845,251 @@
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/journalHistoryOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:visibility="gone">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/journalHistoryTopBar"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="29dp"
+            android:layout_marginEnd="20dp"
+            android:elevation="24dp"
+            android:translationZ="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <FrameLayout
+                android:id="@+id/btnJournalHistoryProfile"
+                android:layout_width="@dimen/journal_locket_top_icon_size"
+                android:layout_height="@dimen/journal_locket_top_icon_size"
+                android:background="@drawable/bg_journal_history_locket_top_icon"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="@drawable/fg_ripple_circle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/material_symbols_outlined"
+                    android:text="account_circle"
+                    android:textColor="@android:color/white"
+                    android:textSize="30sp" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/btnJournalHistoryFriends"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/journal_locket_top_pill_height"
+                android:layout_marginStart="56dp"
+                android:layout_marginEnd="56dp"
+                android:background="@drawable/bg_journal_history_locket_pill"
+                android:gravity="center"
+                android:minWidth="@dimen/journal_history_locket_pill_min_width"
+                android:orientation="horizontal"
+                android:paddingStart="28dp"
+                android:paddingEnd="28dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/ic_camera_groups"
+                    android:visibility="gone"
+                    app:tint="@android:color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text="Tất cả bạn bè"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/material_symbols_outlined"
+                    android:text="keyboard_arrow_down"
+                    android:textColor="@android:color/white"
+                    android:textSize="28sp" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/btnJournalHistoryChat"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_journal_history_locket_top_icon"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="@drawable/fg_ripple_circle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_camera_chat" />
+            </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <FrameLayout
+            android:id="@+id/journalHistoryPagerContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/vpJournalHistory"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:paddingTop="@dimen/journal_history_pager_top_padding"
+                android:paddingBottom="@dimen/journal_history_pager_bottom_padding"
+                android:scrollbars="none"
+                android:visibility="gone" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/journalHistoryEmptyFrame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/journalHistoryEmptyCard"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="@dimen/journal_history_card_margin_horizontal"
+                    android:layout_marginTop="@dimen/journal_history_card_margin_top"
+                    android:layout_marginEnd="@dimen/journal_history_card_margin_horizontal"
+                    android:background="@drawable/bg_journal_history_card"
+                    android:stateListAnimator="@null"
+                    app:cardBackgroundColor="#685757"
+                    app:cardCornerRadius="@dimen/journal_history_card_corner_radius"
+                    app:cardElevation="0dp"
+                    app:cardPreventCornerOverlap="false"
+                    app:cardUseCompatPadding="false"
+                    app:layout_constraintDimensionRatio="424:430"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:strokeColor="@android:color/transparent"
+                    app:strokeWidth="0dp" />
+
+                <TextView
+                    android:id="@+id/txtJournalHistoryEmpty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/journal_history_meta_top_margin"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text="Chưa có ảnh"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="@id/journalHistoryEmptyCard"
+                    app:layout_constraintStart_toStartOf="@id/journalHistoryEmptyCard"
+                    app:layout_constraintTop_toBottomOf="@id/journalHistoryEmptyCard" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </FrameLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/journalHistoryBottomBar"
+            android:layout_width="0dp"
+            android:layout_height="82dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="@dimen/journal_history_bottom_margin"
+            android:elevation="24dp"
+            android:translationZ="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/btnJournalGrid"
+                android:layout_width="@dimen/journal_history_locket_bottom_icon_size"
+                android:layout_height="@dimen/journal_history_locket_bottom_icon_size"
+                android:background="@drawable/bg_journal_history_bottom_icon"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:foreground="@drawable/fg_ripple_circle"
+                android:gravity="center"
+                android:text="grid_view"
+                android:textColor="#C9CDD3"
+                android:textSize="@dimen/journal_history_grid_icon_size"
+                app:layout_constraintBottom_toBottomOf="@id/btnJournalHistoryShutter"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btnJournalHistoryShutter" />
+
+            <FrameLayout
+                android:id="@+id/btnJournalHistoryShutter"
+                android:layout_width="@dimen/journal_history_locket_shutter_outer_size"
+                android:layout_height="@dimen/journal_history_locket_shutter_outer_size"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="@drawable/fg_ripple_circle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <View
+                    android:layout_width="@dimen/journal_history_locket_shutter_outer_size"
+                    android:layout_height="@dimen/journal_history_locket_shutter_outer_size"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_journal_history_locket_shutter_outer" />
+
+                <View
+                    android:layout_width="@dimen/journal_history_locket_shutter_inner_size"
+                    android:layout_height="@dimen/journal_history_locket_shutter_inner_size"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_journal_history_locket_shutter_inner" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/btnJournalMore"
+                android:layout_width="@dimen/journal_history_locket_bottom_icon_size"
+                android:layout_height="@dimen/journal_history_locket_bottom_icon_size"
+                android:background="@drawable/bg_journal_history_bottom_icon"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:foreground="@drawable/fg_ripple_circle"
+                android:gravity="center"
+                android:text="more_horiz"
+                android:textColor="#C9CDD3"
+                android:textSize="@dimen/journal_history_more_icon_size"
+                app:layout_constraintBottom_toBottomOf="@id/btnJournalHistoryShutter"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btnJournalHistoryShutter" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <FrameLayout
         android:id="@+id/captureSaveOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#00000000"
+        android:background="#000000"
         android:paddingStart="20dp"
         android:paddingTop="28dp"
         android:paddingEnd="20dp"
@@ -942,8 +1222,9 @@
                 android:id="@+id/txtPreviewSendToTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="56dp"
                 android:fontFamily="@font/be_vietnam_pro_bold"
-                android:text="Gửi đến"
+                android:text="Gửi đến..."
                 android:textColor="@android:color/white"
                 android:textSize="26sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -959,10 +1240,58 @@
                 android:gravity="center"
                 android:text="download"
                 android:textColor="@android:color/white"
-                android:textSize="28sp"
+                android:textSize="34sp"
                 app:layout_constraintBottom_toBottomOf="@id/txtPreviewSendToTitle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/txtPreviewSendToTitle" />
+
+            <FrameLayout
+                android:id="@+id/journalCapturedPreviewFrame"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="-20dp"
+                android:layout_marginTop="70dp"
+                android:layout_marginEnd="-20dp"
+                app:layout_constraintDimensionRatio="390:386"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtPreviewSendToTitle">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/imgJournalCapturedPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="false"
+                    android:contentDescription="@string/journal_photo_desc"
+                    android:scaleType="centerCrop"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance.Coolcook.JournalCapturedPreview" />
+
+                <EditText
+                    android:id="@+id/edtJournalPreviewCaption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="22dp"
+                    android:background="@drawable/bg_journal_preview_caption"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:gravity="center"
+                    android:hint="Thêm một tin nhắn"
+                    android:imeOptions="actionDone"
+                    android:maxLength="180"
+                    android:maxLines="1"
+                    android:minHeight="50dp"
+                    android:minWidth="210dp"
+                    android:paddingStart="24dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="24dp"
+                    android:paddingBottom="10dp"
+                    android:singleLine="true"
+                    android:textColor="#FFFFFFFF"
+                    android:textColorHint="#F4FFFFFF"
+                    android:textSize="18sp" />
+            </FrameLayout>
 
             <LinearLayout
                 android:id="@+id/previewPagerDots"
@@ -971,10 +1300,9 @@
                 android:layout_marginTop="18dp"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/txtPreviewSendToTitle">
+                app:layout_constraintTop_toBottomOf="@id/journalCapturedPreviewFrame">
 
                 <View
                     android:layout_width="10dp"
@@ -1007,17 +1335,18 @@
             </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/previewBottomActionsLegacy"
+                android:id="@+id/previewBottomActions"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:visibility="gone"
+                android:layout_marginStart="36dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="36dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/previewPagerDots">
 
                 <TextView
-                    android:id="@+id/btnPreviewCancelLegacy"
+                    android:id="@+id/btnPreviewCancel"
                     android:layout_width="52dp"
                     android:layout_height="52dp"
                     android:fontFamily="@font/material_symbols_outlined"
@@ -1026,12 +1355,12 @@
                     android:text="close"
                     android:textColor="@android:color/white"
                     android:textSize="38sp"
-                    app:layout_constraintBottom_toBottomOf="@id/btnPreviewSendLegacy"
+                    app:layout_constraintBottom_toBottomOf="@id/btnPreviewSend"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/btnPreviewSendLegacy" />
+                    app:layout_constraintTop_toTopOf="@id/btnPreviewSend" />
 
                 <FrameLayout
-                    android:id="@+id/btnPreviewSendLegacy"
+                    android:id="@+id/btnPreviewSend"
                     android:layout_width="112dp"
                     android:layout_height="112dp"
                     android:background="@drawable/bg_journal_preview_send_button"
@@ -1043,6 +1372,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
+                        android:id="@+id/iconPreviewSend"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -1051,10 +1381,31 @@
                         android:text="send"
                         android:textColor="@android:color/white"
                         android:textSize="52sp" />
+
+                    <ProgressBar
+                        android:id="@+id/capturePreviewLoading"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_gravity="center"
+                        android:indeterminate="true"
+                        android:indeterminateTint="@android:color/white"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/iconPreviewSuccess"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/material_symbols_outlined"
+                        android:gravity="center"
+                        android:text="check"
+                        android:textColor="@android:color/white"
+                        android:textSize="56sp"
+                        android:visibility="gone" />
                 </FrameLayout>
 
                 <TextView
-                    android:id="@+id/btnPreviewEffectsLegacy"
+                    android:id="@+id/btnPreviewEffects"
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:fontFamily="@font/material_symbols_outlined"
@@ -1063,9 +1414,9 @@
                     android:text="auto_awesome"
                     android:textColor="@android:color/white"
                     android:textSize="34sp"
-                    app:layout_constraintBottom_toBottomOf="@id/btnPreviewSendLegacy"
+                    app:layout_constraintBottom_toBottomOf="@id/btnPreviewSend"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/btnPreviewSendLegacy" />
+                    app:layout_constraintTop_toTopOf="@id/btnPreviewSend" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
@@ -1079,10 +1430,10 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/previewBottomActionsLegacy" />
+                app:layout_constraintTop_toBottomOf="@id/previewBottomActions" />
 
             <TextView
-                android:id="@+id/txtPreviewSaveErrorLegacy"
+                android:id="@+id/txtPreviewSaveError"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
@@ -1092,7 +1443,82 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/txtPreviewUploadProgressLegacy" />
+                app:layout_constraintTop_toBottomOf="@id/txtPreviewUploadProgress" />
+
+            <LinearLayout
+                android:id="@+id/journalPreviewRecipientSelectorOverlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="54dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <LinearLayout
+                    android:id="@+id/optionPreviewRecipientAllOverlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+                        android:background="@drawable/bg_journal_recipient_active">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_camera_groups"
+                            app:tint="@android:color/white" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Tất cả"
+                        android:textColor="#F7B500"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/optionPreviewRecipientMeOverlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="58dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+                        android:background="@drawable/bg_journal_recipient_inactive">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/be_vietnam_pro_bold"
+                            android:text="MD"
+                            android:textColor="#7A7A7A"
+                            android:textSize="18sp" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Mình"
+                        android:textColor="#9E9E9E"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 

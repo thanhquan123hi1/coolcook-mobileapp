@@ -2,6 +2,8 @@ package com.coolcook.app.feature.camera.ui;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +60,8 @@ final class ScanFoodJournalManager {
     private final View btnJournalPostCancel;
     private final View btnJournalPostPublish;
     private final ProgressBar journalPostLoading;
+    private final TextView iconJournalPostSend;
+    private final TextView iconJournalPostSuccess;
     private final MediaUploadRepository mediaUploadRepository;
     private final JournalFeedRepository journalFeedRepository;
     private final FriendInviteRepository friendInviteRepository;
@@ -99,9 +103,20 @@ final class ScanFoodJournalManager {
         this.btnJournalPostCancel = btnJournalPostCancel;
         this.btnJournalPostPublish = btnJournalPostPublish;
         this.journalPostLoading = journalPostLoading;
+        this.iconJournalPostSend = resolveTextView(btnJournalPostPublish, R.id.iconPreviewSend, R.id.iconPreviewSendOld);
+        this.iconJournalPostSuccess = resolveTextView(btnJournalPostPublish, R.id.iconPreviewSuccess, R.id.iconPreviewSuccessOld);
         this.mediaUploadRepository = mediaUploadRepository;
         this.journalFeedRepository = journalFeedRepository;
         this.friendInviteRepository = friendInviteRepository;
+    }
+
+    @Nullable
+    private static TextView resolveTextView(@Nullable View root, int preferredId, int fallbackId) {
+        if (root == null) {
+            return null;
+        }
+        TextView preferred = root.findViewById(preferredId);
+        return preferred != null ? preferred : root.findViewById(fallbackId);
     }
 
     void setupJournalList() {
@@ -275,12 +290,7 @@ final class ScanFoodJournalManager {
                                                         journalFeedAdapter.getItemCount(),
                                                         "Chưa có hoạt động nào!");
                                             }
-                                            hideJournalCapturePreview(true);
-                                            host.updateJournalStatus("Đã đăng moment mới.");
-                                            Toast.makeText(
-                                                    activity,
-                                                    "Đã đăng moment thành công",
-                                                    Toast.LENGTH_SHORT).show();
+                                            showJournalPostSuccessThenReset();
                                         });
                                     }
 
@@ -390,6 +400,11 @@ final class ScanFoodJournalManager {
             return;
         }
         boolean showEmpty = count <= 0;
+        if (showEmpty && "Chưa có hoạt động nào!".contentEquals(emptyText)) {
+            txtJournalEmptyState.setVisibility(View.GONE);
+            txtJournalEmptyState.setText("");
+            return;
+        }
         txtJournalEmptyState.setVisibility(showEmpty ? View.VISIBLE : View.GONE);
         if (showEmpty) {
             txtJournalEmptyState.setText(emptyText);
@@ -400,9 +415,15 @@ final class ScanFoodJournalManager {
         if (journalPostLoading != null) {
             journalPostLoading.setVisibility(loading ? View.VISIBLE : View.GONE);
         }
+        if (iconJournalPostSend != null) {
+            iconJournalPostSend.setVisibility(loading ? View.GONE : View.VISIBLE);
+        }
+        if (iconJournalPostSuccess != null && loading) {
+            iconJournalPostSuccess.setVisibility(View.GONE);
+        }
         if (txtJournalUploadProgress != null) {
-            txtJournalUploadProgress.setText(statusText);
-            txtJournalUploadProgress.setVisibility(TextUtils.isEmpty(statusText) ? View.GONE : View.VISIBLE);
+            txtJournalUploadProgress.setText("");
+            txtJournalUploadProgress.setVisibility(View.GONE);
         }
         if (btnJournalPostCancel != null) {
             btnJournalPostCancel.setEnabled(!loading);
@@ -431,9 +452,34 @@ final class ScanFoodJournalManager {
         isJournalSaveInProgress = false;
         host.setProcessingUiEnabled(true);
         setJournalPostLoading(false, "");
-        showJournalPostError(errorMessage);
-        host.updateJournalStatus(errorMessage);
-        Toast.makeText(activity, errorMessage, Toast.LENGTH_SHORT).show();
+        showJournalPostError("Thử lại");
+        host.updateJournalStatus("");
+        Toast.makeText(activity, "Thử lại", Toast.LENGTH_SHORT).show();
+    }
+
+    private void showJournalPostSuccessThenReset() {
+        if (journalPostLoading != null) {
+            journalPostLoading.setVisibility(View.GONE);
+        }
+        if (iconJournalPostSend != null) {
+            iconJournalPostSend.setVisibility(View.GONE);
+        }
+        if (iconJournalPostSuccess != null) {
+            iconJournalPostSuccess.setVisibility(View.VISIBLE);
+            iconJournalPostSuccess.setScaleX(0.82f);
+            iconJournalPostSuccess.setScaleY(0.82f);
+            iconJournalPostSuccess.setAlpha(0f);
+            iconJournalPostSuccess.animate()
+                    .alpha(1f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(180L)
+                    .start();
+        }
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            hideJournalCapturePreview(true);
+            host.updateJournalStatus("");
+        }, 700L);
     }
 
     private void shareInvite(@NonNull FriendInvite invite) {

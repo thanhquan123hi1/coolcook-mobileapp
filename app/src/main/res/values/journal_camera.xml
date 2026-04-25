@@ -5,6 +5,7 @@
     <color name="journal_surface_mid">#202022</color>
     <color name="journal_surface_pill">#2A2A2A</color>
     <color name="journal_surface_overlay">#66212121</color>
+    <color name="journal_history_placeholder">#685757</color>
     <color name="journal_text_primary">#FFFFFFFF</color>
     <color name="journal_text_secondary">#B3FFFFFF</color>
     <color name="journal_text_muted">#80FFFFFF</color>
@@ -26,4 +27,8 @@
     <dimen name="journal_feed_corner_radius">32dp</dimen>
     <dimen name="journal_feed_top_padding">22dp</dimen>
     <dimen name="journal_feed_content_bottom_padding">220dp</dimen>
+    <dimen name="journal_history_card_corner">60dp</dimen>
+    <dimen name="journal_history_card_height">430dp</dimen>
+    <dimen name="journal_history_top_padding">186dp</dimen>
+    <dimen name="journal_history_bottom_padding">214dp</dimen>
 </resources>

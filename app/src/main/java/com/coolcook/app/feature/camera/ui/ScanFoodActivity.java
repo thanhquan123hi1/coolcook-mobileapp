@@ -3,6 +3,7 @@ package com.coolcook.app.feature.camera.ui;
 import android.Manifest;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -52,6 +54,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.coolcook.app.R;
 import com.coolcook.app.feature.camera.data.ScanFoodLocalMatcher;
@@ -65,17 +68,22 @@ import com.coolcook.app.feature.chatbot.data.GeminiRepository;
 import com.coolcook.app.feature.social.data.FriendInviteRepository;
 import com.coolcook.app.feature.social.data.JournalFeedRepository;
 import com.coolcook.app.feature.social.data.MediaUploadRepository;
+import com.coolcook.app.feature.social.model.JournalFeedItem;
+import com.coolcook.app.feature.social.ui.JournalHistoryGridActivity;
+import com.coolcook.app.feature.social.ui.adapter.JournalLocketPagerAdapter;
 import com.coolcook.app.feature.journal.data.JournalRepository;
 import com.coolcook.app.feature.home.ui.HomeActivity;
 import com.coolcook.app.feature.search.model.FoodItem;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -145,6 +153,10 @@ public class ScanFoodActivity extends AppCompatActivity {
     private View recognitionSurface;
     private View topBar;
     private View footerContainer;
+    private View tabsContainer;
+    private View txtHistoryTitle;
+    private View txtJournalHistoryActivityPill;
+    private View journalHistoryEmptyFrame;
     private View cameraPreviewCard;
     private View previewInnerFrame;
     private View detectionBox;
@@ -152,12 +164,22 @@ public class ScanFoodActivity extends AppCompatActivity {
     private View btnSaveSelectedDish;
     private View tabIndicator;
     private View captureSaveOverlay;
+    private View journalHistoryOverlay;
+    private View journalHistoryBottomBar;
+    private View btnJournalGrid;
+    private View btnJournalMore;
+    private View btnJournalHistoryShutter;
     private View journalPreviewFooterContainer;
     private View btnBack;
     private View btnFlash;
     private View btnGallery;
     private View btnShutter;
     private View btnFlipCamera;
+    private View journalCameraPreviewInnerFrame;
+    private View btnJournalCameraFlash;
+    private View btnJournalCameraGallery;
+    private View btnJournalCameraShutter;
+    private View btnJournalCameraFlip;
     private View btnCaptureSaveCancel;
     private View btnCaptureSaveConfirm;
     private View btnPreviewDownload;
@@ -173,12 +195,15 @@ public class ScanFoodActivity extends AppCompatActivity {
     private TextView tabNhanDien;
     private TextView tabNhatKy;
     private TextView iconFlash;
+    private TextView journalCameraIconFlash;
     private EditText edtCaptureCaption;
     private EditText edtManualExtraIngredient;
     private ImageView imgCapturePreview;
     private ImageView imgCapturedRecognition;
     private PreviewView recognitionPreviewView;
+    private PreviewView journalCameraPreviewView;
     private PreviewView previewView;
+    private ViewPager2 vpJournalHistory;
     private RecyclerView rvDishSuggestions;
     private ChipGroup groupDetectedIngredients;
     private ChipGroup groupSuggestedExtraIngredients;
@@ -217,6 +242,10 @@ public class ScanFoodActivity extends AppCompatActivity {
     private String selectedHealthFilter = ScanHealthFilters.FILTER_ALL;
     private ExecutorService recognitionExecutor;
     private BottomSheetDialog suggestionDialog;
+    private JournalLocketPagerAdapter journalHistoryAdapter;
+    private ListenerRegistration journalHistoryListener;
+    private JournalFeedItem currentJournalHistoryItem;
+    private List<JournalFeedItem> journalHistoryItems = new ArrayList<>();
     private ScanDishSuggestionAdapter suggestionDialogAdapter;
     private ChipGroup suggestionIngredientGroup;
     private TextView txtSuggestionEmpty;
@@ -262,6 +291,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         journalFeedRepository = new JournalFeedRepository(firestore);
         friendInviteRepository = new FriendInviteRepository(firestore);
         setupRecognitionResultUi();
+        setupJournalHistoryFeed();
         setupClickListeners();
         recognitionExecutor = Executors.newSingleThreadExecutor();
         journalManager = new ScanFoodJournalManager(
@@ -289,7 +319,7 @@ public class ScanFoodActivity extends AppCompatActivity {
                 txtCaptureSaveError,
                 edtCaptureCaption,
                 imgCapturePreview,
-                captureSaveOverlay,
+                journalPreviewFooterContainer,
                 btnCaptureSaveCancel,
                  btnCaptureSaveConfirm,
                 captureSaveLoading,
@@ -310,6 +340,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        startJournalHistoryListener();
     }
 
     @Override
@@ -331,6 +362,7 @@ public class ScanFoodActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
+        stopJournalHistoryListener();
         super.onStop();
     }
 
@@ -338,6 +370,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         dismissSuggestionDialog();
+        stopJournalHistoryListener();
         if (recognitionExecutor != null && !recognitionExecutor.isShutdown()) {
             recognitionExecutor.shutdownNow();
         }
@@ -354,6 +387,10 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void handleBackPressed() {
+        if (isJournalHistoryVisible()) {
+            hideJournalHistoryOverlay();
+            return;
+        }
         if (journalManager != null && journalManager.isCapturePreviewVisible()) {
             journalManager.hideJournalCapturePreview(true);
             return;
@@ -366,6 +403,10 @@ public class ScanFoodActivity extends AppCompatActivity {
         recognitionSurface = findViewById(R.id.recognitionSurface);
         topBar = findViewById(R.id.topBar);
         footerContainer = findViewById(R.id.footerContainer);
+        tabsContainer = findViewById(R.id.tabsContainer);
+        txtHistoryTitle = findViewById(R.id.txtHistoryTitle);
+        txtJournalHistoryActivityPill = findViewById(R.id.txtJournalHistoryActivityPill);
+        journalHistoryEmptyFrame = findViewById(R.id.journalHistoryEmptyFrame);
         cameraPreviewCard = findViewById(R.id.cameraPreviewCard);
         previewInnerFrame = findViewById(R.id.previewInnerFrame);
         detectionBox = findViewById(R.id.detectionBox);
@@ -373,14 +414,19 @@ public class ScanFoodActivity extends AppCompatActivity {
         btnSaveSelectedDish = findViewById(R.id.btnSaveSelectedDish);
         tabIndicator = findViewById(R.id.tabIndicator);
         captureSaveOverlay = findViewById(R.id.captureSaveOverlay);
+        journalHistoryOverlay = findViewById(R.id.journalHistoryOverlay);
+        journalHistoryBottomBar = findViewById(R.id.journalHistoryBottomBar);
+        btnJournalGrid = findViewById(R.id.btnJournalGrid);
+        btnJournalMore = findViewById(R.id.btnJournalMore);
+        btnJournalHistoryShutter = findViewById(R.id.btnJournalHistoryShutter);
         journalPreviewFooterContainer = findViewById(R.id.journalPreviewFooterContainer);
         txtScanStatus = findViewById(R.id.txtScanStatus);
         txtDetectedIngredientsEmpty = findViewById(R.id.txtDetectedIngredientsEmpty);
         txtDishSuggestionsEmpty = findViewById(R.id.txtDishSuggestionsEmpty);
         txtSelectedDishHint = findViewById(R.id.txtSelectedDishHint);
         txtExtraIngredientsHint = findViewById(R.id.txtExtraIngredientsHint);
-        txtCaptureUploadProgress = findViewById(R.id.txtPreviewUploadProgress);
-        txtCaptureSaveError = findViewById(R.id.txtPreviewSaveError);
+        txtCaptureUploadProgress = findViewById(R.id.txtPreviewUploadProgressLegacy);
+        txtCaptureSaveError = findViewById(R.id.txtPreviewSaveErrorOld);
         tabNhanDien = findViewById(R.id.tabNhanDien);
         tabNhatKy = findViewById(R.id.tabNhatKy);
         iconFlash = findViewById(R.id.iconFlash);
@@ -389,16 +435,17 @@ public class ScanFoodActivity extends AppCompatActivity {
         btnGallery = findViewById(R.id.btnGallery);
         btnShutter = findViewById(R.id.btnShutter);
         btnFlipCamera = findViewById(R.id.btnFlipCamera);
-        btnCaptureSaveCancel = findViewById(R.id.btnPreviewCancel);
-        btnCaptureSaveConfirm = findViewById(R.id.btnPreviewSend);
+        btnCaptureSaveCancel = findViewById(R.id.btnPreviewCancelOld);
+        btnCaptureSaveConfirm = findViewById(R.id.btnPreviewSendOld);
         btnPreviewDownload = findViewById(R.id.btnPreviewDownload);
-        btnPreviewEffects = findViewById(R.id.btnPreviewEffects);
-        captureSaveLoading = findViewById(R.id.capturePreviewLoading);
-        edtCaptureCaption = findViewById(R.id.edtJournalPreviewCaption);
+        btnPreviewEffects = findViewById(R.id.btnPreviewEffectsOld);
+        captureSaveLoading = findViewById(R.id.capturePreviewLoadingOldInline);
+        edtCaptureCaption = findViewById(R.id.edtJournalPreviewCaptionOld);
         edtManualExtraIngredient = findViewById(R.id.edtManualExtraIngredient);
-        imgCapturePreview = findViewById(R.id.imgJournalPreviewInline);
+        imgCapturePreview = findViewById(R.id.imgJournalPreviewInlineOld);
         imgCapturedRecognition = findViewById(R.id.imgCapturedRecognition);
         recognitionPreviewView = findViewById(R.id.previewView);
+        vpJournalHistory = findViewById(R.id.vpJournalHistory);
         rvDishSuggestions = findViewById(R.id.rvDishSuggestions);
         groupDetectedIngredients = findViewById(R.id.groupDetectedIngredients);
         groupSuggestedExtraIngredients = findViewById(R.id.groupSuggestedExtraIngredients);
@@ -443,6 +490,233 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
         renderSelectedExtraIngredients();
         renderSuggestedExtraIngredients();
+    }
+
+    private void setupJournalHistoryFeed() {
+        if (vpJournalHistory != null) {
+            journalHistoryAdapter = new JournalLocketPagerAdapter(new JournalLocketPagerAdapter.Listener() {
+                @Override
+                public void onHistoryPageVisible(@Nullable JournalFeedItem item) {
+                    currentJournalHistoryItem = item;
+                }
+
+                @Override
+                public void onCameraPageBound(
+                        @NonNull PreviewView pagePreviewView,
+                        @NonNull View pagePreviewInnerFrame,
+                        @NonNull View pageFlashButton,
+                        @NonNull TextView pageFlashIcon,
+                        @NonNull View pageGalleryButton,
+                        @NonNull View pageShutterButton,
+                        @NonNull View pageFlipButton) {
+                    bindJournalCameraPageViews(
+                            pagePreviewView,
+                            pagePreviewInnerFrame,
+                            pageFlashButton,
+                            pageFlashIcon,
+                            pageGalleryButton,
+                            pageShutterButton,
+                            pageFlipButton);
+                }
+            });
+            vpJournalHistory.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
+            vpJournalHistory.setOffscreenPageLimit(2);
+            vpJournalHistory.setAdapter(journalHistoryAdapter);
+            vpJournalHistory.setPageTransformer((page, position) -> {
+                page.setAlpha(1f);
+                View historyCard = page.findViewById(R.id.journalHistoryCard);
+                if (historyCard != null) {
+                    float lift = Math.max(0f, position);
+                    historyCard.setTranslationY(dp(18f) * lift);
+                    historyCard.setScaleX(1f - (0.03f * Math.abs(position)));
+                    historyCard.setScaleY(1f - (0.015f * Math.abs(position)));
+                }
+            });
+            vpJournalHistory.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                    renderJournalPagerChrome(position > 0 || positionOffset > 0.02f, position > 0 ? 1f : positionOffset);
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    currentJournalHistoryItem = journalHistoryAdapter == null
+                            ? null
+                            : journalHistoryAdapter.getHistoryItemForPage(position);
+                    renderJournalPagerState(position);
+                }
+            });
+            vpJournalHistory.post(() -> {
+                configureJournalHistoryPagerRecycler();
+            });
+        }
+        renderJournalPagerState(0);
+    }
+
+    private void bindJournalCameraPageViews(
+            @NonNull PreviewView pagePreviewView,
+            @NonNull View pagePreviewInnerFrame,
+            @NonNull View pageFlashButton,
+            @NonNull TextView pageFlashIcon,
+            @NonNull View pageGalleryButton,
+            @NonNull View pageShutterButton,
+            @NonNull View pageFlipButton) {
+        journalCameraPreviewView = pagePreviewView;
+        journalCameraPreviewInnerFrame = pagePreviewInnerFrame;
+        btnJournalCameraFlash = pageFlashButton;
+        journalCameraIconFlash = pageFlashIcon;
+        btnJournalCameraGallery = pageGalleryButton;
+        btnJournalCameraShutter = pageShutterButton;
+        btnJournalCameraFlip = pageFlipButton;
+
+        btnJournalCameraFlash.setOnClickListener(v -> toggleFlash());
+        btnJournalCameraGallery.setOnClickListener(v -> openGalleryPicker());
+        btnJournalCameraShutter.setOnClickListener(v -> performShutterAction());
+        btnJournalCameraFlip.setOnClickListener(v -> toggleCameraLens());
+        applyPressScale(
+                btnJournalCameraFlash,
+                btnJournalCameraGallery,
+                btnJournalCameraShutter,
+                btnJournalCameraFlip);
+        updateFlashUi(false);
+        setTorchButtonsEnabled(camera != null && camera.getCameraInfo() != null && camera.getCameraInfo().hasFlashUnit());
+        if (!isRecognitionMode) {
+            updateActivePreviewView();
+            startCameraIfNeeded();
+        }
+    }
+
+    private void configureJournalHistoryPagerRecycler() {
+        if (vpJournalHistory == null || vpJournalHistory.getChildCount() == 0) {
+            return;
+        }
+        View child = vpJournalHistory.getChildAt(0);
+        if (!(child instanceof RecyclerView)) {
+            return;
+        }
+        RecyclerView pagerRecycler = (RecyclerView) child;
+        pagerRecycler.setClipToPadding(false);
+        pagerRecycler.setClipChildren(false);
+        pagerRecycler.setOverScrollMode(View.OVER_SCROLL_NEVER);
+    }
+
+    private void renderJournalPagerState(int pagePosition) {
+        boolean showingHistoryPage = pagePosition > 0;
+        renderJournalPagerChrome(showingHistoryPage, showingHistoryPage ? 1f : 0f);
+        if (journalHistoryEmptyFrame != null) {
+            journalHistoryEmptyFrame.setVisibility(View.GONE);
+        }
+        if (txtScanStatus != null) {
+            txtScanStatus.setVisibility(View.GONE);
+        }
+        if (previewView != null) {
+            previewView.setVisibility(View.VISIBLE);
+        }
+        if (previewInnerFrame != null) {
+            previewInnerFrame.setVisibility(View.VISIBLE);
+        }
+        if (btnFlash != null) {
+            btnFlash.setVisibility(showingHistoryPage ? View.GONE : View.VISIBLE);
+        }
+        if (btnJournalCameraFlash != null) {
+            btnJournalCameraFlash.setVisibility(showingHistoryPage ? View.GONE : View.VISIBLE);
+        }
+        if (btnJournalMore != null) {
+            btnJournalMore.setAlpha(showingHistoryPage ? 1f : 0.55f);
+        }
+    }
+
+    private void renderJournalPagerChrome(boolean visible, float alpha) {
+        float boundedAlpha = Math.max(0f, Math.min(1f, alpha));
+        View journalHistoryTopBar = findViewById(R.id.journalHistoryTopBar);
+        if (journalHistoryTopBar != null) {
+            journalHistoryTopBar.setVisibility(visible ? View.VISIBLE : View.GONE);
+            journalHistoryTopBar.setAlpha(boundedAlpha);
+        }
+        if (journalHistoryBottomBar != null) {
+            journalHistoryBottomBar.setVisibility(visible ? View.VISIBLE : View.GONE);
+            journalHistoryBottomBar.setAlpha(boundedAlpha);
+        }
+    }
+
+    private void startJournalHistoryListener() {
+        if (journalFeedRepository == null) {
+            return;
+        }
+        stopJournalHistoryListener();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            if (journalHistoryAdapter != null) {
+                journalHistoryAdapter.submitItems(new ArrayList<>());
+            }
+            journalHistoryItems = new ArrayList<>();
+            currentJournalHistoryItem = null;
+            updateJournalHistoryEmptyState(true);
+            return;
+        }
+        journalHistoryListener = journalFeedRepository.listenToFeed(user.getUid(), 60, new JournalFeedRepository.FeedCallback() {
+            @Override
+            public void onItems(@NonNull List<JournalFeedItem> items) {
+                journalHistoryItems = new ArrayList<>(items);
+                if (journalHistoryAdapter != null) {
+                    journalHistoryAdapter.submitItems(items);
+                }
+                int currentPosition = vpJournalHistory == null ? 0 : vpJournalHistory.getCurrentItem();
+                int maxPage = items.isEmpty() ? 0 : items.size();
+                int boundedPosition = Math.min(currentPosition, maxPage);
+                currentJournalHistoryItem = journalHistoryAdapter == null
+                        ? null
+                        : journalHistoryAdapter.getHistoryItemForPage(boundedPosition);
+                if (vpJournalHistory != null && vpJournalHistory.getCurrentItem() != boundedPosition) {
+                    vpJournalHistory.setCurrentItem(boundedPosition, false);
+                }
+                renderJournalPagerState(boundedPosition);
+                updateJournalHistoryEmptyState(items.isEmpty());
+            }
+
+            @Override
+            public void onError(@NonNull Exception error) {
+                if (journalHistoryAdapter != null) {
+                    journalHistoryAdapter.submitItems(new ArrayList<>());
+                }
+                journalHistoryItems = new ArrayList<>();
+                currentJournalHistoryItem = null;
+                renderJournalPagerState(0);
+                updateJournalHistoryEmptyState(true);
+            }
+        });
+    }
+
+    private void stopJournalHistoryListener() {
+        if (journalHistoryListener != null) {
+            journalHistoryListener.remove();
+            journalHistoryListener = null;
+        }
+    }
+
+    private void updateJournalHistoryEmptyState(boolean empty) {
+        if (vpJournalHistory != null) {
+            vpJournalHistory.setVisibility(!isRecognitionMode ? View.VISIBLE : View.GONE);
+        }
+        if (journalHistoryEmptyFrame != null) {
+            journalHistoryEmptyFrame.setVisibility(View.GONE);
+        }
+        if (txtJournalHistoryActivityPill != null) {
+            txtJournalHistoryActivityPill.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean isJournalHistoryVisible() {
+        return !isRecognitionMode
+                && journalHistoryOverlay != null
+                && journalHistoryOverlay.getVisibility() == View.VISIBLE
+                && vpJournalHistory != null
+                && vpJournalHistory.getCurrentItem() > 0;
+    }
+
+    private void renderJournalHistoryMeta(@Nullable JournalFeedItem item) {
     }
 
     private void saveSuggestedDish(@NonNull ScanDishItem item) {
@@ -517,6 +791,15 @@ public class ScanFoodActivity extends AppCompatActivity {
         final int overlayTop = captureSaveOverlay == null ? 0 : captureSaveOverlay.getPaddingTop();
         final int overlayEnd = captureSaveOverlay == null ? 0 : captureSaveOverlay.getPaddingEnd();
         final int overlayBottom = captureSaveOverlay == null ? 0 : captureSaveOverlay.getPaddingBottom();
+        final View journalHistoryTopBar = findViewById(R.id.journalHistoryTopBar);
+        final ViewGroup.MarginLayoutParams historyTopParams = journalHistoryTopBar == null
+                ? null
+                : (ViewGroup.MarginLayoutParams) journalHistoryTopBar.getLayoutParams();
+        final int historyTopMargin = historyTopParams == null ? 0 : historyTopParams.topMargin;
+        final ViewGroup.MarginLayoutParams historyBottomParams = journalHistoryBottomBar == null
+                ? null
+                : (ViewGroup.MarginLayoutParams) journalHistoryBottomBar.getLayoutParams();
+        final int historyBottomMargin = historyBottomParams == null ? 0 : historyBottomParams.bottomMargin;
 
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -553,6 +836,16 @@ public class ScanFoodActivity extends AppCompatActivity {
                         overlayBottom + systemBars.bottom);
             }
 
+            if (journalHistoryTopBar != null && historyTopParams != null) {
+                historyTopParams.topMargin = historyTopMargin + systemBars.top;
+                journalHistoryTopBar.setLayoutParams(historyTopParams);
+            }
+
+            if (journalHistoryBottomBar != null && historyBottomParams != null) {
+                historyBottomParams.bottomMargin = historyBottomMargin + systemBars.bottom;
+                journalHistoryBottomBar.setLayoutParams(historyBottomParams);
+            }
+
             return insets;
         });
         ViewCompat.requestApplyInsets(root);
@@ -585,9 +878,8 @@ public class ScanFoodActivity extends AppCompatActivity {
                 isGranted -> {
                     if (isGranted) {
                         updateScanStatus(isRecognitionMode
-                                ? "Camera sẵn sàng, bạn có thể quét món ăn"
-                                : "Camera sẵn sàng, bạn có thể đăng moment");
-                        updateEntryStatus("Camera sẵn sàng. Chụp ảnh để lưu vào nhật ký.");
+                                ? "Sẵn sàng quét món ăn"
+                                : "");
                         startCameraIfNeeded();
                     } else {
                         isCameraReady = false;
@@ -636,7 +928,9 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void updateActivePreviewView() {
-        previewView = recognitionPreviewView;
+        previewView = !isRecognitionMode && journalCameraPreviewView != null
+                ? journalCameraPreviewView
+                : recognitionPreviewView;
     }
 
     private void bindCameraUseCases() {
@@ -664,9 +958,8 @@ public class ScanFoodActivity extends AppCompatActivity {
             isCameraReady = true;
             applyTorchState();
             updateScanStatus(isRecognitionMode
-                    ? "Camera sẵn sàng, bạn có thể quét món ăn"
-                    : "Camera sẵn sàng, bấm chụp để đăng.");
-            updateEntryStatus("Camera sẵn sàng. Chụp ảnh để lưu vào nhật ký.");
+                    ? "Sẵn sàng quét món ăn"
+                    : "");
         } catch (Exception bindError) {
             isCameraReady = false;
             updateScanStatus("Không bind được camera, đang thử camera khác...");
@@ -706,7 +999,10 @@ public class ScanFoodActivity extends AppCompatActivity {
                 tabNhanDien,
                 tabNhatKy,
                 btnCaptureSaveCancel,
-                btnCaptureSaveConfirm);
+                btnCaptureSaveConfirm,
+                btnJournalGrid,
+                btnJournalMore,
+                btnJournalHistoryShutter);
     }
 
     private void applyPressScale(View... targets) {
@@ -768,6 +1064,9 @@ public class ScanFoodActivity extends AppCompatActivity {
             return;
         }
         isRecognitionMode = recognitionMode;
+        if (!isRecognitionMode && vpJournalHistory != null) {
+            vpJournalHistory.setCurrentItem(0, false);
+        }
         updateUiForMode(true);
         startCameraIfNeeded();
     }
@@ -793,6 +1092,12 @@ public class ScanFoodActivity extends AppCompatActivity {
 
         moveIndicatorTo(isRecognitionMode ? tabNhanDien : tabNhatKy, animated);
         updateActivePreviewView();
+        if (isRecognitionMode) {
+            hideJournalHistoryOverlay();
+        } else if (journalHistoryOverlay != null) {
+            journalHistoryOverlay.setVisibility(View.VISIBLE);
+        }
+        updateJournalBottomControls();
 
         if (recognitionSurface != null) {
             recognitionSurface.setVisibility(View.VISIBLE);
@@ -802,7 +1107,7 @@ public class ScanFoodActivity extends AppCompatActivity {
             cameraPreviewCard.setAlpha(1f);
         }
         if (previewInnerFrame != null) {
-            previewInnerFrame.setAlpha(isRecognitionMode ? 1f : 0.62f);
+            previewInnerFrame.setAlpha(isRecognitionMode ? 1f : 0.92f);
         }
         if (!isRecognitionMode && scanResultContainer != null) {
             scanResultContainer.setVisibility(View.GONE);
@@ -833,12 +1138,69 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (isRecognitionMode && journalManager != null && journalManager.isCapturePreviewVisible()) {
             journalManager.hideJournalCapturePreview(true);
         }
+        renderJournalCameraState();
+        if (!isRecognitionMode) {
+            if (vpJournalHistory != null) {
+                vpJournalHistory.setVisibility(View.VISIBLE);
+            }
+            renderJournalPagerState(vpJournalHistory == null ? 0 : vpJournalHistory.getCurrentItem());
+        }
+    }
+
+    private void updateJournalBottomControls() {
+        ImageView galleryButton = findViewById(R.id.btnGallery);
+        TextView flipButton = findViewById(R.id.btnFlipCamera);
+        if (galleryButton != null) {
+            int journalPadding = 0;
+            int recognitionPadding = Math.round(dp(6f));
+            galleryButton.setImageResource(isRecognitionMode ? R.drawable.ic_camera_gallery : R.drawable.ic_journal_grid);
+            galleryButton.setPadding(
+                    isRecognitionMode ? recognitionPadding : journalPadding,
+                    isRecognitionMode ? recognitionPadding : journalPadding,
+                    isRecognitionMode ? recognitionPadding : journalPadding,
+                    isRecognitionMode ? recognitionPadding : journalPadding);
+        }
+        if (flipButton != null) {
+            flipButton.setText(isRecognitionMode ? "flip_camera_ios" : "more_horiz");
+            flipButton.setTextSize(isRecognitionMode ? 30f : 28f);
+        }
+    }
+
+    private void renderJournalCameraState() {
+        if (tabsContainer != null) {
+            tabsContainer.setVisibility(isRecognitionMode ? View.VISIBLE : View.GONE);
+        }
+        if (txtHistoryTitle != null) {
+            txtHistoryTitle.setVisibility(isRecognitionMode ? View.VISIBLE : View.GONE);
+        }
+        if (txtJournalHistoryActivityPill != null) {
+            txtJournalHistoryActivityPill.setVisibility(View.GONE);
+        }
+        if (txtScanStatus != null) {
+            txtScanStatus.setVisibility(isRecognitionMode ? View.VISIBLE : View.GONE);
+            if (isRecognitionMode) {
+                txtScanStatus.setTextColor(Color.parseColor("#D4C5AB"));
+                txtScanStatus.setTextSize(13f);
+            }
+        }
+        if (topBar != null) {
+            topBar.setVisibility(isRecognitionMode ? View.VISIBLE : View.GONE);
+        }
+        if (footerContainer != null) {
+            footerContainer.setVisibility(isRecognitionMode ? View.VISIBLE : View.GONE);
+        }
+        if (cameraPreviewCard != null) {
+            cameraPreviewCard.setVisibility(isRecognitionMode ? View.VISIBLE : View.GONE);
+        }
+        if (journalHistoryOverlay != null) {
+            journalHistoryOverlay.setVisibility(isRecognitionMode ? View.GONE : View.VISIBLE);
+        }
     }
 
     private void setJournalPreviewUiVisible(boolean visible) {
         updateCameraPreviewConstraintsForState(visible);
         if (captureSaveOverlay != null) {
-            captureSaveOverlay.setVisibility(visible ? View.VISIBLE : View.GONE);
+            captureSaveOverlay.setVisibility(View.GONE);
         }
         if (journalPreviewFooterContainer != null) {
             journalPreviewFooterContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -855,8 +1217,14 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (footerContainer != null) {
             footerContainer.setVisibility(visible ? View.GONE : View.VISIBLE);
         }
+        if (cameraPreviewCard != null && !isRecognitionMode) {
+            cameraPreviewCard.setVisibility(View.VISIBLE);
+        }
         if (btnFlash != null) {
             btnFlash.setVisibility(visible ? View.GONE : View.VISIBLE);
+        }
+        if (journalHistoryOverlay != null && !isRecognitionMode) {
+            journalHistoryOverlay.setVisibility(visible ? View.GONE : View.VISIBLE);
         }
         if (previewView != null) {
             previewView.setVisibility(visible ? View.INVISIBLE : View.VISIBLE);
@@ -882,6 +1250,15 @@ public class ScanFoodActivity extends AppCompatActivity {
         constraintSet.clone(rootLayout);
         constraintSet.clear(R.id.cameraPreviewCard, ConstraintSet.TOP);
         constraintSet.clear(R.id.cameraPreviewCard, ConstraintSet.BOTTOM);
+
+        if (!isRecognitionMode && !previewVisible) {
+            int topMargin = getResources().getDimensionPixelSize(R.dimen.journal_history_card_margin_top);
+            constraintSet.connect(R.id.cameraPreviewCard, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, topMargin);
+            constraintSet.connect(R.id.cameraPreviewCard, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0);
+            constraintSet.setVerticalBias(R.id.cameraPreviewCard, 0f);
+            constraintSet.applyTo(rootLayout);
+            return;
+        }
 
         int topMargin = getResources().getDimensionPixelSize(
                 previewVisible
@@ -947,6 +1324,10 @@ public class ScanFoodActivity extends AppCompatActivity {
             iconFlash.setText(isFlashOn ? "flash_on" : "flash_off");
             iconFlash.setTextColor(Color.WHITE);
         }
+        if (journalCameraIconFlash != null) {
+            journalCameraIconFlash.setText(isFlashOn ? "flash_on" : "flash_off");
+            journalCameraIconFlash.setTextColor(Color.WHITE);
+        }
 
         if (showToast) {
             Toast.makeText(this, isFlashOn ? "Flash: Bật" : "Flash: Tắt", Toast.LENGTH_SHORT).show();
@@ -976,6 +1357,10 @@ public class ScanFoodActivity extends AppCompatActivity {
             btnFlash.setEnabled(enabled);
             btnFlash.setAlpha(enabled ? 1f : 0.5f);
         }
+        if (btnJournalCameraFlash != null) {
+            btnJournalCameraFlash.setEnabled(enabled);
+            btnJournalCameraFlash.setAlpha(enabled ? 1f : 0.5f);
+        }
     }
 
     private void setupClickListeners() {
@@ -986,13 +1371,53 @@ public class ScanFoodActivity extends AppCompatActivity {
             btnFlash.setOnClickListener(v -> toggleFlash());
         }
         if (btnGallery != null) {
-            btnGallery.setOnClickListener(v -> openGalleryPicker());
+            btnGallery.setOnClickListener(v -> {
+                if (isRecognitionMode) {
+                    openGalleryPicker();
+                    return;
+                }
+                startActivity(JournalHistoryGridActivity.createIntent(this));
+            });
         }
         if (btnShutter != null) {
-            btnShutter.setOnClickListener(v -> performShutterAction());
+            btnShutter.setOnClickListener(v -> {
+                if (!isRecognitionMode && isJournalHistoryVisible()) {
+                    hideJournalHistoryOverlay();
+                    return;
+                }
+                performShutterAction();
+            });
         }
         if (btnFlipCamera != null) {
-            btnFlipCamera.setOnClickListener(v -> toggleCameraLens());
+            btnFlipCamera.setOnClickListener(v -> {
+                if (isRecognitionMode) {
+                    toggleCameraLens();
+                    return;
+                }
+                showJournalHistoryActions();
+            });
+        }
+        if (btnJournalGrid != null) {
+            btnJournalGrid.setOnClickListener(v -> startActivity(JournalHistoryGridActivity.createIntent(this)));
+        }
+        if (btnJournalHistoryShutter != null) {
+            btnJournalHistoryShutter.setOnClickListener(v -> {
+                if (isRecognitionMode) {
+                    return;
+                }
+                if (vpJournalHistory != null && vpJournalHistory.getCurrentItem() > 0) {
+                    vpJournalHistory.setCurrentItem(0, true);
+                    return;
+                }
+                performShutterAction();
+            });
+        }
+        if (btnJournalMore != null) {
+            btnJournalMore.setOnClickListener(v -> {
+                if (!isRecognitionMode && vpJournalHistory != null && vpJournalHistory.getCurrentItem() > 0) {
+                    showJournalHistoryActions();
+                }
+            });
         }
         if (btnCaptureSaveCancel != null) {
             btnCaptureSaveCancel.setOnClickListener(v -> {
@@ -1023,6 +1448,128 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (btnAddManualExtraIngredient != null) {
             btnAddManualExtraIngredient.setOnClickListener(v -> addManualExtraIngredient());
         }
+    }
+
+    private void showJournalHistoryOverlay() {
+        if (isRecognitionMode) {
+            return;
+        }
+        if (journalHistoryOverlay != null) {
+            journalHistoryOverlay.setVisibility(View.VISIBLE);
+        }
+        if (vpJournalHistory != null) {
+            vpJournalHistory.setVisibility(View.VISIBLE);
+            vpJournalHistory.setCurrentItem(journalHistoryItems.isEmpty() ? 0 : 1, true);
+        }
+        currentJournalHistoryItem = journalHistoryItems.isEmpty() ? null : journalHistoryItems.get(0);
+        renderJournalPagerState(vpJournalHistory == null ? 0 : vpJournalHistory.getCurrentItem());
+    }
+
+    private void hideJournalHistoryOverlay() {
+        if (vpJournalHistory != null) {
+            vpJournalHistory.setCurrentItem(0, true);
+        }
+        renderJournalPagerState(0);
+    }
+
+    private void showJournalHistoryActions() {
+        JournalFeedItem item = currentJournalHistoryItem;
+        if (item == null) {
+            Toast.makeText(this, "Chưa có ảnh nhật ký", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        View sheet = getLayoutInflater().inflate(R.layout.bottom_sheet_journal_history_actions, null, false);
+        dialog.setContentView(sheet);
+
+        View btnShare = sheet.findViewById(R.id.btnJournalShare);
+        View btnDownload = sheet.findViewById(R.id.btnJournalDownload);
+        TextView btnDelete = sheet.findViewById(R.id.btnJournalDelete);
+        View btnCancel = sheet.findViewById(R.id.btnJournalCancel);
+
+        if (btnShare != null) {
+            btnShare.setOnClickListener(v -> {
+                dialog.dismiss();
+                shareJournalHistoryItem(item);
+            });
+        }
+        if (btnDownload != null) {
+            btnDownload.setOnClickListener(v -> {
+                dialog.dismiss();
+                downloadJournalHistoryItem(item);
+            });
+        }
+        if (btnDelete != null) {
+            if (!item.isOwnMoment()) {
+                btnDelete.setVisibility(View.GONE);
+            } else {
+                btnDelete.setOnClickListener(v -> {
+                    dialog.dismiss();
+                    confirmDeleteJournalHistoryItem(item);
+                });
+            }
+        }
+        if (btnCancel != null) {
+            btnCancel.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
+    }
+
+    private void shareJournalHistoryItem(@NonNull JournalFeedItem item) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, item.getImageUrl());
+        startActivity(Intent.createChooser(intent, "Chia sẻ nhật ký"));
+    }
+
+    private void downloadJournalHistoryItem(@NonNull JournalFeedItem item) {
+        String imageUrl = item.getImageUrl();
+        if (TextUtils.isEmpty(imageUrl)) {
+            Toast.makeText(this, "Không có ảnh để tải", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(imageUrl));
+        request.setTitle("CoolCook journal");
+        request.setDescription("Đang tải ảnh nhật ký");
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalPublicDir(
+                Environment.DIRECTORY_DOWNLOADS,
+                "coolcook-journal-" + item.getMomentId() + ".jpg");
+        DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        if (downloadManager != null) {
+            downloadManager.enqueue(request);
+            Toast.makeText(this, "Đang tải ảnh về Downloads", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void confirmDeleteJournalHistoryItem(@NonNull JournalFeedItem item) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Xóa nhật ký?")
+                .setMessage("Ảnh này sẽ bị xóa khỏi feed Nhật ký.")
+                .setNegativeButton("Hủy", null)
+                .setPositiveButton("Xóa", (dialog, which) -> deleteJournalHistoryItem(item))
+                .show();
+    }
+
+    private void deleteJournalHistoryItem(@NonNull JournalFeedItem item) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null || !item.isOwnMoment()) {
+            Toast.makeText(this, "Chỉ có thể xóa ảnh của bạn", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        journalFeedRepository.deleteOwnMoment(user.getUid(), item.getMomentId(), new JournalFeedRepository.DeleteCallback() {
+            @Override
+            public void onSuccess() {
+                runOnUiThread(() -> Toast.makeText(ScanFoodActivity.this, "Đã xóa nhật ký", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onError(@NonNull Exception error) {
+                runOnUiThread(() -> Toast.makeText(ScanFoodActivity.this, "Không xóa được nhật ký", Toast.LENGTH_SHORT).show());
+            }
+        });
     }
 
     private void toggleFlash() {
@@ -1129,7 +1676,12 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void animateShutterFeedback() {
-        View activeShutter = btnShutter;
+        boolean showingJournalCameraPage = !isRecognitionMode
+                && vpJournalHistory != null
+                && vpJournalHistory.getCurrentItem() == 0;
+        View activeShutter = isRecognitionMode
+                ? btnShutter
+                : (showingJournalCameraPage ? btnJournalCameraShutter : btnJournalHistoryShutter);
         if (activeShutter == null) {
             return;
         }
@@ -2485,6 +3037,12 @@ public class ScanFoodActivity extends AppCompatActivity {
         setViewEnabled(btnShutter, enabled);
         setViewEnabled(btnGallery, enabled);
         setViewEnabled(btnFlipCamera, enabled);
+        setViewEnabled(btnJournalCameraGallery, enabled);
+        setViewEnabled(btnJournalCameraShutter, enabled);
+        setViewEnabled(btnJournalCameraFlip, enabled);
+        setViewEnabled(btnJournalHistoryShutter, enabled);
+        setViewEnabled(btnJournalGrid, enabled);
+        setViewEnabled(btnJournalMore, enabled);
         setViewEnabled(tabNhanDien, enabled);
         setViewEnabled(tabNhatKy, enabled);
         setViewEnabled(btnPreviewDownload, enabled);
@@ -2511,7 +3069,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void updateEntryStatus(@NonNull String status) {
-        if (txtScanStatus != null && !isRecognitionMode) {
+        if (txtScanStatus != null && !isRecognitionMode && txtScanStatus.getVisibility() == View.VISIBLE) {
             txtScanStatus.setText(status);
         }
     }

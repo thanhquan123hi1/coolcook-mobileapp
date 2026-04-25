@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_journal_history_action_sheet"
+    android:orientation="vertical"
+    android:paddingStart="22dp"
+    android:paddingTop="18dp"
+    android:paddingEnd="22dp"
+    android:paddingBottom="28dp">
+
+    <TextView
+        android:id="@+id/btnJournalShare"
+        style="@style/JournalHistoryActionText"
+        android:text="Chia sẻ" />
+
+    <TextView
+        android:id="@+id/btnJournalDownload"
+        style="@style/JournalHistoryActionText"
+        android:text="Tải về" />
+
+    <TextView
+        android:id="@+id/btnJournalDelete"
+        style="@style/JournalHistoryActionText"
+        android:text="Xóa"
+        android:textColor="#FFFF6B6B" />
+
+    <TextView
+        android:id="@+id/btnJournalCancel"
+        style="@style/JournalHistoryActionText"
+        android:text="Hủy" />
+</LinearLayout>
