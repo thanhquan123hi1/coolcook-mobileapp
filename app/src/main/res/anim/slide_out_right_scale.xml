@@ -3,4 +3,5 @@
     android:shareInterpolator="true"
     android:interpolator="@android:interpolator/fast_out_slow_in">
     <translate android:fromXDelta="0%" android:toXDelta="12%" android:duration="200" />
+    <alpha android:fromAlpha="1.0" android:toAlpha="0.0" android:duration="200" />
 </set>
