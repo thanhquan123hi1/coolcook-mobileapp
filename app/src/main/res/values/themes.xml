@@ -46,12 +46,6 @@
         <item name="cornerSize">50%</item>
     </style>
 
-    <style name="Theme.Coolcook.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#feedda</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
-        <item name="postSplashScreenTheme">@style/Theme.Coolcook</item>
-    </style>
-
     <style name="Animation.Coolcook.EditProfileDialog" parent="@android:style/Animation.Dialog">
         <item name="android:windowEnterAnimation">@anim/dialog_bounce_in</item>
         <item name="android:windowExitAnimation">@anim/dialog_bounce_out</item>
