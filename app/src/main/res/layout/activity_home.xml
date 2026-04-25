@@ -5,7 +5,7 @@
     android:id="@+id/homeRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="@drawable/bg_home_screen"
     android:clipChildren="false"
     android:clipToPadding="false"
     tools:context=".feature.home.ui.HomeActivity">
@@ -14,6 +14,7 @@
         android:id="@+id/homeScroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:clipChildren="false"
         android:clipToPadding="false"
         android:fillViewport="true"
         android:overScrollMode="never"
@@ -27,246 +28,336 @@
             android:id="@+id/homeContentContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:orientation="vertical"
             android:paddingStart="@dimen/home_content_padding_horizontal"
             android:paddingTop="@dimen/home_content_padding_top"
             android:paddingEnd="@dimen/home_content_padding_horizontal"
             android:paddingBottom="@dimen/home_content_padding_bottom">
 
-            <LinearLayout
-                android:id="@+id/homeHeaderRow"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
                 <LinearLayout
+                    android:id="@+id/homeHeaderRow"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingEnd="8dp">
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/homeNotificationButton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/imgHomeAvatar"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:contentDescription="@string/home_avatar_desc"
                         android:scaleType="centerCrop"
                         android:src="@drawable/img_home_profile"
                         app:shapeAppearanceOverlay="@style/CircleImageView"
-                        app:strokeColor="@color/home_avatar_border"
-                        app:strokeWidth="2dp"
+                        app:strokeColor="@color/home_avatar_stroke"
+                        app:strokeWidth="1dp"
                         tools:src="@drawable/img_home_profile" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
+                        android:layout_marginStart="12dp"
                         android:orientation="vertical">
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/be_vietnam_pro"
-                            android:text="@string/home_greeting"
-                            android:textColor="@color/on_surface_variant"
-                            android:textSize="14sp" />
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/be_vietnam_pro_medium"
+                                android:text="@string/home_greeting"
+                                android:textColor="@color/home_text_secondary"
+                                android:textSize="11.5sp" />
+
+                            <ImageView
+                                android:layout_width="9dp"
+                                android:layout_height="9dp"
+                                android:layout_marginStart="4dp"
+                                android:contentDescription="@null"
+                                android:src="@drawable/img_home_sticker_heart" />
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/txtHomeUserName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_marginTop="1dp"
+                            android:fontFamily="@font/be_vietnam_pro_bold"
                             android:text="@string/home_user_name"
-                            android:textColor="@color/on_surface"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/home_text_primary"
+                            android:textSize="17sp" />
                     </LinearLayout>
                 </LinearLayout>
 
                 <FrameLayout
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:id="@+id/homeNotificationButton"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
                     android:background="@drawable/bg_home_icon_button"
-                    android:contentDescription="@string/home_notification_desc">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:fontFamily="@font/material_symbols_outlined"
-                        android:fontVariationSettings="'wght' 600"
-                        android:text="notifications"
-                        android:textColor="@color/home_accent"
-                        android:textSize="20sp" />
-
-                    <View
-                        android:layout_width="8dp"
-                        android:layout_height="8dp"
-                        android:layout_gravity="top|end"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/bg_home_notification_dot" />
-                </FrameLayout>
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/be_vietnam_pro"
-                android:lineSpacingExtra="2dp"
-                android:text="@string/home_question"
-                android:textColor="@color/on_surface"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:id="@+id/homeSearchBar"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/home_search_height"
-                android:layout_marginTop="@dimen/home_search_margin_top"
-                android:background="@drawable/bg_home_search"
-                android:elevation="@dimen/home_surface_elevation"
-                android:gravity="center_vertical"
-                android:outlineAmbientShadowColor="@color/home_shadow_ambient"
-                android:outlineProvider="background"
-                android:outlineSpotShadowColor="@color/home_shadow_spot"
-                android:orientation="horizontal"
-                android:paddingStart="@dimen/home_search_padding_horizontal"
-                android:paddingEnd="@dimen/home_search_padding_horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/material_symbols_outlined"
-                    android:fontVariationSettings="'wght' 600"
-                    android:text="search"
-                    android:textColor="@color/home_accent"
-                    android:textSize="22sp" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/home_search_text_margin_start"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/be_vietnam_pro"
-                    android:text="@string/home_search_hint"
-                    android:textColor="@color/home_search_placeholder"
-                    android:textSize="14sp" />
-
-                <FrameLayout
-                    android:id="@+id/homeSearchCameraButton"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
                     android:clickable="true"
+                    android:contentDescription="@string/home_notification_desc"
                     android:focusable="true"
                     android:foreground="@drawable/fg_ripple_circle"
-                    android:background="@drawable/bg_home_search_camera_button">
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:fontFamily="@font/material_symbols_outlined"
-                        android:fontVariationSettings="'wght' 600"
-                        android:text="photo_camera"
-                        android:textColor="@color/home_accent"
-                        android:textSize="20sp" />
+                        android:fontVariationSettings="'wght' 500"
+                        android:text="notifications"
+                        android:textColor="@color/home_text_primary"
+                        android:textSize="18sp" />
                 </FrameLayout>
-            </LinearLayout>
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginTop="-6dp"
+                    android:layout_marginEnd="-4dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/img_home_sticker_flower"
+                    app:layout_constraintEnd_toEndOf="@id/homeNotificationButton"
+                    app:layout_constraintTop_toTopOf="@id/homeNotificationButton" />
+
+                <ImageView
+                    android:layout_width="9dp"
+                    android:layout_height="9dp"
+                    android:layout_marginStart="-4dp"
+                    android:layout_marginBottom="-2dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/img_home_sticker_heart"
+                    app:layout_constraintBottom_toBottomOf="@id/homeNotificationButton"
+                    app:layout_constraintStart_toStartOf="@id/homeNotificationButton" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:text="@string/home_question"
+                android:textColor="@color/home_text_primary"
+                android:textSize="22sp" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="@dimen/home_search_margin_top"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <LinearLayout
+                    android:id="@+id/homeSearchBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/home_search_height"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/bg_home_search"
+                    android:elevation="@dimen/home_surface_elevation"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/home_search_padding_horizontal"
+                    android:paddingEnd="@dimen/home_search_padding_horizontal">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_nav_search"
+                        app:tint="@color/home_text_secondary" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/home_search_text_margin_start"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/be_vietnam_pro_medium"
+                        android:text="@string/home_search_hint"
+                        android:textColor="@color/home_search_placeholder"
+                        android:textSize="12.5sp" />
+
+                    <FrameLayout
+                        android:id="@+id/homeSearchCameraButton"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/bg_home_search_camera_button"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="@drawable/fg_ripple_circle">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="@string/home_nav_camera"
+                            android:src="@drawable/ic_nav_camera"
+                            app:tint="@color/white" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="start|top"
+                    android:layout_marginStart="-4dp"
+                    android:layout_marginTop="-4dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/img_home_mascot_teddy" />
+            </FrameLayout>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/homeFeatureCard"
-                style="@style/Widget.Coolcook.Home.SurfaceCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/home_feature_margin_top"
-                app:cardBackgroundColor="@color/surface_container_low"
+                app:cardBackgroundColor="@android:color/transparent"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="@dimen/home_card_elevation"
-                app:strokeWidth="1dp"
-                app:cardUseCompatPadding="false">
+                app:strokeWidth="0dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/bg_home_banner"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
                     android:minHeight="@dimen/home_feature_min_height"
-                    android:padding="@dimen/home_feature_padding">
+                    android:padding="14dp">
 
-                    <View
-                        android:layout_width="128dp"
-                        android:layout_height="128dp"
-                        android:layout_marginTop="-16dp"
-                        android:layout_marginEnd="-16dp"
-                        android:background="@drawable/bg_home_feature_decor"
+                    <ImageView
+                        android:layout_width="9dp"
+                        android:layout_height="9dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/img_home_sticker_heart"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/img_home_sticker_flower"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/img_home_sticker_flower"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <LinearLayout
                         android:id="@+id/homeFeatureText"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/home_feature_text_margin_end"
+                        android:layout_height="0dp"
+                        android:gravity="center_vertical"
                         android:orientation="vertical"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/homeFeatureImage"
+                        app:layout_constraintEnd_toStartOf="@+id/homeFeatureVisual"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintWidth_percent="0.55"
-                        app:layout_constraintHorizontal_bias="0">
+                        app:layout_constraintWidth_percent="0.58">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/be_vietnam_pro"
+                            android:fontFamily="@font/be_vietnam_pro_bold"
                             android:lineSpacingExtra="2dp"
-                            android:maxLines="3"
                             android:text="@string/home_feature_title"
-                            android:textColor="@color/on_surface"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/home_text_primary"
+                            android:textSize="13.5sp" />
 
-                        <androidx.appcompat.widget.AppCompatButton
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/homeFeatureActionButton"
                             android:layout_width="wrap_content"
-                            android:layout_height="@dimen/home_feature_button_height"
-                            android:layout_marginTop="@dimen/home_feature_button_margin_top"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="10dp"
                             android:background="@drawable/bg_home_feature_action"
-                            android:fontFamily="@font/be_vietnam_pro_medium"
+                            android:fontFamily="@font/be_vietnam_pro_bold"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
                             android:minWidth="0dp"
+                            android:minHeight="0dp"
                             android:paddingStart="16dp"
                             android:paddingEnd="16dp"
                             android:text="@string/home_feature_action"
                             android:textAllCaps="false"
-                            android:textColor="@color/on_primary"
-                            android:textSize="14sp"
-                            android:textStyle="normal" />
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            app:icon="@drawable/ic_nav_camera"
+                            app:iconGravity="textStart"
+                            app:iconPadding="6dp"
+                            app:iconSize="13dp"
+                            app:iconTint="@color/white" />
                     </LinearLayout>
 
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/homeFeatureImage"
-                        android:layout_width="0dp"
+                    <FrameLayout
+                        android:id="@+id/homeFeatureVisual"
+                        android:layout_width="128dp"
                         android:layout_height="0dp"
-                        android:layout_marginEnd="-16dp"
-                        android:layout_marginBottom="-16dp"
-                        android:contentDescription="@string/home_feature_image_desc"
-                        android:elevation="@dimen/home_feature_image_elevation"
-                        android:outlineAmbientShadowColor="@color/home_shadow_ambient"
-                        android:outlineSpotShadowColor="@color/home_shadow_spot"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/img_home_feature_illustration"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="1.0"
-                        app:layout_constraintWidth_percent="0.4"
-                        app:layout_constraintDimensionRatio="1:1"
-                        app:shapeAppearanceOverlay="@style/CircleImageView"
-                        tools:src="@drawable/img_home_feature_illustration" />
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="top|start"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginTop="-2dp"
+                            android:fontFamily="@font/manrope"
+                            android:rotation="-8"
+                            android:text="@string/home_banner_good_food"
+                            android:textColor="@color/home_text_primary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginBottom="6dp"
+                            android:fontFamily="@font/manrope"
+                            android:rotation="-7"
+                            android:text="@string/home_banner_safe_work"
+                            android:textColor="@color/home_text_primary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:id="@+id/homeFeatureImage"
+                            android:layout_width="92dp"
+                            android:layout_height="72dp"
+                            android:layout_gravity="center|end"
+                            android:adjustViewBounds="true"
+                            android:contentDescription="@string/home_feature_image_desc"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/img_scan_food_burger"
+                            tools:src="@drawable/img_scan_food_burger" />
+                    </FrameLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -280,31 +371,28 @@
                     android:id="@+id/homeQuickScanCard"
                     style="@style/Widget.Coolcook.Home.SurfaceCard"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="68dp"
                     android:layout_weight="1"
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="@drawable/fg_ripple_rounded_large"
-                    app:cardBackgroundColor="@color/surface_container_lowest"
-                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="24dp"
                     app:cardElevation="@dimen/home_card_elevation"
                     app:strokeColor="@color/home_card_border_soft"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:minHeight="@dimen/home_quick_card_min_height"
-                        android:orientation="vertical"
-                        android:paddingStart="@dimen/home_quick_card_padding_horizontal"
-                        android:paddingTop="@dimen/home_quick_card_padding_vertical"
-                        android:paddingEnd="@dimen/home_quick_card_padding_horizontal"
-                        android:paddingBottom="@dimen/home_quick_card_padding_vertical">
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp">
 
                         <FrameLayout
-                            android:layout_width="@dimen/home_quick_card_icon_size"
-                            android:layout_height="@dimen/home_quick_card_icon_size"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
                             android:background="@drawable/bg_home_icon_circle_primary">
 
                             <TextView
@@ -312,22 +400,21 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:fontFamily="@font/material_symbols_outlined"
-                                android:fontVariationSettings="'FILL' 1, 'wght' 600"
+                                android:fontVariationSettings="'FILL' 0, 'wght' 500"
                                 android:text="qr_code_scanner"
-                                android:textColor="@color/home_accent"
+                                android:textColor="@color/home_soft_pink_icon"
                                 android:textSize="20sp" />
                         </FrameLayout>
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/home_quick_card_label_margin_top"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
                             android:fontFamily="@font/be_vietnam_pro_medium"
-                            android:gravity="center"
                             android:text="@string/home_quick_scan"
-                            android:textColor="@color/on_surface"
-                            android:textSize="14sp"
-                            android:textStyle="normal" />
+                            android:textColor="@color/home_text_primary"
+                            android:textSize="13sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -339,31 +426,28 @@
                     android:id="@+id/homeQuickSuggestCard"
                     style="@style/Widget.Coolcook.Home.SurfaceCard"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="68dp"
                     android:layout_weight="1"
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="@drawable/fg_ripple_rounded_large"
-                    app:cardBackgroundColor="@color/surface_container_lowest"
-                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="24dp"
                     app:cardElevation="@dimen/home_card_elevation"
                     app:strokeColor="@color/home_card_border_soft"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:minHeight="@dimen/home_quick_card_min_height"
-                        android:orientation="vertical"
-                        android:paddingStart="@dimen/home_quick_card_padding_horizontal"
-                        android:paddingTop="@dimen/home_quick_card_padding_vertical"
-                        android:paddingEnd="@dimen/home_quick_card_padding_horizontal"
-                        android:paddingBottom="@dimen/home_quick_card_padding_vertical">
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp">
 
                         <FrameLayout
-                            android:layout_width="@dimen/home_quick_card_icon_size"
-                            android:layout_height="@dimen/home_quick_card_icon_size"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
                             android:background="@drawable/bg_home_icon_circle_secondary">
 
                             <TextView
@@ -371,22 +455,21 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:fontFamily="@font/material_symbols_outlined"
-                                android:fontVariationSettings="'FILL' 1, 'wght' 600"
-                                android:text="restaurant_menu"
-                                android:textColor="@color/home_accent"
+                                android:fontVariationSettings="'FILL' 0, 'wght' 500"
+                                android:text="restaurant"
+                                android:textColor="@color/home_soft_peach_icon"
                                 android:textSize="20sp" />
                         </FrameLayout>
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/home_quick_card_label_margin_top"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
                             android:fontFamily="@font/be_vietnam_pro_medium"
-                            android:gravity="center"
                             android:text="@string/home_quick_suggest"
-                            android:textColor="@color/on_surface"
-                            android:textSize="14sp"
-                            android:textStyle="normal" />
+                            android:textColor="@color/home_text_primary"
+                            android:textSize="13sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
@@ -401,54 +484,50 @@
                     android:id="@+id/homeQuickHealthCard"
                     style="@style/Widget.Coolcook.Home.SurfaceCard"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="68dp"
                     android:layout_weight="1"
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="@drawable/fg_ripple_rounded_large"
-                    app:cardBackgroundColor="@color/surface_container_lowest"
-                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="24dp"
                     app:cardElevation="@dimen/home_card_elevation"
                     app:strokeColor="@color/home_card_border_soft"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:minHeight="@dimen/home_quick_card_min_height"
-                        android:orientation="vertical"
-                        android:paddingStart="@dimen/home_quick_card_padding_horizontal"
-                        android:paddingTop="@dimen/home_quick_card_padding_vertical"
-                        android:paddingEnd="@dimen/home_quick_card_padding_horizontal"
-                        android:paddingBottom="@dimen/home_quick_card_padding_vertical">
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp">
 
                         <FrameLayout
-                            android:layout_width="@dimen/home_quick_card_icon_size"
-                            android:layout_height="@dimen/home_quick_card_icon_size"
-                            android:background="@drawable/bg_home_icon_circle_error">
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_home_goal_icon_warm">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:fontFamily="@font/material_symbols_outlined"
-                                android:fontVariationSettings="'FILL' 1, 'wght' 600"
+                                android:fontVariationSettings="'FILL' 0, 'wght' 500"
                                 android:text="favorite"
-                                android:textColor="@color/error"
-                                android:textSize="20sp" />
+                                android:textColor="@color/home_soft_green_icon"
+                                android:textSize="18sp" />
                         </FrameLayout>
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/home_quick_card_label_margin_top"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
                             android:fontFamily="@font/be_vietnam_pro_medium"
-                            android:gravity="center"
                             android:text="@string/home_quick_health"
-                            android:textColor="@color/on_surface"
-                            android:textSize="14sp"
-                            android:textStyle="normal" />
+                            android:textColor="@color/home_text_primary"
+                            android:textSize="13sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -460,31 +539,28 @@
                     android:id="@+id/homeQuickAiCard"
                     style="@style/Widget.Coolcook.Home.SurfaceCard"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="68dp"
                     android:layout_weight="1"
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="@drawable/fg_ripple_rounded_large"
-                    app:cardBackgroundColor="@color/surface_container_lowest"
-                    app:cardCornerRadius="20dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="24dp"
                     app:cardElevation="@dimen/home_card_elevation"
                     app:strokeColor="@color/home_card_border_soft"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:minHeight="@dimen/home_quick_card_min_height"
-                        android:orientation="vertical"
-                        android:paddingStart="@dimen/home_quick_card_padding_horizontal"
-                        android:paddingTop="@dimen/home_quick_card_padding_vertical"
-                        android:paddingEnd="@dimen/home_quick_card_padding_horizontal"
-                        android:paddingBottom="@dimen/home_quick_card_padding_vertical">
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp">
 
                         <FrameLayout
-                            android:layout_width="@dimen/home_quick_card_icon_size"
-                            android:layout_height="@dimen/home_quick_card_icon_size"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
                             android:background="@drawable/bg_home_icon_circle_info">
 
                             <TextView
@@ -492,22 +568,21 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:fontFamily="@font/material_symbols_outlined"
-                                android:fontVariationSettings="'FILL' 1, 'wght' 600"
+                                android:fontVariationSettings="'FILL' 0, 'wght' 500"
                                 android:text="smart_toy"
-                                android:textColor="@color/home_info_icon"
-                                android:textSize="20sp" />
+                                android:textColor="@color/home_soft_lilac_icon"
+                                android:textSize="18sp" />
                         </FrameLayout>
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/home_quick_card_label_margin_top"
+                            android:layout_marginStart="12dp"
+                            android:layout_weight="1"
                             android:fontFamily="@font/be_vietnam_pro_medium"
-                            android:gravity="center"
                             android:text="@string/home_quick_ai"
-                            android:textColor="@color/on_surface"
-                            android:textSize="14sp"
-                            android:textStyle="normal" />
+                            android:textColor="@color/home_text_primary"
+                            android:textSize="13sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
@@ -519,329 +594,369 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="@font/be_vietnam_pro"
-                    android:text="@string/home_today_title"
-                    android:textColor="@color/on_surface"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="@string/home_today_title"
+                        android:textColor="@color/home_text_primary"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:layout_marginStart="6dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/img_home_sticker_heart" />
+
+                    <ImageView
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_marginStart="6dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/img_home_sticker_flower" />
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/be_vietnam_pro_medium"
                     android:text="@string/home_see_all"
-                    android:textColor="@color/home_accent"
-                    android:textSize="14sp"
-                    android:textStyle="normal" />
+                    android:textColor="@color/home_link_pink"
+                    android:textSize="11.5sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:fontFamily="@font/material_symbols_outlined"
+                    android:text="chevron_right"
+                    android:textColor="@color/home_link_pink"
+                    android:textSize="14sp" />
             </LinearLayout>
 
-            <HorizontalScrollView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/home_today_list_margin_top"
-                android:overScrollMode="never"
-                android:scrollbars="none">
+                android:gravity="top"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Coolcook.Home.SurfaceCard"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="@dimen/home_card_elevation"
+                    app:strokeColor="@color/home_card_border_soft"
+                    app:strokeWidth="1dp">
 
-                    <com.google.android.material.card.MaterialCardView
-                        style="@style/Widget.Coolcook.Home.SurfaceCard"
-                        android:layout_width="@dimen/home_recipe_card_width"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:cardBackgroundColor="@color/surface_container_lowest"
-                        app:cardCornerRadius="24dp"
-                        app:cardElevation="@dimen/home_card_elevation"
-                        app:strokeColor="@color/home_card_border_soft"
-                        app:strokeWidth="1dp">
+                        android:orientation="vertical">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="112dp">
+
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:contentDescription="@string/home_recipe_1"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/img_home_recipe_pho"
+                                app:shapeAppearanceOverlay="@style/ShapeAppearance.Coolcook.HomeRecipeImage"
+                                tools:src="@drawable/img_home_recipe_pho" />
+
+                            <FrameLayout
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_gravity="top|end"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:background="@drawable/bg_circle_white">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/material_symbols_outlined"
+                                    android:text="bookmark"
+                                    android:textColor="@color/home_soft_pink_icon"
+                                    android:textSize="14sp" />
+                            </FrameLayout>
+
+                            <ImageView
+                                android:layout_width="11dp"
+                                android:layout_height="11dp"
+                                android:layout_gravity="top|start"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:contentDescription="@null"
+                                android:src="@drawable/img_home_sticker_heart" />
+                        </FrameLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:padding="10dp">
 
-                            <FrameLayout
+                            <TextView
                                 android:layout_width="match_parent"
-                                android:layout_height="@dimen/home_recipe_image_height">
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/be_vietnam_pro_bold"
+                                android:text="@string/home_recipe_1"
+                                android:textColor="@color/home_text_primary"
+                                android:textSize="13sp" />
 
-                                <com.google.android.material.imageview.ShapeableImageView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:contentDescription="@string/home_feature_image_desc"
-                                    android:scaleType="centerCrop"
-                                    android:src="@drawable/img_home_recipe_pho"
-                                    app:shapeAppearanceOverlay="@style/ShapeAppearance.Coolcook.HomeRecipeImage"
-                                    tools:src="@drawable/img_home_recipe_pho" />
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
 
-                                <FrameLayout
-                                    android:layout_width="@dimen/home_recipe_fav_size"
-                                    android:layout_height="@dimen/home_recipe_fav_size"
-                                    android:layout_gravity="top|end"
-                                    android:layout_margin="@dimen/home_recipe_fav_margin"
-                                    android:background="@drawable/bg_home_fav_chip">
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="19dp"
+                                    android:background="@drawable/bg_home_recipe_time_chip"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp">
 
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_gravity="center"
                                         android:fontFamily="@font/material_symbols_outlined"
-                                        android:text="bookmark"
-                                        android:textColor="@color/on_surface"
-                                        android:textSize="14sp" />
-                                </FrameLayout>
-                            </FrameLayout>
+                                        android:text="schedule"
+                                        android:textColor="@color/home_text_primary"
+                                        android:textSize="10sp" />
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:paddingStart="@dimen/home_recipe_content_padding"
-                                android:paddingTop="@dimen/home_recipe_content_padding"
-                                android:paddingEnd="@dimen/home_recipe_content_padding"
-                                android:paddingBottom="@dimen/home_recipe_content_padding">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/be_vietnam_pro"
-                                    android:text="@string/home_recipe_1"
-                                    android:textColor="@color/on_surface"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="4dp"
+                                        android:fontFamily="@font/be_vietnam_pro_medium"
+                                        android:text="@string/home_recipe_time_1"
+                                        android:textColor="@color/home_text_primary"
+                                        android:textSize="10sp" />
+                                </LinearLayout>
 
                                 <LinearLayout
                                     android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/home_recipe_meta_margin_top"
+                                    android:layout_height="19dp"
+                                    android:layout_marginStart="6dp"
+                                    android:background="@drawable/bg_home_recipe_difficulty_chip"
                                     android:gravity="center_vertical"
-                                    android:orientation="horizontal">
+                                    android:orientation="horizontal"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp">
 
-                                    <LinearLayout
+                                    <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:background="@drawable/bg_home_recipe_meta_chip"
-                                        android:gravity="center_vertical"
-                                        android:orientation="horizontal"
-                                        android:paddingStart="8dp"
-                                        android:paddingTop="4dp"
-                                        android:paddingEnd="8dp"
-                                        android:paddingBottom="4dp">
+                                        android:fontFamily="@font/material_symbols_outlined"
+                                        android:text="water_drop"
+                                        android:textColor="@color/home_link_pink"
+                                        android:textSize="10sp" />
 
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:fontFamily="@font/material_symbols_outlined"
-                                            android:fontVariationSettings="'wght' 600"
-                                            android:text="schedule"
-                                            android:textColor="@color/home_accent"
-                                            android:textSize="14sp" />
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginStart="4dp"
-                                            android:fontFamily="@font/be_vietnam_pro_medium"
-                                            android:text="@string/home_recipe_tag_1"
-                                            android:textColor="@color/home_accent"
-                                            android:textSize="12sp"
-                                            android:textStyle="normal" />
-                                    </LinearLayout>
-
-                                    <LinearLayout
+                                    <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginStart="8dp"
-                                        android:background="@drawable/bg_home_recipe_meta_chip"
-                                        android:gravity="center_vertical"
-                                        android:orientation="horizontal"
-                                        android:paddingStart="8dp"
-                                        android:paddingTop="4dp"
-                                        android:paddingEnd="8dp"
-                                        android:paddingBottom="4dp">
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:fontFamily="@font/material_symbols_outlined"
-                                            android:fontVariationSettings="'wght' 600"
-                                            android:text="signal_cellular_alt_1_bar"
-                                            android:textColor="@color/secondary"
-                                            android:textSize="14sp" />
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginStart="4dp"
-                                            android:fontFamily="@font/be_vietnam_pro_medium"
-                                            android:text="@string/home_recipe_difficulty"
-                                            android:textColor="@color/secondary"
-                                            android:textSize="12sp"
-                                            android:textStyle="normal" />
-                                    </LinearLayout>
+                                        android:layout_marginStart="4dp"
+                                        android:fontFamily="@font/be_vietnam_pro_medium"
+                                        android:text="@string/home_recipe_difficulty"
+                                        android:textColor="@color/home_link_pink"
+                                        android:textSize="10sp" />
                                 </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <Space
-                        android:layout_width="@dimen/home_recipe_card_gap"
-                        android:layout_height="1dp" />
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" />
 
-                    <com.google.android.material.card.MaterialCardView
-                        style="@style/Widget.Coolcook.Home.SurfaceCard"
-                        android:layout_width="@dimen/home_recipe_card_width"
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Coolcook.Home.SurfaceCard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="@dimen/home_card_elevation"
+                    app:strokeColor="@color/home_card_border_soft"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:cardBackgroundColor="@color/surface_container_lowest"
-                        app:cardCornerRadius="24dp"
-                        app:cardElevation="@dimen/home_card_elevation"
-                        app:strokeColor="@color/home_card_border_soft"
-                        app:strokeWidth="1dp">
+                        android:orientation="vertical">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="112dp">
+
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:contentDescription="@string/home_recipe_2"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/img_home_recipe_goi_cuon"
+                                app:shapeAppearanceOverlay="@style/ShapeAppearance.Coolcook.HomeRecipeImage"
+                                tools:src="@drawable/img_home_recipe_goi_cuon" />
+
+                            <FrameLayout
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_gravity="top|end"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:background="@drawable/bg_circle_white">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/material_symbols_outlined"
+                                    android:text="bookmark"
+                                    android:textColor="@color/home_soft_pink_icon"
+                                    android:textSize="14sp" />
+                            </FrameLayout>
+
+                            <ImageView
+                                android:layout_width="11dp"
+                                android:layout_height="11dp"
+                                android:layout_gravity="top|start"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:contentDescription="@null"
+                                android:src="@drawable/img_home_sticker_heart" />
+                        </FrameLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:padding="10dp">
 
-                            <FrameLayout
+                            <TextView
                                 android:layout_width="match_parent"
-                                android:layout_height="@dimen/home_recipe_image_height">
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/be_vietnam_pro_bold"
+                                android:text="@string/home_recipe_2"
+                                android:textColor="@color/home_text_primary"
+                                android:textSize="13sp" />
 
-                                <com.google.android.material.imageview.ShapeableImageView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:contentDescription="@string/home_feature_image_desc"
-                                    android:scaleType="centerCrop"
-                                    android:src="@drawable/img_home_recipe_goi_cuon"
-                                    app:shapeAppearanceOverlay="@style/ShapeAppearance.Coolcook.HomeRecipeImage"
-                                    tools:src="@drawable/img_home_recipe_goi_cuon" />
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
 
-                                <FrameLayout
-                                    android:layout_width="@dimen/home_recipe_fav_size"
-                                    android:layout_height="@dimen/home_recipe_fav_size"
-                                    android:layout_gravity="top|end"
-                                    android:layout_margin="@dimen/home_recipe_fav_margin"
-                                    android:background="@drawable/bg_home_fav_chip">
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="19dp"
+                                    android:background="@drawable/bg_home_recipe_time_chip"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp">
 
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_gravity="center"
                                         android:fontFamily="@font/material_symbols_outlined"
-                                        android:text="bookmark"
-                                        android:textColor="@color/on_surface"
-                                        android:textSize="14sp" />
-                                </FrameLayout>
-                            </FrameLayout>
+                                        android:text="schedule"
+                                        android:textColor="@color/home_text_primary"
+                                        android:textSize="10sp" />
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:paddingStart="@dimen/home_recipe_content_padding"
-                                android:paddingTop="@dimen/home_recipe_content_padding"
-                                android:paddingEnd="@dimen/home_recipe_content_padding"
-                                android:paddingBottom="@dimen/home_recipe_content_padding">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/be_vietnam_pro"
-                                    android:text="@string/home_recipe_2"
-                                    android:textColor="@color/on_surface"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="4dp"
+                                        android:fontFamily="@font/be_vietnam_pro_medium"
+                                        android:text="@string/home_recipe_time_2"
+                                        android:textColor="@color/home_text_primary"
+                                        android:textSize="10sp" />
+                                </LinearLayout>
 
                                 <LinearLayout
                                     android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="@dimen/home_recipe_meta_margin_top"
+                                    android:layout_height="19dp"
+                                    android:layout_marginStart="6dp"
+                                    android:background="@drawable/bg_home_recipe_difficulty_chip"
                                     android:gravity="center_vertical"
-                                    android:orientation="horizontal">
+                                    android:orientation="horizontal"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp">
 
-                                    <LinearLayout
+                                    <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:background="@drawable/bg_home_recipe_meta_chip"
-                                        android:gravity="center_vertical"
-                                        android:orientation="horizontal"
-                                        android:paddingStart="8dp"
-                                        android:paddingTop="4dp"
-                                        android:paddingEnd="8dp"
-                                        android:paddingBottom="4dp">
+                                        android:fontFamily="@font/material_symbols_outlined"
+                                        android:text="water_drop"
+                                        android:textColor="@color/home_link_pink"
+                                        android:textSize="10sp" />
 
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:fontFamily="@font/material_symbols_outlined"
-                                            android:fontVariationSettings="'wght' 600"
-                                            android:text="schedule"
-                                            android:textColor="@color/home_accent"
-                                            android:textSize="14sp" />
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginStart="4dp"
-                                            android:fontFamily="@font/be_vietnam_pro_medium"
-                                            android:text="@string/home_recipe_tag_2"
-                                            android:textColor="@color/home_accent"
-                                            android:textSize="12sp"
-                                            android:textStyle="normal" />
-                                    </LinearLayout>
-
-                                    <LinearLayout
+                                    <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginStart="8dp"
-                                        android:background="@drawable/bg_home_recipe_meta_chip"
-                                        android:gravity="center_vertical"
-                                        android:orientation="horizontal"
-                                        android:paddingStart="8dp"
-                                        android:paddingTop="4dp"
-                                        android:paddingEnd="8dp"
-                                        android:paddingBottom="4dp">
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:fontFamily="@font/material_symbols_outlined"
-                                            android:fontVariationSettings="'wght' 600"
-                                            android:text="signal_cellular_alt_1_bar"
-                                            android:textColor="@color/secondary"
-                                            android:textSize="14sp" />
-
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginStart="4dp"
-                                            android:fontFamily="@font/be_vietnam_pro_medium"
-                                            android:text="@string/home_recipe_difficulty"
-                                            android:textColor="@color/secondary"
-                                            android:textSize="12sp"
-                                            android:textStyle="normal" />
-                                    </LinearLayout>
+                                        android:layout_marginStart="4dp"
+                                        android:fontFamily="@font/be_vietnam_pro_medium"
+                                        android:text="@string/home_recipe_difficulty"
+                                        android:textColor="@color/home_link_pink"
+                                        android:textSize="10sp" />
                                 </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-                </LinearLayout>
-            </HorizontalScrollView>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/home_fit_title_margin_top"
-                android:fontFamily="@font/be_vietnam_pro"
-                android:text="@string/home_fit_title"
-                android:textColor="@color/on_surface"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text="@string/home_fit_title"
+                    android:textColor="@color/home_text_primary"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="6dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/img_home_sticker_bow" />
+
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="6dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/img_home_sticker_heart" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -851,19 +966,16 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="60dp"
                     android:background="@drawable/bg_home_goal_card"
                     android:gravity="center_vertical"
-                    android:minHeight="@dimen/home_goal_card_min_height"
                     android:orientation="horizontal"
-                    android:paddingStart="@dimen/home_goal_card_padding_horizontal"
-                    android:paddingTop="@dimen/home_goal_card_padding_vertical"
-                    android:paddingEnd="@dimen/home_goal_card_padding_horizontal"
-                    android:paddingBottom="@dimen/home_goal_card_padding_vertical">
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp">
 
                     <FrameLayout
-                        android:layout_width="@dimen/home_goal_icon_size"
-                        android:layout_height="@dimen/home_goal_icon_size"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:background="@drawable/bg_home_goal_icon_info">
 
                         <TextView
@@ -871,67 +983,61 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:fontFamily="@font/material_symbols_outlined"
-                            android:fontVariationSettings="'wght' 600"
                             android:text="water_drop"
-                            android:textColor="@color/home_info_icon"
+                            android:textColor="@color/home_soft_blue_icon"
                             android:textSize="18sp" />
                     </FrameLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:layout_marginStart="@dimen/home_goal_text_margin_start"
                         android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/be_vietnam_pro"
+                            android:fontFamily="@font/be_vietnam_pro_bold"
                             android:text="@string/home_goal_weight"
-                            android:textColor="@color/on_surface"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/home_text_primary"
+                            android:textSize="13sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/home_goal_subtitle_margin_top"
-                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_marginTop="1dp"
+                            android:fontFamily="@font/be_vietnam_pro_regular"
                             android:text="@string/home_goal_weight_sub"
-                            android:textColor="@color/on_surface_variant"
-                            android:textSize="12sp" />
+                            android:textColor="@color/home_text_secondary"
+                            android:textSize="10.5sp" />
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/material_symbols_outlined"
-                        android:fontVariationSettings="'wght' 600"
                         android:text="chevron_right"
-                        android:textColor="@color/home_accent"
-                        android:textSize="20sp" />
+                        android:textColor="@color/home_text_primary"
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <Space
                     android:layout_width="1dp"
-                    android:layout_height="@dimen/home_goal_card_spacing" />
+                    android:layout_height="8dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="60dp"
                     android:background="@drawable/bg_home_goal_card"
                     android:gravity="center_vertical"
-                    android:minHeight="@dimen/home_goal_card_min_height"
                     android:orientation="horizontal"
-                    android:paddingStart="@dimen/home_goal_card_padding_horizontal"
-                    android:paddingTop="@dimen/home_goal_card_padding_vertical"
-                    android:paddingEnd="@dimen/home_goal_card_padding_horizontal"
-                    android:paddingBottom="@dimen/home_goal_card_padding_vertical">
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp">
 
                     <FrameLayout
-                        android:layout_width="@dimen/home_goal_icon_size"
-                        android:layout_height="@dimen/home_goal_icon_size"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:background="@drawable/bg_home_goal_icon_warm">
 
                         <TextView
@@ -939,68 +1045,61 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:fontFamily="@font/material_symbols_outlined"
-                            android:fontVariationSettings="'wght' 600"
-                            android:text="spa"
-                            android:textColor="@color/home_warm_icon"
+                            android:text="nutrition"
+                            android:textColor="@color/home_soft_green_icon"
                             android:textSize="18sp" />
                     </FrameLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:layout_marginStart="@dimen/home_goal_text_margin_start"
                         android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/be_vietnam_pro"
+                            android:fontFamily="@font/be_vietnam_pro_bold"
                             android:text="@string/home_goal_energy"
-                            android:textColor="@color/on_surface"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/home_text_primary"
+                            android:textSize="13sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/home_goal_subtitle_margin_top"
-                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_marginTop="1dp"
+                            android:fontFamily="@font/be_vietnam_pro_regular"
                             android:text="@string/home_goal_energy_sub"
-                            android:textColor="@color/on_surface_variant"
-                            android:textSize="12sp"
-                            android:textStyle="normal" />
+                            android:textColor="@color/home_text_secondary"
+                            android:textSize="10.5sp" />
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/material_symbols_outlined"
-                        android:fontVariationSettings="'wght' 600"
                         android:text="chevron_right"
-                        android:textColor="@color/home_accent"
-                        android:textSize="20sp" />
+                        android:textColor="@color/home_text_primary"
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <Space
                     android:layout_width="1dp"
-                    android:layout_height="@dimen/home_goal_card_spacing" />
+                    android:layout_height="8dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="60dp"
                     android:background="@drawable/bg_home_goal_card"
                     android:gravity="center_vertical"
-                    android:minHeight="@dimen/home_goal_card_min_height"
                     android:orientation="horizontal"
-                    android:paddingStart="@dimen/home_goal_card_padding_horizontal"
-                    android:paddingTop="@dimen/home_goal_card_padding_vertical"
-                    android:paddingEnd="@dimen/home_goal_card_padding_horizontal"
-                    android:paddingBottom="@dimen/home_goal_card_padding_vertical">
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp">
 
                     <FrameLayout
-                        android:layout_width="@dimen/home_goal_icon_size"
-                        android:layout_height="@dimen/home_goal_icon_size"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:background="@drawable/bg_home_goal_icon_error">
 
                         <TextView
@@ -1008,49 +1107,49 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:fontFamily="@font/material_symbols_outlined"
-                            android:fontVariationSettings="'wght' 600"
-                            android:text="fitness_center"
-                            android:textColor="@color/error"
+                            android:text="restaurant"
+                            android:textColor="@color/home_soft_peach_icon"
                             android:textSize="18sp" />
                     </FrameLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:layout_marginStart="@dimen/home_goal_text_margin_start"
                         android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/be_vietnam_pro"
+                            android:fontFamily="@font/be_vietnam_pro_bold"
                             android:text="@string/home_goal_fast"
-                            android:textColor="@color/on_surface"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/home_text_primary"
+                            android:textSize="13sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/home_goal_subtitle_margin_top"
-                            android:fontFamily="@font/be_vietnam_pro"
+                            android:layout_marginTop="1dp"
+                            android:fontFamily="@font/be_vietnam_pro_regular"
                             android:text="@string/home_goal_fast_sub"
-                            android:textColor="@color/on_surface_variant"
-                            android:textSize="12sp"
-                            android:textStyle="normal" />
+                            android:textColor="@color/home_text_secondary"
+                            android:textSize="10.5sp" />
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/material_symbols_outlined"
-                        android:fontVariationSettings="'wght' 600"
                         android:text="chevron_right"
-                        android:textColor="@color/home_accent"
-                        android:textSize="20sp" />
+                        android:textColor="@color/home_text_primary"
+                        android:textSize="16sp" />
                 </LinearLayout>
             </LinearLayout>
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="20dp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
