@@ -90,7 +90,7 @@
                                 android:layout_height="9dp"
                                 android:layout_marginStart="4dp"
                                 android:contentDescription="@null"
-                                android:src="@drawable/img_home_sticker_heart" />
+                                android:src="@drawable/ic_home_decor_heart_figma" />
                         </LinearLayout>
 
                         <TextView
@@ -117,15 +117,12 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
                         android:layout_gravity="center"
-                        android:fontFamily="@font/material_symbols_outlined"
-                        android:fontVariationSettings="'wght' 500"
-                        android:text="notifications"
-                        android:textColor="@color/home_text_primary"
-                        android:textSize="18sp" />
+                        android:contentDescription="@null"
+                        app:srcCompat="@drawable/ic_home_notification_figma" />
                 </FrameLayout>
 
                 <ImageView
@@ -134,7 +131,7 @@
                     android:layout_marginTop="-6dp"
                     android:layout_marginEnd="-4dp"
                     android:contentDescription="@null"
-                    android:src="@drawable/img_home_sticker_flower"
+                    android:src="@drawable/ic_home_decor_flower_figma"
                     app:layout_constraintEnd_toEndOf="@id/homeNotificationButton"
                     app:layout_constraintTop_toTopOf="@id/homeNotificationButton" />
 
@@ -144,7 +141,7 @@
                     android:layout_marginStart="-4dp"
                     android:layout_marginBottom="-2dp"
                     android:contentDescription="@null"
-                    android:src="@drawable/img_home_sticker_heart"
+                    android:src="@drawable/ic_home_decor_heart_figma"
                     app:layout_constraintBottom_toBottomOf="@id/homeNotificationButton"
                     app:layout_constraintStart_toStartOf="@id/homeNotificationButton" />
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -181,8 +178,7 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:contentDescription="@null"
-                        android:src="@drawable/ic_nav_search"
-                        app:tint="@color/home_text_secondary" />
+                        android:src="@drawable/ic_home_search_figma" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -208,8 +204,7 @@
                             android:layout_height="16dp"
                             android:layout_gravity="center"
                             android:contentDescription="@string/home_nav_camera"
-                            android:src="@drawable/ic_nav_camera"
-                            app:tint="@color/white" />
+                            android:src="@drawable/ic_home_camera_figma" />
                     </FrameLayout>
                 </LinearLayout>
 
@@ -220,7 +215,7 @@
                     android:layout_marginStart="-4dp"
                     android:layout_marginTop="-4dp"
                     android:contentDescription="@null"
-                    android:src="@drawable/img_home_mascot_teddy" />
+                    android:src="@drawable/ic_home_decor_teddy_figma" />
             </FrameLayout>
 
             <com.google.android.material.card.MaterialCardView
@@ -246,7 +241,7 @@
                         android:layout_width="9dp"
                         android:layout_height="9dp"
                         android:contentDescription="@null"
-                        android:src="@drawable/img_home_sticker_heart"
+                        android:src="@drawable/ic_home_decor_heart_figma"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -254,7 +249,7 @@
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:contentDescription="@null"
-                        android:src="@drawable/img_home_sticker_flower"
+                        android:src="@drawable/ic_home_decor_sparkle_pink_figma"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -262,7 +257,7 @@
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:contentDescription="@null"
-                        android:src="@drawable/img_home_sticker_flower"
+                        android:src="@drawable/ic_home_decor_flower_figma"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 
@@ -304,7 +299,7 @@
                             android:textAllCaps="false"
                             android:textColor="@color/white"
                             android:textSize="12sp"
-                            app:icon="@drawable/ic_nav_camera"
+                            app:icon="@drawable/ic_home_camera_figma"
                             app:iconGravity="textStart"
                             app:iconPadding="6dp"
                             app:iconSize="13dp"
@@ -348,6 +343,23 @@
                             android:textStyle="bold" />
 
                         <ImageView
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:layout_gravity="top|end"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="12dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_home_decor_sparkle_gold_figma" />
+
+                        <ImageView
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:layout_gravity="center_vertical|end"
+                            android:layout_marginEnd="2dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_home_decor_heart_figma" />
+
+                        <ImageView
                             android:id="@+id/homeFeatureImage"
                             android:layout_width="92dp"
                             android:layout_height="72dp"
@@ -358,6 +370,26 @@
                             android:src="@drawable/img_scan_food_burger"
                             tools:src="@drawable/img_scan_food_burger" />
                     </FrameLayout>
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="-14dp"
+                        android:layout_marginTop="34dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_home_decor_bunny_figma"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginEnd="-14dp"
+                        android:layout_marginBottom="8dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_home_decor_teddy_figma"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -395,15 +427,12 @@
                             android:layout_height="44dp"
                             android:background="@drawable/bg_home_icon_circle_primary">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
                                 android:layout_gravity="center"
-                                android:fontFamily="@font/material_symbols_outlined"
-                                android:fontVariationSettings="'FILL' 0, 'wght' 500"
-                                android:text="qr_code_scanner"
-                                android:textColor="@color/home_soft_pink_icon"
-                                android:textSize="20sp" />
+                                android:contentDescription="@null"
+                                app:srcCompat="@drawable/ic_home_quick_scan_figma" />
                         </FrameLayout>
 
                         <TextView
@@ -450,15 +479,12 @@
                             android:layout_height="44dp"
                             android:background="@drawable/bg_home_icon_circle_secondary">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
                                 android:layout_gravity="center"
-                                android:fontFamily="@font/material_symbols_outlined"
-                                android:fontVariationSettings="'FILL' 0, 'wght' 500"
-                                android:text="restaurant"
-                                android:textColor="@color/home_soft_peach_icon"
-                                android:textSize="20sp" />
+                                android:contentDescription="@null"
+                                app:srcCompat="@drawable/ic_home_quick_suggest_figma" />
                         </FrameLayout>
 
                         <TextView
@@ -473,6 +499,36 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="18dp"
+                android:layout_marginTop="-8dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_vertical|start"
+                    android:layout_marginStart="-2dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_home_decor_teddy_figma" />
+
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="top|center_horizontal"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_home_decor_sparkle_pink_figma" />
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="bottom|end"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_home_decor_bunny_figma" />
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -508,15 +564,12 @@
                             android:layout_height="44dp"
                             android:background="@drawable/bg_home_goal_icon_warm">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
                                 android:layout_gravity="center"
-                                android:fontFamily="@font/material_symbols_outlined"
-                                android:fontVariationSettings="'FILL' 0, 'wght' 500"
-                                android:text="favorite"
-                                android:textColor="@color/home_soft_green_icon"
-                                android:textSize="18sp" />
+                                android:contentDescription="@null"
+                                app:srcCompat="@drawable/ic_home_quick_health_figma" />
                         </FrameLayout>
 
                         <TextView
@@ -563,15 +616,12 @@
                             android:layout_height="44dp"
                             android:background="@drawable/bg_home_icon_circle_info">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
                                 android:layout_gravity="center"
-                                android:fontFamily="@font/material_symbols_outlined"
-                                android:fontVariationSettings="'FILL' 0, 'wght' 500"
-                                android:text="smart_toy"
-                                android:textColor="@color/home_soft_lilac_icon"
-                                android:textSize="18sp" />
+                                android:contentDescription="@null"
+                                app:srcCompat="@drawable/ic_home_quick_chat_figma" />
                         </FrameLayout>
 
                         <TextView
@@ -614,14 +664,14 @@
                         android:layout_height="11dp"
                         android:layout_marginStart="6dp"
                         android:contentDescription="@null"
-                        android:src="@drawable/img_home_sticker_heart" />
+                        android:src="@drawable/ic_home_decor_heart_figma" />
 
                     <ImageView
                         android:layout_width="10dp"
                         android:layout_height="10dp"
                         android:layout_marginStart="6dp"
                         android:contentDescription="@null"
-                        android:src="@drawable/img_home_sticker_flower" />
+                        android:src="@drawable/ic_home_decor_sparkle_peach_figma" />
                 </LinearLayout>
 
                 <TextView
@@ -632,14 +682,12 @@
                     android:textColor="@color/home_link_pink"
                     android:textSize="11.5sp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
                     android:layout_marginStart="2dp"
-                    android:fontFamily="@font/material_symbols_outlined"
-                    android:text="chevron_right"
-                    android:textColor="@color/home_link_pink"
-                    android:textSize="14sp" />
+                    android:contentDescription="@null"
+                    app:srcCompat="@drawable/ic_home_see_all_arrow_figma" />
             </LinearLayout>
 
             <LinearLayout
@@ -686,14 +734,12 @@
                                 android:layout_marginEnd="8dp"
                                 android:background="@drawable/bg_circle_white">
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="14dp"
+                                    android:layout_height="14dp"
                                     android:layout_gravity="center"
-                                    android:fontFamily="@font/material_symbols_outlined"
-                                    android:text="bookmark"
-                                    android:textColor="@color/home_soft_pink_icon"
-                                    android:textSize="14sp" />
+                                    android:contentDescription="@null"
+                                    app:srcCompat="@drawable/ic_home_bookmark_figma" />
                             </FrameLayout>
 
                             <ImageView
@@ -703,7 +749,7 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_marginTop="8dp"
                                 android:contentDescription="@null"
-                                android:src="@drawable/img_home_sticker_heart" />
+                                android:src="@drawable/ic_home_decor_heart_figma" />
                         </FrameLayout>
 
                         <LinearLayout
@@ -736,13 +782,11 @@
                                     android:paddingStart="8dp"
                                     android:paddingEnd="8dp">
 
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:fontFamily="@font/material_symbols_outlined"
-                                        android:text="schedule"
-                                        android:textColor="@color/home_text_primary"
-                                        android:textSize="10sp" />
+                                    <androidx.appcompat.widget.AppCompatImageView
+                                        android:layout_width="10dp"
+                                        android:layout_height="10dp"
+                                        android:contentDescription="@null"
+                                        app:srcCompat="@drawable/ic_home_time_figma" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -764,13 +808,11 @@
                                     android:paddingStart="8dp"
                                     android:paddingEnd="8dp">
 
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:fontFamily="@font/material_symbols_outlined"
-                                        android:text="water_drop"
-                                        android:textColor="@color/home_link_pink"
-                                        android:textSize="10sp" />
+                                    <androidx.appcompat.widget.AppCompatImageView
+                                        android:layout_width="10dp"
+                                        android:layout_height="10dp"
+                                        android:contentDescription="@null"
+                                        app:srcCompat="@drawable/ic_home_difficulty_figma" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -827,14 +869,12 @@
                                 android:layout_marginEnd="8dp"
                                 android:background="@drawable/bg_circle_white">
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="14dp"
+                                    android:layout_height="14dp"
                                     android:layout_gravity="center"
-                                    android:fontFamily="@font/material_symbols_outlined"
-                                    android:text="bookmark"
-                                    android:textColor="@color/home_soft_pink_icon"
-                                    android:textSize="14sp" />
+                                    android:contentDescription="@null"
+                                    app:srcCompat="@drawable/ic_home_bookmark_figma" />
                             </FrameLayout>
 
                             <ImageView
@@ -844,7 +884,7 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_marginTop="8dp"
                                 android:contentDescription="@null"
-                                android:src="@drawable/img_home_sticker_heart" />
+                                android:src="@drawable/ic_home_decor_heart_figma" />
                         </FrameLayout>
 
                         <LinearLayout
@@ -877,13 +917,11 @@
                                     android:paddingStart="8dp"
                                     android:paddingEnd="8dp">
 
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:fontFamily="@font/material_symbols_outlined"
-                                        android:text="schedule"
-                                        android:textColor="@color/home_text_primary"
-                                        android:textSize="10sp" />
+                                    <androidx.appcompat.widget.AppCompatImageView
+                                        android:layout_width="10dp"
+                                        android:layout_height="10dp"
+                                        android:contentDescription="@null"
+                                        app:srcCompat="@drawable/ic_home_time_figma" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -905,13 +943,11 @@
                                     android:paddingStart="8dp"
                                     android:paddingEnd="8dp">
 
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:fontFamily="@font/material_symbols_outlined"
-                                        android:text="water_drop"
-                                        android:textColor="@color/home_link_pink"
-                                        android:textSize="10sp" />
+                                    <androidx.appcompat.widget.AppCompatImageView
+                                        android:layout_width="10dp"
+                                        android:layout_height="10dp"
+                                        android:contentDescription="@null"
+                                        app:srcCompat="@drawable/ic_home_difficulty_figma" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -948,14 +984,14 @@
                     android:layout_height="12dp"
                     android:layout_marginStart="6dp"
                     android:contentDescription="@null"
-                    android:src="@drawable/img_home_sticker_bow" />
+                    android:src="@drawable/ic_home_decor_bow_figma" />
 
                 <ImageView
                     android:layout_width="10dp"
                     android:layout_height="10dp"
                     android:layout_marginStart="6dp"
                     android:contentDescription="@null"
-                    android:src="@drawable/img_home_sticker_heart" />
+                    android:src="@drawable/ic_home_decor_heart_figma" />
             </LinearLayout>
 
             <LinearLayout
@@ -978,14 +1014,12 @@
                         android:layout_height="40dp"
                         android:background="@drawable/bg_home_goal_icon_info">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_gravity="center"
-                            android:fontFamily="@font/material_symbols_outlined"
-                            android:text="water_drop"
-                            android:textColor="@color/home_soft_blue_icon"
-                            android:textSize="18sp" />
+                            android:contentDescription="@null"
+                            app:srcCompat="@drawable/ic_home_goal_hydration_figma" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -1013,13 +1047,11 @@
                             android:textSize="10.5sp" />
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/material_symbols_outlined"
-                        android:text="chevron_right"
-                        android:textColor="@color/home_text_primary"
-                        android:textSize="16sp" />
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:contentDescription="@null"
+                        app:srcCompat="@drawable/ic_home_row_arrow_figma" />
                 </LinearLayout>
 
                 <Space
@@ -1040,14 +1072,12 @@
                         android:layout_height="40dp"
                         android:background="@drawable/bg_home_goal_icon_warm">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_gravity="center"
-                            android:fontFamily="@font/material_symbols_outlined"
-                            android:text="nutrition"
-                            android:textColor="@color/home_soft_green_icon"
-                            android:textSize="18sp" />
+                            android:contentDescription="@null"
+                            app:srcCompat="@drawable/ic_home_goal_stomach_figma" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -1075,13 +1105,11 @@
                             android:textSize="10.5sp" />
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/material_symbols_outlined"
-                        android:text="chevron_right"
-                        android:textColor="@color/home_text_primary"
-                        android:textSize="16sp" />
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:contentDescription="@null"
+                        app:srcCompat="@drawable/ic_home_row_arrow_figma" />
                 </LinearLayout>
 
                 <Space
@@ -1102,14 +1130,12 @@
                         android:layout_height="40dp"
                         android:background="@drawable/bg_home_goal_icon_error">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
                             android:layout_gravity="center"
-                            android:fontFamily="@font/material_symbols_outlined"
-                            android:text="restaurant"
-                            android:textColor="@color/home_soft_peach_icon"
-                            android:textSize="18sp" />
+                            android:contentDescription="@null"
+                            app:srcCompat="@drawable/ic_home_goal_protein_figma" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -1137,15 +1163,45 @@
                             android:textSize="10.5sp" />
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/material_symbols_outlined"
-                        android:text="chevron_right"
-                        android:textColor="@color/home_text_primary"
-                        android:textSize="16sp" />
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:contentDescription="@null"
+                        app:srcCompat="@drawable/ic_home_row_arrow_figma" />
                 </LinearLayout>
             </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="18dp"
+                android:layout_marginTop="-8dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginEnd="-8dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_home_decor_flower_figma" />
+
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="-1dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_home_decor_sparkle_gold_figma" />
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginStart="-10dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_home_decor_teddy_figma" />
+            </FrameLayout>
 
             <Space
                 android:layout_width="1dp"
