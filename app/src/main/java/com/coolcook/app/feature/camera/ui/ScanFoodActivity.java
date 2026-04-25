@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
@@ -210,6 +211,9 @@ public class ScanFoodActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        getWindow().setStatusBarColor(Color.BLACK);
+        getWindow().setNavigationBarColor(Color.BLACK);
+        getWindow().setNavigationBarContrastEnforced(false);
         setContentView(R.layout.activity_scan_food);
 
         initViews();
@@ -457,10 +461,13 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void applyInsets() {
-        final int topBarStart = topBar == null ? 0 : topBar.getPaddingStart();
-        final int topBarTop = topBar == null ? 0 : topBar.getPaddingTop();
-        final int topBarEnd = topBar == null ? 0 : topBar.getPaddingEnd();
-        final int topBarBottom = topBar == null ? 0 : topBar.getPaddingBottom();
+        final ViewGroup.MarginLayoutParams topBarLayoutParams = topBar != null
+                ? (ViewGroup.MarginLayoutParams) topBar.getLayoutParams()
+                : null;
+        final int topBarMarginStart = topBarLayoutParams == null ? 0 : topBarLayoutParams.getMarginStart();
+        final int topBarMarginTop = topBarLayoutParams == null ? 0 : topBarLayoutParams.topMargin;
+        final int topBarMarginEnd = topBarLayoutParams == null ? 0 : topBarLayoutParams.getMarginEnd();
+        final int topBarMarginBottom = topBarLayoutParams == null ? 0 : topBarLayoutParams.bottomMargin;
 
         final int footerStart = footerContainer == null ? 0 : footerContainer.getPaddingStart();
         final int footerTop = footerContainer == null ? 0 : footerContainer.getPaddingTop();
@@ -475,12 +482,12 @@ public class ScanFoodActivity extends AppCompatActivity {
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
 
-            if (topBar != null) {
-                topBar.setPaddingRelative(
-                        topBarStart + systemBars.left,
-                        topBarTop + systemBars.top,
-                        topBarEnd + systemBars.right,
-                        topBarBottom);
+            if (topBar != null && topBarLayoutParams != null) {
+                topBarLayoutParams.setMarginStart(topBarMarginStart + systemBars.left);
+                topBarLayoutParams.topMargin = topBarMarginTop + systemBars.top;
+                topBarLayoutParams.setMarginEnd(topBarMarginEnd + systemBars.right);
+                topBarLayoutParams.bottomMargin = topBarMarginBottom;
+                topBar.setLayoutParams(topBarLayoutParams);
             }
 
             if (footerContainer != null) {

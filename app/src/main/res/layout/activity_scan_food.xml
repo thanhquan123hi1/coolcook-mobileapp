@@ -43,22 +43,40 @@
                     app:tint="@android:color/white" />
             </FrameLayout>
 
-            <FrameLayout
+            <LinearLayout
                 android:id="@+id/topCenterAction"
-                android:layout_width="@dimen/camera_screen_top_center_width"
+                android:layout_width="wrap_content"
                 android:layout_height="@dimen/camera_screen_top_center_height"
                 android:background="@drawable/bg_scan_camera_control_dark"
+                android:gravity="center"
+                android:minWidth="@dimen/camera_screen_top_center_width"
+                android:orientation="horizontal"
+                android:paddingStart="22dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="22dp"
+                android:paddingBottom="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:src="@drawable/ic_camera_groups" />
-            </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="1 Bạn bè"
+                    android:textColor="@android:color/white"
+                    android:textSize="17sp" />
+            </LinearLayout>
 
             <FrameLayout
                 android:id="@+id/topRightDecor"
@@ -479,7 +497,7 @@
                     android:clickable="true"
                     android:contentDescription="@null"
                     android:focusable="true"
-                    android:padding="10dp"
+                    android:padding="8dp"
                     android:src="@drawable/ic_camera_gallery"
                     app:layout_constraintBottom_toBottomOf="@id/btnShutter"
                     app:layout_constraintStart_toStartOf="parent"
@@ -518,7 +536,7 @@
                     android:clickable="true"
                     android:contentDescription="@null"
                     android:focusable="true"
-                    android:padding="10dp"
+                    android:padding="8dp"
                     android:src="@drawable/ic_camera_flip"
                     app:layout_constraintBottom_toBottomOf="@id/btnShutter"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -530,10 +548,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/camera_screen_history_top_margin"
+                android:drawableEnd="@drawable/ic_chevron_down"
+                android:drawablePadding="6dp"
                 android:fontFamily="@font/be_vietnam_pro_bold"
                 android:text="Lịch sử"
                 android:textColor="@android:color/white"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
