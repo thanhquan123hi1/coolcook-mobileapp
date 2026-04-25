@@ -99,6 +99,13 @@ public class FoodCatalogFragment extends Fragment {
         renderFoods();
     }
 
+    public void applyFilter(@NonNull FoodCatalogFilter filter) {
+        selectedFilter = filter;
+        if (isAdded()) {
+            renderFoods();
+        }
+    }
+
     private void setupRecyclerView(@NonNull View view) {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerFoods);
         recyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 2));

@@ -256,17 +256,19 @@ public class HomeActivity extends AppCompatActivity {
         if (btnHomeSeeAllFoods == null) {
             return;
         }
-        btnHomeSeeAllFoods.setOnClickListener(v -> {
-            Intent intent = FoodCatalogActivity.createIntent(this);
-            startActivity(intent);
-        });
+        btnHomeSeeAllFoods.setOnClickListener(v -> animateQuickActionPress(v, this::launchFoodCatalogScreen));
     }
 
     private void openFoodCatalogWithFilter(@NonNull FoodCatalogFilter filter) {
         if (isFinishing() || isDestroyed()) {
             return;
         }
-        startActivity(FoodCatalogActivity.createIntent(this, filter.name()));
+        showTab(TAB_SEARCH);
+        getSupportFragmentManager().executePendingTransactions();
+        FoodCatalogFragment fragment = getSearchFragment();
+        if (fragment != null) {
+            fragment.applyFilter(filter);
+        }
     }
 
     private void setupSearchEntryAction(View entryView) {
@@ -426,13 +428,17 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void ensureSearchFragment() {
-        if (getSupportFragmentManager().findFragmentByTag(SEARCH_FRAGMENT_TAG) != null) {
+        if (getSearchFragment() != null) {
             return;
         }
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.searchContainer, new FoodCatalogFragment(), SEARCH_FRAGMENT_TAG)
                 .commit();
+    }
+
+    private FoodCatalogFragment getSearchFragment() {
+        return (FoodCatalogFragment) getSupportFragmentManager().findFragmentByTag(SEARCH_FRAGMENT_TAG);
     }
 
     private void ensureJournalFragment() {
