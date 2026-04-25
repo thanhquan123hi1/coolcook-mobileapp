@@ -530,8 +530,11 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/btnHomeSeeAllFoods"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:fontFamily="@font/be_vietnam_pro_medium"
                     android:text="@string/home_see_all"
                     android:textColor="@color/home_accent"
@@ -552,6 +555,7 @@
                     android:orientation="horizontal">
 
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/homeTodayFoodCard1"
                         style="@style/Widget.Coolcook.Home.SurfaceCard"
                         android:layout_width="@dimen/home_recipe_card_width"
                         android:layout_height="wrap_content"
@@ -571,6 +575,7 @@
                                 android:layout_height="@dimen/home_recipe_image_height">
 
                                 <com.google.android.material.imageview.ShapeableImageView
+                                    android:id="@+id/homeTodayFoodImage1"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:contentDescription="@string/home_feature_image_desc"
@@ -607,16 +612,19 @@
                                 android:paddingBottom="@dimen/home_recipe_content_padding">
 
                                 <TextView
+                                    android:id="@+id/homeTodayFoodTitle1"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:ellipsize="end"
                                     android:fontFamily="@font/be_vietnam_pro"
+                                    android:maxLines="1"
                                     android:text="@string/home_recipe_1"
                                     android:textColor="@color/on_surface"
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
 
                                 <LinearLayout
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="@dimen/home_recipe_meta_margin_top"
                                     android:gravity="center_vertical"
@@ -643,10 +651,13 @@
                                             android:textSize="14sp" />
 
                                         <TextView
+                                            android:id="@+id/homeTodayFoodTime1"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginStart="4dp"
+                                            android:ellipsize="end"
                                             android:fontFamily="@font/be_vietnam_pro_medium"
+                                            android:maxLines="1"
                                             android:text="@string/home_recipe_tag_1"
                                             android:textColor="@color/home_accent"
                                             android:textSize="12sp"
@@ -675,10 +686,13 @@
                                             android:textSize="14sp" />
 
                                         <TextView
+                                            android:id="@+id/homeTodayFoodTag1"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginStart="4dp"
+                                            android:ellipsize="end"
                                             android:fontFamily="@font/be_vietnam_pro_medium"
+                                            android:maxLines="1"
                                             android:text="@string/home_recipe_difficulty"
                                             android:textColor="@color/secondary"
                                             android:textSize="12sp"
@@ -694,6 +708,7 @@
                         android:layout_height="1dp" />
 
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/homeTodayFoodCard2"
                         style="@style/Widget.Coolcook.Home.SurfaceCard"
                         android:layout_width="@dimen/home_recipe_card_width"
                         android:layout_height="wrap_content"
@@ -713,6 +728,7 @@
                                 android:layout_height="@dimen/home_recipe_image_height">
 
                                 <com.google.android.material.imageview.ShapeableImageView
+                                    android:id="@+id/homeTodayFoodImage2"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:contentDescription="@string/home_feature_image_desc"
@@ -749,16 +765,19 @@
                                 android:paddingBottom="@dimen/home_recipe_content_padding">
 
                                 <TextView
+                                    android:id="@+id/homeTodayFoodTitle2"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:ellipsize="end"
                                     android:fontFamily="@font/be_vietnam_pro"
+                                    android:maxLines="1"
                                     android:text="@string/home_recipe_2"
                                     android:textColor="@color/on_surface"
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
 
                                 <LinearLayout
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="@dimen/home_recipe_meta_margin_top"
                                     android:gravity="center_vertical"
@@ -785,10 +804,13 @@
                                             android:textSize="14sp" />
 
                                         <TextView
+                                            android:id="@+id/homeTodayFoodTime2"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginStart="4dp"
+                                            android:ellipsize="end"
                                             android:fontFamily="@font/be_vietnam_pro_medium"
+                                            android:maxLines="1"
                                             android:text="@string/home_recipe_tag_2"
                                             android:textColor="@color/home_accent"
                                             android:textSize="12sp"
@@ -817,10 +839,13 @@
                                             android:textSize="14sp" />
 
                                         <TextView
+                                            android:id="@+id/homeTodayFoodTag2"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginStart="4dp"
+                                            android:ellipsize="end"
                                             android:fontFamily="@font/be_vietnam_pro_medium"
+                                            android:maxLines="1"
                                             android:text="@string/home_recipe_difficulty"
                                             android:textColor="@color/secondary"
                                             android:textSize="12sp"
@@ -850,9 +875,12 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/homeGoalLowFatCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_home_goal_card"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center_vertical"
                     android:minHeight="@dimen/home_goal_card_min_height"
                     android:orientation="horizontal"
@@ -918,9 +946,12 @@
                     android:layout_height="@dimen/home_goal_card_spacing" />
 
                 <LinearLayout
+                    android:id="@+id/homeGoalStomachCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_home_goal_card"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center_vertical"
                     android:minHeight="@dimen/home_goal_card_min_height"
                     android:orientation="horizontal"
@@ -987,9 +1018,12 @@
                     android:layout_height="@dimen/home_goal_card_spacing" />
 
                 <LinearLayout
+                    android:id="@+id/homeGoalProteinCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_home_goal_card"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center_vertical"
                     android:minHeight="@dimen/home_goal_card_min_height"
                     android:orientation="horizontal"
