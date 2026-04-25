@@ -93,6 +93,11 @@
             android:theme="@style/Theme.Coolcook" />
 
         <activity
+            android:name=".feature.camera.ui.SavedScanDishesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Coolcook" />
+
+        <activity
             android:name=".feature.social.ui.FriendInviteActivity"
             android:exported="true"
             android:theme="@style/Theme.Coolcook">

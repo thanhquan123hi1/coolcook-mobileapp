@@ -140,7 +140,7 @@
                 android:id="@+id/scanResultContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#EE090909"
+                android:background="#F7FFF8F1"
                 android:fillViewport="true"
                 android:padding="18dp"
                 android:scrollbars="none"
@@ -156,14 +156,14 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/be_vietnam_pro_medium"
                         android:text="Ảnh đã chụp"
-                        android:textColor="#FFF4DA"
+                        android:textColor="#8F5A14"
                         android:textSize="13sp" />
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="180dp"
                         android:layout_marginTop="10dp"
-                        app:cardBackgroundColor="#161616"
+                        app:cardBackgroundColor="#FFF3E6"
                         app:cardCornerRadius="24dp"
                         app:cardElevation="0dp">
 
@@ -182,7 +182,7 @@
                         android:layout_marginTop="18dp"
                         android:fontFamily="@font/be_vietnam_pro_bold"
                         android:text="Nguyên liệu nhận diện được"
-                        android:textColor="#F8F5EE"
+                        android:textColor="#26180F"
                         android:textSize="16sp" />
 
                     <TextView
@@ -192,7 +192,7 @@
                         android:layout_marginTop="8dp"
                         android:fontFamily="@font/be_vietnam_pro"
                         android:text="Chưa có nguyên liệu nhận diện được."
-                        android:textColor="#C3D4C5AB"
+                        android:textColor="#886A5341"
                         android:textSize="13sp" />
 
                     <com.google.android.material.chip.ChipGroup
@@ -205,12 +205,105 @@
                         app:singleLine="false" />
 
                     <TextView
+                        android:id="@+id/txtExtraIngredientsLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Bổ sung nguyên liệu"
+                        android:textColor="#26180F"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/txtExtraIngredientsHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:fontFamily="@font/be_vietnam_pro"
+                        android:text="Chọn thêm từ gợi ý hoặc tự nhập để AI ghép thành 1 món duy nhất."
+                        android:textColor="#886A5341"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/groupSuggestedExtraIngredients"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        app:chipSpacingHorizontal="8dp"
+                        app:chipSpacingVertical="8dp"
+                        app:singleLine="false" />
+
+                    <TextView
+                        android:id="@+id/txtSelectedExtraIngredientsLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="@font/be_vietnam_pro_medium"
+                        android:text="Nguyên liệu bổ sung đã chọn"
+                        android:textColor="#8F5A14"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/groupSelectedExtraIngredients"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:chipSpacingHorizontal="8dp"
+                        app:chipSpacingVertical="8dp"
+                        app:singleLine="false" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:id="@+id/edtManualExtraIngredient"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_food_search_input"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:hint="Tự nhập nguyên liệu"
+                            android:imeOptions="actionDone"
+                            android:maxLines="1"
+                            android:minHeight="48dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="12dp"
+                            android:textColor="#26180F"
+                            android:textColorHint="#886A5341"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/btnAddManualExtraIngredient"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:background="#E39A22"
+                            android:fontFamily="@font/be_vietnam_pro_bold"
+                            android:gravity="center"
+                            android:minHeight="48dp"
+                            android:minWidth="74dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="12dp"
+                            android:text="Thêm"
+                            android:textColor="#1A1203"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="18dp"
                         android:fontFamily="@font/be_vietnam_pro_bold"
                         android:text="Lọc theo sức khỏe"
-                        android:textColor="#F8F5EE"
+                        android:textColor="#26180F"
                         android:textSize="16sp" />
 
                     <HorizontalScrollView
@@ -234,7 +327,7 @@
                         android:layout_marginTop="18dp"
                         android:fontFamily="@font/be_vietnam_pro_bold"
                         android:text="Món có thể nấu"
-                        android:textColor="#F8F5EE"
+                        android:textColor="#26180F"
                         android:textSize="16sp" />
 
                     <TextView
@@ -244,7 +337,7 @@
                         android:layout_marginTop="8dp"
                         android:fontFamily="@font/be_vietnam_pro"
                         android:text="Chưa có món gợi ý phù hợp."
-                        android:textColor="#C3D4C5AB"
+                        android:textColor="#886A5341"
                         android:textSize="13sp" />
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -261,7 +354,7 @@
                         android:layout_marginTop="10dp"
                         android:fontFamily="@font/be_vietnam_pro_medium"
                         android:text="Chưa chọn món nào để lưu"
-                        android:textColor="#FFF4DA"
+                        android:textColor="#8F5A14"
                         android:textSize="13sp" />
 
                     <TextView
@@ -269,7 +362,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:background="#FABD00"
+                        android:background="#E39A22"
                         android:fontFamily="@font/be_vietnam_pro_bold"
                         android:gravity="center"
                         android:minHeight="50dp"

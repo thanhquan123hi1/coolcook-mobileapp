@@ -19,6 +19,8 @@ import java.nio.ByteBuffer;
 
 final class ScanFoodImageUtils {
 
+    private static final int MAX_RECOGNITION_DIMENSION = 1600;
+
     private ScanFoodImageUtils() {
     }
 
@@ -45,6 +47,51 @@ final class ScanFoodImageUtils {
         }
     }
 
+    @NonNull
+    static byte[] readOptimizedRecognitionBytes(
+            @NonNull ContentResolver resolver,
+            @NonNull Uri uri,
+            int maxBytes) throws IOException {
+        BitmapFactory.Options bounds = new BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
+        try (InputStream boundsStream = resolver.openInputStream(uri)) {
+            if (boundsStream == null) {
+                throw new IOException("Cannot open selected image");
+            }
+            BitmapFactory.decodeStream(boundsStream, null, bounds);
+        }
+
+        BitmapFactory.Options decode = new BitmapFactory.Options();
+        decode.inSampleSize = calculateInSampleSize(bounds, MAX_RECOGNITION_DIMENSION);
+        decode.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        try (InputStream decodeStream = resolver.openInputStream(uri)) {
+            if (decodeStream == null) {
+                throw new IOException("Cannot open selected image");
+            }
+            Bitmap bitmap = BitmapFactory.decodeStream(decodeStream, null, decode);
+            if (bitmap == null) {
+                throw new IOException("Cannot decode selected image");
+            }
+            return compressBitmap(bitmap, maxBytes);
+        }
+    }
+
+    @NonNull
+    static byte[] optimizeForRecognition(@NonNull byte[] imageBytes, int maxBytes) throws IOException {
+        BitmapFactory.Options bounds = new BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, bounds);
+
+        BitmapFactory.Options decode = new BitmapFactory.Options();
+        decode.inSampleSize = calculateInSampleSize(bounds, MAX_RECOGNITION_DIMENSION);
+        decode.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, decode);
+        if (bitmap == null) {
+            throw new IOException("Cannot decode image bytes");
+        }
+        return compressBitmap(bitmap, maxBytes);
+    }
+
     @Nullable
     static Bitmap decodePreviewBitmap(@NonNull byte[] imageBytes) {
         try {
@@ -52,15 +99,9 @@ final class ScanFoodImageUtils {
             bounds.inJustDecodeBounds = true;
             BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, bounds);
 
-            int maxSide = Math.max(bounds.outWidth, bounds.outHeight);
-            int inSampleSize = 1;
-            while (maxSide / inSampleSize > 1600) {
-                inSampleSize *= 2;
-            }
-
             BitmapFactory.Options decode = new BitmapFactory.Options();
             decode.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            decode.inSampleSize = Math.max(1, inSampleSize);
+            decode.inSampleSize = calculateInSampleSize(bounds, MAX_RECOGNITION_DIMENSION);
             return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, decode);
         } catch (Exception ignored) {
             return null;
@@ -158,5 +199,59 @@ final class ScanFoodImageUtils {
         }
 
         return nv21;
+    }
+
+    @NonNull
+    private static byte[] compressBitmap(@NonNull Bitmap bitmap, int maxBytes) throws IOException {
+        Bitmap scaledBitmap = scaleBitmapIfNeeded(bitmap, MAX_RECOGNITION_DIMENSION);
+        try {
+            for (int quality = 88; quality >= 50; quality -= 8) {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                scaledBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+                byte[] compressed = outputStream.toByteArray();
+                if (compressed.length <= maxBytes) {
+                    return compressed;
+                }
+            }
+
+            Bitmap fallback = scaleBitmapIfNeeded(scaledBitmap, 1200);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            fallback.compress(Bitmap.CompressFormat.JPEG, 70, outputStream);
+            byte[] compressed = outputStream.toByteArray();
+            if (compressed.length <= maxBytes) {
+                return compressed;
+            }
+            throw new IOException("Image too large after compression");
+        } finally {
+            if (scaledBitmap != bitmap) {
+                scaledBitmap.recycle();
+            }
+            bitmap.recycle();
+        }
+    }
+
+    @NonNull
+    private static Bitmap scaleBitmapIfNeeded(@NonNull Bitmap bitmap, int maxDimension) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int longestSide = Math.max(width, height);
+        if (longestSide <= maxDimension) {
+            return bitmap;
+        }
+
+        float ratio = maxDimension / (float) longestSide;
+        int scaledWidth = Math.max(1, Math.round(width * ratio));
+        int scaledHeight = Math.max(1, Math.round(height * ratio));
+        return Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true);
+    }
+
+    private static int calculateInSampleSize(@NonNull BitmapFactory.Options bounds, int maxDimension) {
+        int width = Math.max(1, bounds.outWidth);
+        int height = Math.max(1, bounds.outHeight);
+        int inSampleSize = 1;
+        while (Math.max(width / inSampleSize, height / inSampleSize) > maxDimension) {
+            inSampleSize *= 2;
+        }
+        return Math.max(1, inSampleSize);
     }
 }
