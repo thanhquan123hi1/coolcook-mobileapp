@@ -54,11 +54,27 @@ public class ChatSessionAdapter extends RecyclerView.Adapter<ChatSessionAdapter.
         return new SessionViewHolder(view);
     }
 
+    private static String stripMarkdown(String text) {
+        if (text == null) return "";
+        return text
+                .replaceAll("(?m)^#{1,6}\\s*", "")   // headings
+                .replaceAll("\\*{1,3}([^*]+)\\*{1,3}", "$1") // bold/italic
+                .replaceAll("_{1,3}([^_]+)_{1,3}", "$1")     // underscore bold/italic
+                .replaceAll("`{1,3}[^`]*`{1,3}", "")          // inline code / code blocks
+                .replaceAll("(?m)^[-*+]\\s+", "")             // unordered lists
+                .replaceAll("(?m)^\\d+\\.\\s+", "")           // ordered lists
+                .replaceAll("!?\\[[^]]*]\\([^)]*\\)", "")     // links / images
+                .replaceAll(">+\\s?", "")                      // blockquotes
+                .replaceAll("-{3,}|\\*{3,}|_{3,}", "")        // horizontal rules
+                .replaceAll("\\s+", " ")
+                .trim();
+    }
+
     @Override
     public void onBindViewHolder(@NonNull SessionViewHolder holder, int position) {
         ChatSession session = sessions.get(position);
         holder.txtTitle.setText(session.getTitle());
-        holder.txtPreview.setText(session.getLastPreview());
+        holder.txtPreview.setText(stripMarkdown(session.getLastPreview()));
         holder.txtTime.setText(session.getUpdatedAt() != null ? timeFormat.format(session.getUpdatedAt()) : "");
 
         boolean isActive = session.getId().equals(activeSessionId);
