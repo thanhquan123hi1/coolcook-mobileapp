@@ -92,7 +92,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private static final float PRESS_SCALE = 0.95f;
     private static final long MODE_TRANSITION_DURATION = 240L;
     private static final @ColorInt int TAB_ACTIVE_COLOR = Color.parseColor("#FABD00");
-    private static final @ColorInt int TAB_INACTIVE_COLOR = Color.parseColor("#99D4C5AB");
+    private static final @ColorInt int TAB_INACTIVE_COLOR = Color.parseColor("#D4C5AB");
 
     private static final int MAX_RECOGNITION_IMAGE_BYTES = 4 * 1024 * 1024;
     private static final int MAX_JOURNAL_IMAGE_BYTES = 8 * 1024 * 1024;
@@ -813,7 +813,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private void updateFlashUi(boolean showToast) {
         if (iconFlash != null) {
             iconFlash.setText(isFlashOn ? "flash_on" : "flash_off");
-            iconFlash.setTextColor(isFlashOn ? TAB_ACTIVE_COLOR : TAB_INACTIVE_COLOR);
+            iconFlash.setTextColor(Color.WHITE);
         }
 
         if (showToast) {
