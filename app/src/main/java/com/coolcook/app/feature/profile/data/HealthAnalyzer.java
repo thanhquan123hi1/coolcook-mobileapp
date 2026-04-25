@@ -31,8 +31,9 @@ public final class HealthAnalyzer {
             add(shouldEat, "món hấp");
             add(shouldEat, "canh thanh");
             add(shouldEat, "nhiều rau");
-            add(shouldLimit, "nhiều muối");
-            add(shouldLimit, "món quá nhiều dầu");
+            add(shouldLimit, "món nhiều muối");
+            add(shouldLimit, "món nhiều dầu");
+            add(shouldLimit, "món quá cay");
             summaryParts.add("nên ưu tiên món thanh đạm, ít muối và ít dầu mỡ");
         } else if (profile.getSystolicBp() < 90 || profile.getDiastolicBp() < 60) {
             add(tags, "huyết áp thấp");
@@ -41,7 +42,7 @@ public final class HealthAnalyzer {
             add(shouldEat, "protein vừa phải");
             add(shouldEat, "uống đủ nước");
             add(shouldLimit, "bỏ bữa");
-            summaryParts.add("nên ưu tiên bữa ăn đủ chất và đều bữa");
+            summaryParts.add("nên ưu tiên bữa ăn đều và đủ chất");
         }
 
         if (profile.getHeartRateBpm() > 100) {
@@ -64,7 +65,7 @@ public final class HealthAnalyzer {
             add(shouldEat, "rau xanh");
             add(shouldEat, "đạm nạc");
             add(shouldLimit, "đồ chiên");
-            add(shouldLimit, "món quá nhiều sốt");
+            add(shouldLimit, "món nhiều sốt");
             summaryParts.add("có thể phù hợp với món nhẹ hơn để kiểm soát cân nặng");
         } else if (profile.getWeightKg() < 45d) {
             add(tags, "cần nhiều năng lượng");
@@ -124,7 +125,7 @@ public final class HealthAnalyzer {
     }
 
     @NonNull
-    private static String normalize(@NonNull String input) {
+    public static String normalize(@NonNull String input) {
         String ascii = Normalizer.normalize(input, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}+", "")
                 .replace('đ', 'd')

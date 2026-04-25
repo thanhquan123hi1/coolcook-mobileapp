@@ -182,5 +182,167 @@
       "người ăn thanh nhẹ"
     ],
     "recipe": "### Canh rong biển đậu hũ\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Rong biển khô 10g\n- Đậu hũ mềm 200g\n- Hành boa rô 20g\n- Nước tương 1 muỗng canh\n- Dầu mè 1 muỗng cà phê\n- Nước 1 lít\n\n**Các bước thực hiện:**\n1. Ngâm rong biển 5 phút rồi rửa nhanh, cắt đậu hũ thành miếng vuông.\n2. Phi boa rô 20 giây ở lửa nhỏ với dầu mè, cho nước vào đun sôi ở lửa vừa rồi thả rong biển vào nấu 2 phút.\n3. Cho đậu hũ vào nấu thêm 2 phút ở lửa nhỏ, nếm cuối điều chỉnh nước tương cho vừa miệng.\n\n**Mẹo tối ưu:**\n- Rong biển nấu quá lâu sẽ dai.\n- Món này hợp ăn nóng, vị thật nhẹ."
-  }
+  },
+
+    {
+      "id": "17",
+      "name": "Cá hồi áp chảo",
+      "category": "DRY",
+      "image": "food_ca_hoi_ap_chao",
+      "suitableFor": ["mỡ nhiễm máu", "tăng cơ bắp", "người cần omega-3"],
+      "recipe": "### Cá hồi áp chảo\n**Khẩu phần:** 2 người\n**Nguyên liệu:**\n- Cá hồi 350g\n- Muối 1/2 muỗng cà phê\n- Tiêu 1/2 muỗng cà phê\n- Dầu ô liu 1 muỗng canh\n- Chanh 1/2 quả\n\n**Các bước thực hiện:**\n1. Ướp cá hồi với muối, tiêu trong 10 phút.\n2. Làm nóng chảo, áp chảo cá 3-4 phút mỗi mặt ở lửa vừa.\n3. Vắt chanh nhẹ trước khi ăn.\n\n**Mẹo tối ưu:**\n- Không áp chảo quá lâu để cá không bị khô."
+    },
+    {
+      "id": "18",
+      "name": "Ức gà luộc xé rau củ",
+      "category": "DRY",
+      "image": "food_uc_ga_rau_cu",
+      "suitableFor": ["giảm cân", "tăng cơ bắp", "người hạn chế dầu mỡ"],
+      "recipe": "### Ức gà luộc xé rau củ\n**Khẩu phần:** 2 người\n**Nguyên liệu:**\n- Ức gà 300g\n- Cà rốt 100g\n- Dưa leo 1 quả\n- Xà lách 100g\n- Muối 1/2 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Luộc ức gà 15 phút với chút muối.\n2. Xé gà thành sợi, cắt rau củ vừa ăn.\n3. Trộn nhẹ và nêm nhạt.\n\n**Mẹo tối ưu:**\n- Có thể dùng thêm sốt sữa chua không đường để món dễ ăn hơn."
+    },
+    {
+      "id": "19",
+      "name": "Trứng hấp đậu hũ",
+      "category": "DRY",
+      "image": "food_trung_hap_dau_hu",
+      "suitableFor": ["dạ dày", "người ăn mềm", "người mới ốm dậy"],
+      "recipe": "### Trứng hấp đậu hũ\n**Khẩu phần:** 2 người\n**Nguyên liệu:**\n- Trứng gà 2 quả\n- Đậu hũ non 200g\n- Nước lọc 100ml\n- Nước tương 1 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Đánh trứng với nước lọc, lọc qua rây.\n2. Cho đậu hũ vào chén, đổ trứng lên.\n3. Hấp 12-15 phút ở lửa nhỏ.\n\n**Mẹo tối ưu:**\n- Hấp lửa nhỏ để mặt trứng mịn."
+    },
+    {
+      "id": "20",
+      "name": "Salad cá ngừ",
+      "category": "DRY",
+      "image": "food_salad_ca_ngu",
+      "suitableFor": ["giảm cân", "mỡ nhiễm máu", "người ăn ít tinh bột"],
+      "recipe": "### Salad cá ngừ\n**Khẩu phần:** 2 người\n**Nguyên liệu:**\n- Cá ngừ 150g\n- Xà lách 150g\n- Cà chua bi 100g\n- Dưa leo 1 quả\n- Dầu ô liu 1 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Rửa sạch rau củ, cắt vừa ăn.\n2. Trộn cá ngừ cùng rau củ.\n3. Thêm dầu ô liu và trộn nhẹ.\n\n**Mẹo tối ưu:**\n- Chọn cá ngừ ngâm nước để giảm chất béo."
+    },
+    {
+      "id": "21",
+      "name": "Yến mạch chuối",
+      "category": "DRY",
+      "image": "food_yen_mach_chuoi",
+      "suitableFor": ["tiểu đường mức nhẹ cần ăn kiểm soát", "giảm cân", "người cần bữa sáng nhẹ"],
+      "recipe": "### Yến mạch chuối\n**Khẩu phần:** 1-2 người\n**Nguyên liệu:**\n- Yến mạch 60g\n- Chuối 1 quả\n- Sữa không đường 250ml\n- Hạt chia 1 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Nấu yến mạch với sữa 5 phút ở lửa nhỏ.\n2. Thêm chuối cắt lát và hạt chia.\n3. Dùng khi còn ấm.\n\n**Mẹo tối ưu:**\n- Không thêm đường để kiểm soát năng lượng."
+    },
+    {
+      "id": "22",
+      "name": "Khoai lang luộc trứng",
+      "category": "DRY",
+      "image": "food_khoai_lang_trung",
+      "suitableFor": ["giảm cân", "người tập luyện", "người cần tinh bột tốt"],
+      "recipe": "### Khoai lang luộc trứng\n**Khẩu phần:** 1-2 người\n**Nguyên liệu:**\n- Khoai lang 300g\n- Trứng gà 2 quả\n- Muối 1/4 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Luộc khoai lang 15-20 phút.\n2. Luộc trứng 8-10 phút.\n3. Dùng cùng nhau, nêm rất ít muối nếu cần.\n\n**Mẹo tối ưu:**\n- Phù hợp làm bữa sáng hoặc bữa phụ trước tập."
+    },
+    {
+      "id": "23",
+      "name": "Thịt nạc rim gừng",
+      "category": "DRY",
+      "image": "food_thit_nac_rim_gung",
+      "suitableFor": ["người cần nhiều năng lượng", "người ăn cơm gia đình"],
+      "recipe": "### Thịt nạc rim gừng\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Thịt nạc heo 350g\n- Gừng 20g\n- Nước mắm 1 muỗng canh\n- Nước lọc 80ml\n- Tiêu 1/2 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Thái thịt mỏng, ướp với nước mắm và tiêu 15 phút.\n2. Rim thịt với gừng và nước 12 phút ở lửa nhỏ.\n3. Nếm cuối cho vừa miệng.\n\n**Mẹo tối ưu:**\n- Dùng thịt nạc để giảm mỡ."
+    },
+    {
+      "id": "24",
+      "name": "Tôm hấp sả",
+      "category": "DRY",
+      "image": "food_tom_hap_sa",
+      "suitableFor": ["tăng cơ bắp", "người hạn chế dầu mỡ", "mỡ nhiễm máu"],
+      "recipe": "### Tôm hấp sả\n**Khẩu phần:** 2 người\n**Nguyên liệu:**\n- Tôm 400g\n- Sả 3 cây\n- Gừng 10g\n- Muối 1/2 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Rửa sạch tôm, đập dập sả và gừng.\n2. Hấp tôm với sả 6-8 phút.\n3. Dùng nóng, chấm nhạt.\n\n**Mẹo tối ưu:**\n- Không hấp quá lâu để tôm không bị dai."
+    },
+    {
+      "id": "25",
+      "name": "Canh cải thịt bằm",
+      "category": "SOUP",
+      "image": "food_canh_cai_thit_bam",
+      "suitableFor": ["dạ dày", "người ăn thanh đạm", "người cần món dễ tiêu"],
+      "recipe": "### Canh cải thịt bằm\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Rau cải xanh 250g\n- Thịt nạc bằm 150g\n- Nước 1 lít\n- Nước mắm 1 muỗng canh\n- Muối 1/2 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Ướp thịt với chút nước mắm 10 phút.\n2. Đun nước sôi, cho thịt vào khuấy tơi.\n3. Thêm rau cải, nấu 2-3 phút rồi nêm lại.\n\n**Mẹo tối ưu:**\n- Không nấu rau quá lâu để giữ màu xanh."
+    },
+    {
+      "id": "26",
+      "name": "Canh mướp tôm tươi",
+      "category": "SOUP",
+      "image": "food_canh_muop_tom",
+      "suitableFor": ["người ăn thanh nhẹ", "mỡ nhiễm máu", "người cần món ít dầu"],
+      "recipe": "### Canh mướp tôm tươi\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Mướp 300g\n- Tôm tươi 200g\n- Nước 1 lít\n- Nước mắm 1 muỗng canh\n- Hành lá 20g\n\n**Các bước thực hiện:**\n1. Bóc vỏ tôm, cắt mướp vừa ăn.\n2. Đun nước sôi, cho tôm vào nấu 3 phút.\n3. Thêm mướp, nấu 2 phút rồi nêm lại.\n\n**Mẹo tối ưu:**\n- Mướp rất nhanh chín nên không nấu lâu."
+    },
+    {
+      "id": "27",
+      "name": "Cháo yến mạch thịt bằm",
+      "category": "SOUP",
+      "image": "food_chao_yen_mach_thit_bam",
+      "suitableFor": ["dạ dày", "giảm cân", "người cần món mềm dễ tiêu"],
+      "recipe": "### Cháo yến mạch thịt bằm\n**Khẩu phần:** 2 người\n**Nguyên liệu:**\n- Yến mạch 80g\n- Thịt nạc bằm 120g\n- Nước 800ml\n- Muối 1/2 muỗng cà phê\n- Hành lá 10g\n\n**Các bước thực hiện:**\n1. Nấu thịt bằm với nước 5 phút.\n2. Thêm yến mạch, khuấy đều 5-7 phút.\n3. Nêm nhạt và thêm hành lá.\n\n**Mẹo tối ưu:**\n- Ăn nóng sẽ dễ tiêu hơn."
+    },
+    {
+      "id": "28",
+      "name": "Súp bí đỏ ức gà",
+      "category": "SOUP",
+      "image": "food_sup_bi_do_uc_ga",
+      "suitableFor": ["dạ dày", "người mới ốm dậy", "người ăn mềm"],
+      "recipe": "### Súp bí đỏ ức gà\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Bí đỏ 300g\n- Ức gà 200g\n- Nước dùng 1 lít\n- Muối 1/2 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Luộc ức gà 15 phút rồi xé nhỏ.\n2. Nấu bí đỏ với nước dùng 12 phút đến mềm.\n3. Dầm bí, thêm gà xé và nêm nhạt.\n\n**Mẹo tối ưu:**\n- Có thể xay mịn nếu muốn ăn kiểu súp kem nhẹ."
+    },
+    {
+      "id": "29",
+      "name": "Canh khoai mỡ thịt bằm",
+      "category": "SOUP",
+      "image": "food_canh_khoai_mo",
+      "suitableFor": ["người cần hồi sức", "người ăn mềm", "trẻ nhỏ"],
+      "recipe": "### Canh khoai mỡ thịt bằm\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Khoai mỡ 350g\n- Thịt nạc bằm 150g\n- Nước 1 lít\n- Nước mắm 1 muỗng canh\n- Hành lá 20g\n\n**Các bước thực hiện:**\n1. Gọt khoai mỡ, băm hoặc nạo nhỏ.\n2. Đun nước, cho thịt vào nấu 4 phút.\n3. Thêm khoai mỡ, khuấy đều 7-8 phút rồi nêm lại.\n\n**Mẹo tối ưu:**\n- Khuấy nhẹ để canh không bị khét đáy."
+    },
+    {
+      "id": "30",
+      "name": "Canh cà rốt khoai tây thịt nạc",
+      "category": "SOUP",
+      "image": "food_canh_ca_rot_khoai_tay",
+      "suitableFor": ["người mới ốm dậy", "dạ dày", "người cần năng lượng nhẹ"],
+      "recipe": "### Canh cà rốt khoai tây thịt nạc\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Cà rốt 150g\n- Khoai tây 200g\n- Thịt nạc 150g\n- Nước 1,2 lít\n- Muối 1/2 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Cắt rau củ và thịt thành miếng vừa ăn.\n2. Nấu thịt với nước 10 phút.\n3. Thêm cà rốt, khoai tây, nấu 12 phút rồi nêm lại.\n\n**Mẹo tối ưu:**\n- Hớt bọt để nước canh trong."
+    },
+    {
+      "id": "31",
+      "name": "Miến gà",
+      "category": "SOUP",
+      "image": "food_mien_ga",
+      "suitableFor": ["người mới ốm dậy", "người cần món dễ ăn", "dạ dày"],
+      "recipe": "### Miến gà\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Miến 250g\n- Thịt gà 300g\n- Nấm hương 80g\n- Nước 1,5 lít\n- Nước mắm 1 muỗng canh\n\n**Các bước thực hiện:**\n1. Luộc gà 20 phút, xé sợi.\n2. Nấu nấm trong nước dùng 5 phút.\n3. Trụng miến, cho vào tô cùng gà và chan nước dùng.\n\n**Mẹo tối ưu:**\n- Không ngâm miến quá lâu để tránh bị nát."
+    },
+    {
+      "id": "32",
+      "name": "Bún cá",
+      "category": "SOUP",
+      "image": "food_bun_ca",
+      "suitableFor": ["mỡ nhiễm máu", "người ăn thanh đạm", "người cần đạm nhẹ"],
+      "recipe": "### Bún cá\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Cá 400g\n- Bún tươi 500g\n- Cà chua 2 quả\n- Dứa 100g\n- Nước 1,5 lít\n- Nước mắm 1,5 muỗng canh\n\n**Các bước thực hiện:**\n1. Nấu cà chua và dứa với nước 7 phút.\n2. Thả cá vào nấu 6-8 phút.\n3. Trụng bún, chan nước dùng và nêm lại.\n\n**Mẹo tối ưu:**\n- Giảm chua nếu dùng cho người đau dạ dày."
+    },
+    {
+      "id": "33",
+      "name": "Đậu hũ kho nấm",
+      "category": "DRY",
+      "image": "food_dau_hu_kho_nam",
+      "suitableFor": ["mỡ nhiễm máu", "người ăn chay", "người ăn thanh đạm"],
+      "recipe": "### Đậu hũ kho nấm\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Đậu hũ 300g\n- Nấm rơm 200g\n- Nước tương 1,5 muỗng canh\n- Nước lọc 100ml\n- Tiêu 1/2 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Cắt đậu hũ và nấm vừa ăn.\n2. Kho cùng nước tương và nước lọc 10 phút ở lửa nhỏ.\n3. Nêm lại, thêm tiêu nhẹ.\n\n**Mẹo tối ưu:**\n- Không chiên đậu nếu muốn giảm dầu."
+    },
+    {
+      "id": "34",
+      "name": "Cơm gạo lứt ức gà",
+      "category": "DRY",
+      "image": "food_com_gao_lut_uc_ga",
+      "suitableFor": ["giảm cân", "tiểu đường mức nhẹ cần ăn kiểm soát", "tăng cơ bắp"],
+      "recipe": "### Cơm gạo lứt ức gà\n**Khẩu phần:** 2 người\n**Nguyên liệu:**\n- Gạo lứt 200g\n- Ức gà 300g\n- Bông cải 150g\n- Muối 1/2 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Nấu gạo lứt chín mềm.\n2. Luộc hoặc áp chảo ức gà ít dầu.\n3. Ăn cùng bông cải luộc.\n\n**Mẹo tối ưu:**\n- Ngâm gạo lứt trước 4-6 giờ để cơm mềm hơn."
+    },
+    {
+      "id": "35",
+      "name": "Cá thu kho cà chua",
+      "category": "DRY",
+      "image": "food_ca_thu_kho_ca_chua",
+      "suitableFor": ["người cần omega-3", "người ăn cơm gia đình", "mỡ nhiễm máu nếu kho ít dầu"],
+      "recipe": "### Cá thu kho cà chua\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Cá thu 400g\n- Cà chua 3 quả\n- Nước mắm 1 muỗng canh\n- Nước lọc 120ml\n- Hành tím 1 muỗng cà phê\n\n**Các bước thực hiện:**\n1. Áp nhẹ cá thu cho săn mặt.\n2. Nấu cà chua với nước, thêm cá vào kho 12 phút.\n3. Nêm nước mắm vừa ăn.\n\n**Mẹo tối ưu:**\n- Kho lửa nhỏ để cá thấm mà không bị nát."
+    },
+    {
+      "id": "36",
+      "name": "Canh đậu hũ non rong biển",
+      "category": "SOUP",
+      "image": "food_canh_dau_hu_rong_bien",
+      "suitableFor": ["người ăn thanh nhẹ", "dạ dày", "người hạn chế dầu mỡ"],
+      "recipe": "### Canh đậu hũ non rong biển\n**Khẩu phần:** 2-3 người\n**Nguyên liệu:**\n- Đậu hũ non 250g\n- Rong biển khô 8g\n- Nước 1 lít\n- Nước tương 1 muỗng canh\n- Gừng 5g\n\n**Các bước thực hiện:**\n1. Ngâm rong biển 5 phút rồi rửa nhanh.\n2. Đun nước với gừng, cho rong biển vào nấu 2 phút.\n3. Thêm đậu hũ non, nấu 2 phút và nêm nước tương.\n\n**Mẹo tối ưu:**\n- Đảo nhẹ để đậu không bị nát."
+    }
+
 ]

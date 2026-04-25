@@ -24,6 +24,8 @@ import com.coolcook.app.feature.search.data.FavoriteFoodStore;
 import com.coolcook.app.feature.search.data.FoodJsonRepository;
 import com.coolcook.app.feature.search.model.FoodCategory;
 import com.coolcook.app.feature.search.model.FoodItem;
+import com.coolcook.app.feature.search.model.ParsedRecipe;
+import com.coolcook.app.feature.search.parser.RecipeParser;
 import com.coolcook.app.feature.search.ui.adapter.FoodAdapter;
 import com.coolcook.app.feature.search.util.SearchTextUtils;
 
@@ -167,6 +169,13 @@ public class FoodCatalogFragment extends Fragment {
 
         for (String suitable : food.getSuitableFor()) {
             if (SearchTextUtils.normalizeForSearch(suitable).contains(normalizedQuery)) {
+                return true;
+            }
+        }
+
+        ParsedRecipe parsedRecipe = RecipeParser.parse(food.getRecipe());
+        for (ParsedRecipe.Ingredient ingredient : parsedRecipe.getIngredients()) {
+            if (SearchTextUtils.normalizeForSearch(ingredient.getName()).contains(normalizedQuery)) {
                 return true;
             }
         }

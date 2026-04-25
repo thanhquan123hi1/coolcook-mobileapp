@@ -64,7 +64,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
         holder.imgFavorite.setImageResource(favorite ? R.drawable.ic_favorite_filled : R.drawable.ic_favorite_outline);
         holder.imgFavorite.setColorFilter(holder.itemView.getContext().getColor(
                 favorite ? R.color.error : R.color.on_surface_variant));
-        holder.imgFavorite.setContentDescription(favorite ? "Bo yeu thich" : "Yeu thich");
+        holder.imgFavorite.setContentDescription(favorite ? "Bỏ yêu thích" : "Yêu thích");
 
         holder.itemView.setOnClickListener(v -> clickListener.onFoodClick(food));
         holder.imgFavorite.setOnClickListener(v -> favoriteListener.onFoodFavoriteClick(food));

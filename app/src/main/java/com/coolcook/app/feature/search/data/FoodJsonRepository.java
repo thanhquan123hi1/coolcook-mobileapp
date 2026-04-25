@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.coolcook.app.feature.search.model.FoodCategory;
 import com.coolcook.app.feature.search.model.FoodItem;
 import com.coolcook.app.feature.search.parser.RecipeParser;
+import com.coolcook.app.feature.search.util.LegacyVietnameseText;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -52,7 +53,7 @@ public class FoodJsonRepository {
                 foods.add(parseFoodItem(item));
             }
         } catch (Exception error) {
-            Log.e(TAG, "Khong the doc danh sach mon an", error);
+            Log.e(TAG, "Không thể đọc danh sách món ăn", error);
         }
 
         cachedFoods = foods;
@@ -71,7 +72,7 @@ public class FoodJsonRepository {
 
     @NonNull
     private FoodItem parseFoodItem(@NonNull JSONObject item) {
-        String recipe = item.optString("recipe", "");
+        String recipe = LegacyVietnameseText.repair(item.optString("recipe", ""));
         int cookTimeMinutes = item.optInt("cookTimeMinutes", RecipeParser.inferCookTimeMinutes(recipe));
 
         JSONArray suitableArray = item.optJSONArray("suitableFor");
@@ -80,14 +81,14 @@ public class FoodJsonRepository {
             for (int index = 0; index < suitableArray.length(); index++) {
                 String value = suitableArray.optString(index, "").trim();
                 if (!value.isEmpty()) {
-                    suitableFor.add(value);
+                    suitableFor.add(LegacyVietnameseText.repairHealthTag(value));
                 }
             }
         }
 
         return new FoodItem(
                 item.optString("id", ""),
-                item.optString("name", "Món ngon"),
+                LegacyVietnameseText.repair(item.optString("name", "Món ngon")),
                 FoodCategory.fromValue(item.optString("category", "DRY")),
                 item.optString("image", ""),
                 suitableFor,

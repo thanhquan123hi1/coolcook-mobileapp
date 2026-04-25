@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -156,27 +157,29 @@ public class HealthTrackingActivity extends AppCompatActivity {
         }
 
         String userId = user.getUid();
-        healthProfileRepository.loadHealthProfile(userId, (profile, error) -> {
-            if (!isActivityAliveForUi()) {
-                return;
-            }
+        healthProfileRepository.loadHealthProfile(userId, (profile, error) ->
+                runOnUiThread(() -> {
+                    if (!isActivityAliveForUi()) {
+                        return;
+                    }
 
-            bindHealthProfile(profile);
-            if (!TextUtils.isEmpty(error)) {
-                setHealthStatus(error);
-            } else if (profile == null) {
-                setHealthStatus("Bạn chưa có hồ sơ sức khỏe. Hãy nhập chỉ số để nhận gợi ý tham khảo.");
-            } else {
-                setHealthStatus("Đã đồng bộ hồ sơ sức khỏe gần nhất.");
-            }
-        });
+                    bindHealthProfile(profile);
+                    if (!TextUtils.isEmpty(error)) {
+                        setHealthStatus(error);
+                    } else if (profile == null) {
+                        setHealthStatus("Bạn chưa có hồ sơ sức khỏe. Hãy nhập chỉ số để nhận gợi ý tham khảo.");
+                    } else {
+                        setHealthStatus("Đã đồng bộ hồ sơ sức khỏe gần nhất.");
+                    }
+                }));
 
-        recommendationRepository.loadRecommendations(userId, (profile, analysis, recommendations, friendlyError) -> {
-            if (!isActivityAliveForUi()) {
-                return;
-            }
-            renderRecommendations(profile, analysis, recommendations, friendlyError);
-        });
+        recommendationRepository.loadRecommendations(userId, (profile, analysis, recommendations, friendlyError) ->
+                runOnUiThread(() -> {
+                    if (!isActivityAliveForUi()) {
+                        return;
+                    }
+                    renderRecommendations(profile, analysis, recommendations, friendlyError);
+                }));
     }
 
     private void bindHealthProfile(@Nullable HealthProfile profile) {
@@ -201,29 +204,26 @@ public class HealthTrackingActivity extends AppCompatActivity {
             @Nullable HealthAnalysisResult analysis,
             @NonNull List<HealthRecommendedFood> recommendations,
             @Nullable String friendlyError) {
-        if (txtHealthSummary == null || recommendationsContainer == null || txtHealthEmpty == null) {
+        if (txtHealthSummary == null
+                || txtHealthShouldEat == null
+                || txtHealthShouldLimit == null
+                || txtHealthWarning == null
+                || recommendationsContainer == null
+                || txtHealthEmpty == null) {
             return;
         }
 
         if (!TextUtils.isEmpty(friendlyError) && profile == null) {
-            txtHealthSummary.setText("Bạn chưa có hồ sơ sức khỏe. Hãy lưu chỉ số để nhận gợi ý tham khảo.");
-            txtHealthShouldEat.setText("");
-            txtHealthShouldLimit.setText("");
-            txtHealthWarning.setVisibility(View.GONE);
-            recommendationsContainer.removeAllViews();
-            txtHealthEmpty.setVisibility(View.VISIBLE);
-            txtHealthEmpty.setText("Biểu mẫu nhập sức khỏe đã sẵn sàng.");
+            renderEmptyRecommendationState(
+                    "Bạn chưa có hồ sơ sức khỏe. Hãy lưu chỉ số để nhận gợi ý tham khảo.",
+                    "Biểu mẫu nhập sức khỏe đã sẵn sàng.");
             return;
         }
 
         if (analysis == null) {
-            txtHealthSummary.setText("Bạn chưa có hồ sơ sức khỏe. Hãy lưu chỉ số để nhận gợi ý tham khảo.");
-            txtHealthShouldEat.setText("");
-            txtHealthShouldLimit.setText("");
-            txtHealthWarning.setVisibility(View.GONE);
-            recommendationsContainer.removeAllViews();
-            txtHealthEmpty.setVisibility(View.VISIBLE);
-            txtHealthEmpty.setText("Gợi ý sẽ xuất hiện sau khi bạn lưu hồ sơ sức khỏe.");
+            renderEmptyRecommendationState(
+                    "Bạn chưa có hồ sơ sức khỏe. Hãy lưu chỉ số để nhận gợi ý tham khảo.",
+                    "Gợi ý sẽ xuất hiện sau khi bạn lưu hồ sơ sức khỏe.");
             return;
         }
 
@@ -254,8 +254,26 @@ public class HealthTrackingActivity extends AppCompatActivity {
         }
     }
 
+    private void renderEmptyRecommendationState(@NonNull String summary, @NonNull String emptyMessage) {
+        if (txtHealthSummary == null
+                || txtHealthShouldEat == null
+                || txtHealthShouldLimit == null
+                || txtHealthWarning == null
+                || recommendationsContainer == null
+                || txtHealthEmpty == null) {
+            return;
+        }
+        txtHealthSummary.setText(summary);
+        txtHealthShouldEat.setText("");
+        txtHealthShouldLimit.setText("");
+        txtHealthWarning.setVisibility(View.GONE);
+        recommendationsContainer.removeAllViews();
+        txtHealthEmpty.setVisibility(View.VISIBLE);
+        txtHealthEmpty.setText(emptyMessage);
+    }
+
     private void bindRecommendationItem(@NonNull View itemView, @NonNull HealthRecommendedFood recommendation) {
-        android.widget.ImageView imageView = itemView.findViewById(R.id.imgHealthRecommendation);
+        ImageView imageView = itemView.findViewById(R.id.imgHealthRecommendation);
         TextView nameView = itemView.findViewById(R.id.txtHealthRecommendationName);
         TextView reasonView = itemView.findViewById(R.id.txtHealthRecommendationReason);
         ChipGroup chipGroup = itemView.findViewById(R.id.groupHealthRecommendationTags);
@@ -263,14 +281,28 @@ public class HealthTrackingActivity extends AppCompatActivity {
         MaterialButton btnSave = itemView.findViewById(R.id.btnHealthRecommendationSave);
         MaterialButton btnJournal = itemView.findViewById(R.id.btnHealthRecommendationJournal);
 
-        imageView.setImageResource(recommendation.resolveImageResId(this));
-        nameView.setText(recommendation.getName());
-        reasonView.setText(recommendation.getReason());
-        bindTags(chipGroup, recommendation.getSuitableFor());
+        if (imageView != null) {
+            imageView.setImageResource(recommendation.resolveImageResId(this));
+        }
+        if (nameView != null) {
+            nameView.setText(recommendation.getName());
+        }
+        if (reasonView != null) {
+            reasonView.setText(recommendation.getReason());
+        }
+        if (chipGroup != null) {
+            bindTags(chipGroup, recommendation.getSuitableFor());
+        }
 
-        btnRecipe.setOnClickListener(v -> openRecommendationRecipe(recommendation));
-        btnSave.setOnClickListener(v -> saveRecommendationDish(recommendation));
-        btnJournal.setOnClickListener(v -> addRecommendationToJournal(recommendation));
+        if (btnRecipe != null) {
+            btnRecipe.setOnClickListener(v -> openRecommendationRecipe(recommendation));
+        }
+        if (btnSave != null) {
+            btnSave.setOnClickListener(v -> saveRecommendationDish(recommendation));
+        }
+        if (btnJournal != null) {
+            btnJournal.setOnClickListener(v -> addRecommendationToJournal(recommendation));
+        }
     }
 
     private void bindTags(@NonNull ChipGroup chipGroup, @NonNull List<String> tags) {
@@ -345,19 +377,19 @@ public class HealthTrackingActivity extends AppCompatActivity {
 
         boolean valid = true;
         if (weight == null) {
-            tilWeight.setError("Vui lòng nhập cân nặng.");
+            setInputError(tilWeight, "Vui lòng nhập cân nặng.");
             valid = false;
         }
         if (systolic == null) {
-            tilSystolic.setError("Nhập tâm thu.");
+            setInputError(tilSystolic, "Nhập tâm thu.");
             valid = false;
         }
         if (diastolic == null) {
-            tilDiastolic.setError("Nhập tâm trương.");
+            setInputError(tilDiastolic, "Nhập tâm trương.");
             valid = false;
         }
         if (heartRate == null) {
-            tilHeartRate.setError("Nhập nhịp tim.");
+            setInputError(tilHeartRate, "Nhập nhịp tim.");
             valid = false;
         }
         if (!valid) {
@@ -390,61 +422,76 @@ public class HealthTrackingActivity extends AppCompatActivity {
                 analysis.getTags(),
                 null);
 
-        healthProfileRepository.saveHealthProfile(user.getUid(), finalProfile, (success, friendlyError) -> {
-            if (!isActivityAliveForUi()) {
-                return;
-            }
-            if (!success) {
-                setHealthStatus(friendlyError == null
-                        ? "Không thể lưu hồ sơ sức khỏe."
-                        : friendlyError);
-                if (friendlyError != null) {
-                    attachValidationError(friendlyError);
-                }
-                return;
-            }
+        healthProfileRepository.saveHealthProfile(user.getUid(), finalProfile, (success, friendlyError) ->
+                runOnUiThread(() -> {
+                    if (!isActivityAliveForUi()) {
+                        return;
+                    }
+                    if (!success) {
+                        String message = friendlyError == null
+                                ? "Không thể lưu hồ sơ sức khỏe."
+                                : friendlyError;
+                        setHealthStatus(message);
+                        if (friendlyError != null) {
+                            attachValidationError(friendlyError);
+                        }
+                        return;
+                    }
 
-            Toast.makeText(this, "Đã lưu hồ sơ sức khỏe.", Toast.LENGTH_SHORT).show();
-            setHealthStatus("Đã lưu hồ sơ sức khỏe. CoolCook đang cập nhật gợi ý hôm nay.");
-            loadHealthProfileAndRecommendations();
-        });
+                    Toast.makeText(this, "Đã lưu hồ sơ sức khỏe.", Toast.LENGTH_SHORT).show();
+                    setHealthStatus("Đã lưu hồ sơ sức khỏe. CoolCook đang cập nhật gợi ý hôm nay.");
+                    loadHealthProfileAndRecommendations();
+                }));
     }
 
     private void attachValidationError(@NonNull String friendlyError) {
-        String normalized = friendlyError.toLowerCase(Locale.ROOT);
-        if (normalized.contains("cân nặng")) {
-            tilWeight.setError(friendlyError);
-        } else if (normalized.contains("tâm thu")) {
-            tilSystolic.setError(friendlyError);
-        } else if (normalized.contains("tâm trương")) {
-            tilDiastolic.setError(friendlyError);
-        } else if (normalized.contains("nhịp tim")) {
-            tilHeartRate.setError(friendlyError);
+        String normalized = HealthAnalyzer.normalize(friendlyError);
+        if (normalized.contains("can nang")) {
+            setInputError(tilWeight, friendlyError);
+        } else if (normalized.contains("tam thu")) {
+            setInputError(tilSystolic, friendlyError);
+        } else if (normalized.contains("tam truong")) {
+            setInputError(tilDiastolic, friendlyError);
+        } else if (normalized.contains("nhip tim")) {
+            setInputError(tilHeartRate, friendlyError);
         }
     }
 
     private void clearHealthErrors() {
-        if (tilWeight != null) tilWeight.setError(null);
-        if (tilSystolic != null) tilSystolic.setError(null);
-        if (tilDiastolic != null) tilDiastolic.setError(null);
-        if (tilHeartRate != null) tilHeartRate.setError(null);
-        if (tilGoal != null) tilGoal.setError(null);
+        if (tilWeight != null) {
+            tilWeight.setError(null);
+        }
+        if (tilSystolic != null) {
+            tilSystolic.setError(null);
+        }
+        if (tilDiastolic != null) {
+            tilDiastolic.setError(null);
+        }
+        if (tilHeartRate != null) {
+            tilHeartRate.setError(null);
+        }
+        if (tilGoal != null) {
+            tilGoal.setError(null);
+        }
     }
 
     private void renderLoggedOutHealthState() {
         bindHealthProfile(null);
-        if (txtHealthSummary != null) {
-            txtHealthSummary.setText("Bạn chưa đăng nhập nên chưa thể đồng bộ hồ sơ sức khỏe.");
-        }
-        if (txtHealthEmpty != null) {
-            txtHealthEmpty.setVisibility(View.VISIBLE);
-            txtHealthEmpty.setText("Bạn có thể đăng nhập rồi lưu chỉ số để nhận gợi ý tham khảo.");
-        }
+        setHealthStatus("Bạn chưa đăng nhập nên chưa thể đồng bộ hồ sơ sức khỏe.");
+        renderEmptyRecommendationState(
+                "Bạn chưa đăng nhập nên chưa thể đồng bộ hồ sơ sức khỏe.",
+                "Bạn có thể đăng nhập rồi lưu chỉ số để nhận gợi ý tham khảo.");
     }
 
     private void setHealthStatus(@NonNull String message) {
         if (txtHealthStatus != null) {
             txtHealthStatus.setText(message);
+        }
+    }
+
+    private void setInputError(@Nullable TextInputLayout inputLayout, @NonNull String error) {
+        if (inputLayout != null) {
+            inputLayout.setError(error);
         }
     }
 
@@ -461,7 +508,7 @@ public class HealthTrackingActivity extends AppCompatActivity {
         if (editText == null || editText.getText() == null) {
             return null;
         }
-        String value = editText.getText().toString().trim();
+        String value = editText.getText().toString().trim().replace(',', '.');
         if (value.isEmpty()) {
             return null;
         }

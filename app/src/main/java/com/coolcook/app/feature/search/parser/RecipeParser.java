@@ -1,7 +1,9 @@
 package com.coolcook.app.feature.search.parser;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.coolcook.app.feature.profile.data.HealthAnalyzer;
 import com.coolcook.app.feature.search.model.ParsedRecipe;
 
 import java.util.ArrayList;
@@ -12,12 +14,28 @@ import java.util.regex.Pattern;
 
 public final class RecipeParser {
 
-    private static final String SERVING_LABEL = "**Khẩu phần:**";
-    private static final String INGREDIENT_LABEL = "**Nguyên liệu:**";
-    private static final String STEP_LABEL = "**Các bước thực hiện:**";
-    private static final String TIP_LABEL = "**Mẹo tối ưu:**";
+    private static final String[] SERVING_LABELS = {
+            "**Khẩu phần:**",
+            "**Kháº©u pháº§n:**",
+            "**Kh?u ph?n:**"
+    };
+    private static final String[] INGREDIENT_LABELS = {
+            "**Nguyên liệu:**",
+            "**NguyÃªn liá»‡u:**",
+            "**Nguyï¿½n li?u:**"
+    };
+    private static final String[] STEP_LABELS = {
+            "**Các bước thực hiện:**",
+            "**CÃ¡c bÆ°á»›c thá»±c hiá»‡n:**",
+            "**Cï¿½c bu?c th?c hi?n:**"
+    };
+    private static final String[] TIP_LABELS = {
+            "**Mẹo tối ưu:**",
+            "**Máº¹o tá»‘i Æ°u:**",
+            "**M?o t?i uu:**"
+    };
     private static final Pattern COOK_MINUTE_PATTERN =
-            Pattern.compile("(\\d+)(?:\\s*-\\s*(\\d+))?\\s*phút", Pattern.CASE_INSENSITIVE);
+            Pattern.compile("(\\d+)(?:\\s*-\\s*(\\d+))?\\s*ph(?:ú|u|ï¿½)?t", Pattern.CASE_INSENSITIVE);
 
     private RecipeParser() {
     }
@@ -26,9 +44,13 @@ public final class RecipeParser {
     public static ParsedRecipe parse(@NonNull String recipe) {
         try {
             String serving = parseServing(recipe);
-            List<ParsedRecipe.Ingredient> ingredients = parseIngredients(extractBlock(recipe, INGREDIENT_LABEL, STEP_LABEL));
-            List<String> steps = parseNumberedLines(extractBlock(recipe, STEP_LABEL, TIP_LABEL));
-            List<String> tips = parseBulletLines(extractBlock(recipe, TIP_LABEL, null));
+            String ingredientsBlock = extractBlock(recipe, INGREDIENT_LABELS, STEP_LABELS);
+            String stepsBlock = extractBlock(recipe, STEP_LABELS, TIP_LABELS);
+            String tipsBlock = extractBlock(recipe, TIP_LABELS, null);
+
+            List<ParsedRecipe.Ingredient> ingredients = parseIngredients(ingredientsBlock);
+            List<String> steps = parseNumberedLines(stepsBlock);
+            List<String> tips = parseBulletLines(tipsBlock);
             boolean parsed = !serving.isEmpty() || !ingredients.isEmpty() || !steps.isEmpty() || !tips.isEmpty();
             return new ParsedRecipe(serving, ingredients, steps, tips, recipe, parsed);
         } catch (Exception error) {
@@ -55,22 +77,27 @@ public final class RecipeParser {
     private static String parseServing(@NonNull String recipe) {
         for (String line : recipe.split("\\R")) {
             String trimmed = line.trim();
-            if (trimmed.startsWith(SERVING_LABEL)) {
-                return trimmed.substring(SERVING_LABEL.length()).trim();
+            if (startsWithAny(trimmed, SERVING_LABELS)) {
+                String label = matchedLabel(trimmed, SERVING_LABELS);
+                return trimmed.substring(label.length()).trim();
             }
         }
         return "";
     }
 
     @NonNull
-    private static String extractBlock(@NonNull String recipe, @NonNull String startLabel, String endLabel) {
-        int start = recipe.indexOf(startLabel);
+    private static String extractBlock(
+            @NonNull String recipe,
+            @NonNull String[] startLabels,
+            @Nullable String[] endLabels) {
+        int start = indexOfAny(recipe, startLabels);
         if (start < 0) {
             return "";
         }
 
+        String startLabel = matchedLabel(recipe.substring(start), startLabels);
         int contentStart = start + startLabel.length();
-        int end = endLabel == null ? recipe.length() : recipe.indexOf(endLabel, contentStart);
+        int end = endLabels == null ? recipe.length() : indexOfAny(recipe, endLabels, contentStart);
         if (end < 0) {
             end = recipe.length();
         }
@@ -142,7 +169,43 @@ public final class RecipeParser {
         return trimmed.substring(2).trim();
     }
 
-    private static int parseIntSafely(String value) {
+    private static boolean startsWithAny(@NonNull String value, @NonNull String[] labels) {
+        return matchedLabel(value, labels) != null;
+    }
+
+    @Nullable
+    private static String matchedLabel(@NonNull String value, @NonNull String[] labels) {
+        for (String label : labels) {
+            if (value.startsWith(label)) {
+                return label;
+            }
+        }
+
+        String normalizedValue = HealthAnalyzer.normalize(value);
+        for (String label : labels) {
+            if (normalizedValue.startsWith(HealthAnalyzer.normalize(label))) {
+                return label;
+            }
+        }
+        return null;
+    }
+
+    private static int indexOfAny(@NonNull String value, @NonNull String[] labels) {
+        return indexOfAny(value, labels, 0);
+    }
+
+    private static int indexOfAny(@NonNull String value, @NonNull String[] labels, int fromIndex) {
+        int best = -1;
+        for (String label : labels) {
+            int index = value.indexOf(label, fromIndex);
+            if (index >= 0 && (best < 0 || index < best)) {
+                best = index;
+            }
+        }
+        return best;
+    }
+
+    private static int parseIntSafely(@Nullable String value) {
         if (value == null || value.trim().isEmpty()) {
             return 0;
         }

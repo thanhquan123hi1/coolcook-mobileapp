@@ -19,7 +19,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -99,30 +98,48 @@ public class HealthFoodRecommendationRepository {
 
     private int scoreFood(@NonNull FoodItem food, @NonNull HealthAnalysisResult analysis) {
         int score = 0;
-        for (String suitable : food.getSuitableFor()) {
-            String normalizedSuitable = normalize(suitable);
-            for (String tag : analysis.getTags()) {
-                String normalizedTag = normalize(tag);
-                if (normalizedSuitable.equals(normalizedTag)) {
+        List<String> analysisTags = canonicalizeAll(analysis.getTags());
+        List<String> foodTags = canonicalizeAll(food.getSuitableFor());
+        String recipe = canonicalizeText(food.getRecipe());
+
+        for (String foodTag : foodTags) {
+            for (String analysisTag : analysisTags) {
+                if (foodTag.equals(analysisTag)) {
                     score += 3;
-                    continue;
-                }
-                if (isNearMeaning(normalizedSuitable, normalizedTag)) {
+                } else if (isNearMeaning(foodTag, analysisTag)) {
                     score += 2;
                 }
             }
         }
 
-        String recipe = normalize(food.getRecipe());
-        boolean highPressure = containsAny(analysis.getTags(), "huyết áp cao", "nhịp tim cao");
-        if (highPressure && containsAnyNormalized(recipe, "dau dieu", "gio heo", "mam ruoc", "nhieu muoi")) {
-            score -= 3;
-        }
-        if (highPressure && containsAnyNormalized(recipe, "do chien", "ot", "sa te")) {
-            score -= 2;
+        if (containsTag(analysisTags, "huyet ap cao") || containsTag(analysisTags, "nhip tim cao")) {
+            if (containsAny(recipe, "dau dieu", "gio heo", "mam ruoc", "nhieu muoi")) {
+                score -= 3;
+            }
+            if (containsAny(recipe, "do chien", "ot", "sa te", "qua cay")) {
+                score -= 2;
+            }
         }
 
-        if (score == 0 && containsAny(analysis.getTags(), "ăn cân bằng")) {
+        if (containsTag(analysisTags, "can nhieu nang luong")) {
+            if (containsAny(foodTags, "can nhieu nang luong", "tang co bap")) {
+                score += 2;
+            }
+        }
+
+        if (containsTag(analysisTags, "kiem soat can nang")) {
+            if (containsAny(foodTags, "kiem soat can nang", "an thanh dam", "han che dau mo")) {
+                score += 2;
+            }
+        }
+
+        if (containsTag(analysisTags, "an nhe bung")) {
+            if (containsAny(foodTags, "an nhe bung", "de tieu", "da day")) {
+                score += 2;
+            }
+        }
+
+        if (score == 0 && containsTag(analysisTags, "an can bang")) {
             score = 1;
         }
         return score;
@@ -185,10 +202,11 @@ public class HealthFoodRecommendationRepository {
                 + "  },\n"
                 + "  \"existingLocalRecommendations\": " + new JSONArray(extractNames(localRecommendations)) + ",\n"
                 + "  \"rules\": [\n"
-                + "    \"de xuat them 3 mon moi, khong trung mon local\",\n"
-                + "    \"ngon ngu an toan: chi dung cac cum tu co the phu hop, nen uu tien, nen han che, goi y tham khao\",\n"
+                + "    \"de xuat them toi da 3 mon moi, khong trung mon local\",\n"
+                + "    \"chi dung ngon ngu an toan: co the phu hop, nen uu tien, nen han che, goi y tham khao\",\n"
                 + "    \"khong duoc chan doan, dieu tri hay khang dinh benh\",\n"
-                + "    \"mon phai de lam, thanh dam va phu hop boi canh Viet Nam\"\n"
+                + "    \"mon phai de lam, thanh dam va phu hop boi canh Viet Nam\",\n"
+                + "    \"neu khong chac phu hop thi tra ve danh sach rong\"\n"
                 + "  ],\n"
                 + "  \"outputSchema\": {\n"
                 + "    \"recommendations\": [\n"
@@ -239,8 +257,10 @@ public class HealthFoodRecommendationRepository {
     @NonNull
     private static String buildReason(@NonNull FoodItem food, @NonNull HealthAnalysisResult analysis) {
         List<String> matchedTags = new ArrayList<>();
+        List<String> normalizedAnalysisTags = canonicalizeAll(analysis.getTags());
         for (String tag : food.getSuitableFor()) {
-            if (containsNormalized(analysis.getTags(), tag)) {
+            String canonical = canonicalizeTag(tag);
+            if (normalizedAnalysisTags.contains(canonical)) {
                 matchedTags.add(tag);
             }
         }
@@ -255,7 +275,7 @@ public class HealthFoodRecommendationRepository {
         List<HealthRecommendedFood> results = new ArrayList<>();
         Set<String> seen = new LinkedHashSet<>();
         for (HealthRecommendedFood item : items) {
-            String key = normalize(item.getName());
+            String key = canonicalizeText(item.getName());
             if (seen.contains(key)) {
                 continue;
             }
@@ -303,28 +323,35 @@ public class HealthFoodRecommendationRepository {
         return TextUtils.join(", ", values);
     }
 
+    @NonNull
+    private static List<String> canonicalizeAll(@NonNull List<String> values) {
+        List<String> results = new ArrayList<>();
+        for (String value : values) {
+            String canonical = canonicalizeTag(value);
+            if (!canonical.isEmpty() && !results.contains(canonical)) {
+                results.add(canonical);
+            }
+        }
+        return results;
+    }
+
+    private static boolean containsTag(@NonNull List<String> values, @NonNull String target) {
+        String normalizedTarget = canonicalizeTag(target);
+        return values.contains(normalizedTarget);
+    }
+
     private static boolean containsAny(@NonNull List<String> values, @NonNull String... targets) {
         for (String target : targets) {
-            if (containsNormalized(values, target)) {
+            if (containsTag(values, target)) {
                 return true;
             }
         }
         return false;
     }
 
-    private static boolean containsNormalized(@NonNull List<String> values, @NonNull String target) {
-        String normalizedTarget = normalize(target);
-        for (String value : values) {
-            if (normalize(value).contains(normalizedTarget) || normalizedTarget.contains(normalize(value))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean containsAnyNormalized(@NonNull String value, @NonNull String... targets) {
+    private static boolean containsAny(@NonNull String value, @NonNull String... targets) {
         for (String target : targets) {
-            if (value.contains(normalize(target))) {
+            if (value.contains(canonicalizeText(target))) {
                 return true;
             }
         }
@@ -343,6 +370,95 @@ public class HealthFoodRecommendationRepository {
     }
 
     @NonNull
+    private static String canonicalizeTag(@Nullable String raw) {
+        String value = canonicalizeText(raw);
+        if (value.contains("m nhi m m u") || value.contains("mau") && value.contains("nhiem")) {
+            return "mo nhiem mau";
+        }
+        if (value.contains("han che dau mo")) {
+            return "han che dau mo";
+        }
+        if (value.contains("an thanh dam") || value.contains("an thanh nh")) {
+            return "an thanh dam";
+        }
+        if (value.contains("de tieu")) {
+            return "de tieu";
+        }
+        if (value.contains("da day") || value.contains("d d y")) {
+            return "da day";
+        }
+        if (value.contains("an nhe bung")) {
+            return "an nhe bung";
+        }
+        if (value.contains("kiem soat can nang")) {
+            return "kiem soat can nang";
+        }
+        if (value.contains("can nhieu nang luong") || value.contains("nguoi can nhieu nang luong")) {
+            return "can nhieu nang luong";
+        }
+        if (value.contains("tang co bap")) {
+            return "tang co bap";
+        }
+        if (value.contains("huyet ap cao")) {
+            return "huyet ap cao";
+        }
+        if (value.contains("huyet ap thap")) {
+            return "huyet ap thap";
+        }
+        if (value.contains("an nhat")) {
+            return "an nhat";
+        }
+        if (value.contains("nhip tim cao")) {
+            return "nhip tim cao";
+        }
+        if (value.contains("nhip tim thap")) {
+            return "nhip tim thap";
+        }
+        if (value.contains("it dau mo")) {
+            return "it dau mo";
+        }
+        if (value.contains("nhieu rau")) {
+            return "nhieu rau";
+        }
+        if (value.contains("bo sung dam")) {
+            return "bo sung dam";
+        }
+        if (value.contains("an can bang")) {
+            return "an can bang";
+        }
+        return value;
+    }
+
+    @NonNull
+    private static String canonicalizeText(@Nullable String input) {
+        if (input == null) {
+            return "";
+        }
+        return HealthAnalyzer.normalize(input)
+                .replace("m n", "mon")
+                .replace("n ng", "nuong")
+                .replace("lu c", "luoc")
+                .replace("h p", "hap")
+                .replace("nhi u", "nhieu")
+                .replace("mu i", "muoi")
+                .replace("d u", "dau")
+                .replace("m m", "mam")
+                .replace("c n", "can")
+                .replace("d m", "dam")
+                .replace("thanh d m", "thanh dam")
+                .replace("nh p", "nhip")
+                .replace("huy t", "huyet")
+                .replace("ki m", "kiem")
+                .replace("n ng l ng", "nang luong")
+                .replace("b ng", "bung")
+                .replace("ti u", "tieu")
+                .replace("d y", "day")
+                .replace("m u", "mau")
+                .replaceAll("\\s+", " ")
+                .trim();
+    }
+
+    @NonNull
     private static String extractJsonPayload(@NonNull String rawText) {
         String trimmed = rawText.trim();
         int objectStart = trimmed.indexOf('{');
@@ -351,18 +467,6 @@ public class HealthFoodRecommendationRepository {
             return trimmed.substring(objectStart, objectEnd + 1);
         }
         return trimmed;
-    }
-
-    @NonNull
-    private static String normalize(@NonNull String input) {
-        String ascii = Normalizer.normalize(input, Normalizer.Form.NFD)
-                .replaceAll("\\p{M}+", "")
-                .replace('đ', 'd')
-                .replace('Đ', 'D');
-        return ascii.toLowerCase(Locale.ROOT)
-                .replaceAll("[^a-z0-9\\s]", " ")
-                .replaceAll("\\s+", " ")
-                .trim();
     }
 
     @NonNull

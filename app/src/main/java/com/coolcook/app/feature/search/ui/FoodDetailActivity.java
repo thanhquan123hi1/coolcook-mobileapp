@@ -87,8 +87,7 @@ public class FoodDetailActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.txtFoodDetailCategory)).setText(foodItem.getCategory().name());
         ((TextView) findViewById(R.id.txtFoodDetailTime)).setText(
                 String.format(Locale.US, "%d MIN", foodItem.getCookTimeMinutes()));
-        ((TextView) findViewById(R.id.txtFoodDetailServing)).setText(
-                formatServing(parsedRecipe.getServing()));
+        ((TextView) findViewById(R.id.txtFoodDetailServing)).setText(formatServing(parsedRecipe.getServing()));
 
         bindFavoriteState();
         bindSuitableChips((ChipGroup) findViewById(R.id.groupFoodSuitable));
@@ -105,10 +104,7 @@ public class FoodDetailActivity extends AppCompatActivity {
 
     @NonNull
     private String formatServing(@NonNull String serving) {
-        if (serving.isEmpty()) {
-            return "2-3 PORTIONS";
-        }
-        return serving.toUpperCase(Locale.forLanguageTag("vi-VN")).replace("NGƯỜI", "PORTIONS");
+        return serving.isEmpty() ? "2-3 phần" : serving;
     }
 
     private void bindSuitableChips(@NonNull ChipGroup chipGroup) {
@@ -229,7 +225,7 @@ public class FoodDetailActivity extends AppCompatActivity {
         boolean favorite = favoriteFoodStore.isFavorite(foodItem.getId());
         btnFavorite.setImageResource(favorite ? R.drawable.ic_favorite_filled : R.drawable.ic_favorite_outline);
         btnFavorite.setColorFilter(getColor(favorite ? R.color.error : R.color.on_surface_variant));
-        btnFavorite.setContentDescription(favorite ? "Bo yeu thich" : "Yeu thich");
+        btnFavorite.setContentDescription(favorite ? "Bỏ yêu thích" : "Yêu thích");
     }
 
     private int dpToPx(float dp) {

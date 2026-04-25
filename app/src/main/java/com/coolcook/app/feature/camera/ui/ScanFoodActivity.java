@@ -80,6 +80,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -88,6 +89,21 @@ import org.json.JSONObject;
 
 public class ScanFoodActivity extends AppCompatActivity {
     private static final int SUGGESTION_LIMIT = 3;
+    private static final List<String> MAIN_INGREDIENT_TOKENS = java.util.Arrays.asList(
+            "ga",
+            "bo",
+            "heo",
+            "lon",
+            "tom",
+            "ca",
+            "muc",
+            "cua",
+            "trung",
+            "com",
+            "mi",
+            "bun",
+            "pho",
+            "banh mi");
 
     private static final long PRESS_IN_DURATION = 200L;
     private static final long PRESS_OUT_DURATION = 220L;
@@ -1197,6 +1213,7 @@ public class ScanFoodActivity extends AppCompatActivity {
                                 : recognitionExecutor;
                         executor.execute(() -> {
                             List<ScanDishItem> combinedDishItems = buildAiSuggestionItems(
+                                    effectiveIngredients,
                                     localSuggestions,
                                     parseSuggestedDishes(finalText));
                             runOnUiThread(() -> {
@@ -1294,12 +1311,27 @@ public class ScanFoodActivity extends AppCompatActivity {
 
     @NonNull
     private List<ScanDishItem> buildAiSuggestionItems(
+            @NonNull List<DetectedIngredient> effectiveIngredients,
             @NonNull List<ScanDishItem> localSuggestions,
             @NonNull List<SuggestedDish> aiSuggestions) {
         List<ScanDishItem> items = new ArrayList<>();
         List<String> seenStableIds = new ArrayList<>();
 
         for (SuggestedDish suggestedDish : aiSuggestions) {
+            List<String> sanitizedMatchedIngredients = sanitizeMatchedIngredients(
+                    effectiveIngredients,
+                    suggestedDish.getUsedIngredients());
+            List<String> sanitizedMissingIngredients = sanitizeMissingIngredients(
+                    effectiveIngredients,
+                    suggestedDish.getMissingIngredients());
+            if (!isAiSuggestionRelevant(
+                    effectiveIngredients,
+                    suggestedDish,
+                    sanitizedMatchedIngredients,
+                    sanitizedMissingIngredients)) {
+                continue;
+            }
+
             FoodItem localFood = scanFoodLocalMatcher.findDishByName(suggestedDish.getName());
             if (localFood != null) {
                 String stableId = scanFoodLocalMatcher.createStableId(localFood.getId(), true);
@@ -1311,8 +1343,8 @@ public class ScanFoodActivity extends AppCompatActivity {
                         stableId,
                         localFood.getName(),
                         localFood,
-                        suggestedDish.getUsedIngredients(),
-                        suggestedDish.getMissingIngredients(),
+                        sanitizedMatchedIngredients,
+                        sanitizedMissingIngredients,
                         suggestedDish.getHealthTags().isEmpty() ? localFood.getSuitableFor() : suggestedDish.getHealthTags(),
                         suggestedDish.getReason(),
                         localFood.getRecipe(),
@@ -1332,8 +1364,8 @@ public class ScanFoodActivity extends AppCompatActivity {
                         stableId,
                         suggestedDish.getName(),
                         null,
-                        suggestedDish.getUsedIngredients(),
-                        suggestedDish.getMissingIngredients(),
+                        sanitizedMatchedIngredients,
+                        sanitizedMissingIngredients,
                         suggestedDish.getHealthTags(),
                         suggestedDish.getReason(),
                         suggestedDish.getRecipe(),
@@ -1347,6 +1379,136 @@ public class ScanFoodActivity extends AppCompatActivity {
             return new ArrayList<>(localSuggestions);
         }
         return items;
+    }
+
+    private boolean isAiSuggestionRelevant(
+            @NonNull List<DetectedIngredient> effectiveIngredients,
+            @NonNull SuggestedDish suggestedDish,
+            @NonNull List<String> sanitizedMatchedIngredients,
+            @NonNull List<String> sanitizedMissingIngredients) {
+        if (effectiveIngredients.isEmpty() || sanitizedMatchedIngredients.isEmpty()) {
+            return false;
+        }
+
+        int availableCount = effectiveIngredients.size();
+        int matchedCount = sanitizedMatchedIngredients.size();
+        if (availableCount >= 2 && matchedCount < 2) {
+            return false;
+        }
+
+        double coverage = matchedCount / (double) Math.max(1, availableCount);
+        if (availableCount >= 3 && coverage < 0.5d) {
+            return false;
+        }
+
+        if (sanitizedMissingIngredients.size() > Math.max(2, matchedCount)) {
+            return false;
+        }
+
+        return !suggestsUnavailableMainIngredient(
+                effectiveIngredients,
+                suggestedDish.getName(),
+                sanitizedMatchedIngredients);
+    }
+
+    @NonNull
+    private List<String> sanitizeMatchedIngredients(
+            @NonNull List<DetectedIngredient> effectiveIngredients,
+            @NonNull List<String> rawMatchedIngredients) {
+        List<String> sanitized = new ArrayList<>();
+        for (String rawIngredient : rawMatchedIngredients) {
+            String canonicalName = findBestAvailableIngredientName(effectiveIngredients, rawIngredient);
+            if (!canonicalName.isEmpty() && !sanitized.contains(canonicalName)) {
+                sanitized.add(canonicalName);
+            }
+        }
+        return sanitized;
+    }
+
+    @NonNull
+    private List<String> sanitizeMissingIngredients(
+            @NonNull List<DetectedIngredient> effectiveIngredients,
+            @NonNull List<String> rawMissingIngredients) {
+        List<String> sanitized = new ArrayList<>();
+        for (String rawIngredient : rawMissingIngredients) {
+            String value = rawIngredient == null ? "" : rawIngredient.trim();
+            if (value.isEmpty()) {
+                continue;
+            }
+            if (!findBestAvailableIngredientName(effectiveIngredients, value).isEmpty()) {
+                continue;
+            }
+            if (!sanitized.contains(value)) {
+                sanitized.add(value);
+            }
+        }
+        return sanitized;
+    }
+
+    @NonNull
+    private String findBestAvailableIngredientName(
+            @NonNull List<DetectedIngredient> effectiveIngredients,
+            @NonNull String rawIngredient) {
+        String normalizedRaw = normalizeLooseIngredient(rawIngredient);
+        if (normalizedRaw.isEmpty()) {
+            return "";
+        }
+
+        for (DetectedIngredient ingredient : effectiveIngredients) {
+            String candidate = ingredient.getName().trim();
+            String normalizedCandidate = normalizeLooseIngredient(candidate);
+            if (normalizedCandidate.equals(normalizedRaw)
+                    || normalizedCandidate.contains(normalizedRaw)
+                    || normalizedRaw.contains(normalizedCandidate)) {
+                return candidate;
+            }
+        }
+        return "";
+    }
+
+    private boolean suggestsUnavailableMainIngredient(
+            @NonNull List<DetectedIngredient> effectiveIngredients,
+            @NonNull String dishName,
+            @NonNull List<String> sanitizedMatchedIngredients) {
+        List<String> availableMainTokens = new ArrayList<>();
+        for (DetectedIngredient ingredient : effectiveIngredients) {
+            String normalized = normalizeLooseIngredient(ingredient.getName());
+            for (String token : MAIN_INGREDIENT_TOKENS) {
+                if (normalized.contains(token) && !availableMainTokens.contains(token)) {
+                    availableMainTokens.add(token);
+                }
+            }
+        }
+
+        List<String> matchedMainTokens = new ArrayList<>();
+        for (String ingredientName : sanitizedMatchedIngredients) {
+            String normalized = normalizeLooseIngredient(ingredientName);
+            for (String token : MAIN_INGREDIENT_TOKENS) {
+                if (normalized.contains(token) && !matchedMainTokens.contains(token)) {
+                    matchedMainTokens.add(token);
+                }
+            }
+        }
+
+        String normalizedDishName = normalizeLooseIngredient(dishName);
+        for (String token : MAIN_INGREDIENT_TOKENS) {
+            if (!normalizedDishName.contains(token)) {
+                continue;
+            }
+            if (!availableMainTokens.contains(token) && !matchedMainTokens.contains(token)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @NonNull
+    private String normalizeLooseIngredient(@NonNull String value) {
+        return value.toLowerCase(Locale.ROOT)
+                .replace('đ', 'd')
+                .replaceAll("[^\\p{L}0-9\\s]", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
     }
 
     private void requestRecipesForAiDishes(
@@ -1986,21 +2148,35 @@ public class ScanFoodActivity extends AppCompatActivity {
             localDishArray.put(item.getName());
         }
 
+        JSONArray allowedIngredientArray = new JSONArray();
+        for (DetectedIngredient ingredient : ingredients) {
+            allowedIngredientArray.put(ingredient.getName());
+        }
+
         StringBuilder prompt = new StringBuilder();
         prompt.append("Nguyen lieu da nhan dien: ").append(ingredientArray).append('.').append("\n");
         prompt.append("Nguyen lieu bo sung nguoi dung chon: ").append(new JSONArray(currentExtraIngredients)).append('.').append("\n");
+        prompt.append("Danh sach nguyen lieu hop le de dua vao matchedIngredients: ").append(allowedIngredientArray).append('.').append("\n");
         prompt.append("Mon local tham khao trong app: ").append(localDishArray).append('.').append("\n");
         prompt.append("Hay goi y DUNG 3 mon phu hop nhat co the nau tu tap nguyen lieu nay.\n");
-        prompt.append("Moi mon duoc goi y phai co gang tan dung day du to hop nguyen lieu dang co, khong duoc bo qua nguyen lieu chinh nhu ga hoac bo.\n");
-        prompt.append("Neu nguoi dung co dong thoi ga va bo thi uu tien mon co ca ga va bo; neu local khong co thi moi duoc de xuat mon moi.\n");
+        prompt.append("Moi mon duoc goi y phai bam sat tap nguyen lieu dang co, khong duoc doi sang mot mon khac chi vi thieu nguyen lieu.\n");
+        prompt.append("matchedIngredients BAT BUOC phai copy dung nguyen van tung ten tu danh sach nguyen lieu hop le. Khong duoc doi ten, viet lai ten, hay tu them ten moi.\n");
+        prompt.append("missingIngredients chi duoc phep la gia vi hoac nguyen lieu phu nho. Neu thieu nguyen lieu chinh cua mon thi KHONG duoc de xuat mon do.\n");
+        prompt.append("Neu nguoi dung co dong thoi ga va bo thi uu tien mon co ca ga va bo; neu local khong co thi moi duoc de xuat mon moi, nhung van phai giu dung cac nguyen lieu chinh dang co.\n");
         prompt.append("Mon duoc goi y phai bam sat nhung gi xuat hien trong anh, khong duoc doi sang mon khong lien quan.\n");
         prompt.append("Neu anh cho thay 1 mon hoan chinh hoac 1 thuc pham ro rang, uu tien giu dung ten mon/thuc pham do.\n");
         prompt.append("Vi du neu nhan dien la banh mi thi khong duoc goi y com ga chien hay mon khac khong lien quan.\n");
-        prompt.append("Chi khi khong the goi dung ten mon dang thay moi duoc suy luan 1 mon gan nhat tu tap nguyen lieu.\n");
+        prompt.append("Chi khi khong the goi dung ten mon dang thay moi duoc suy luan 1 mon gan nhat tu tap nguyen lieu, va mon do phai co matchedIngredients bao phu phan lon nguyen lieu dang co.\n");
+        prompt.append("Neu khong tim duoc mon phu hop, tra ve dishes rong []. Khong duoc co gang tra ve du 3 mon bang cach doan mon lech nguyen lieu.\n");
         prompt.append("Sap xep 3 mon theo muc do phu hop giam dan, mon dau tien la phu hop nhat.\n");
         prompt.append("Neu ten mon trung mot mon local trong app, giu dung ten mon local do.\n");
         prompt.append("Bat buoc tra ve day du cong thuc theo dung format foods.json voi cac heading:\n");
         prompt.append("### Ten mon | **Khau phan:** | **Nguyen lieu:** | **Cac buoc thuc hien:** | **Meo toi uu:**\n");
+        prompt.append("Quy tac hop le:\n");
+        prompt.append("- Neu input co tu 2 nguyen lieu tro len, moi mon goi y phai dung it nhat 2 matchedIngredients.\n");
+        prompt.append("- Khong de xuat mon neu matchedIngredients it hon missingIngredients.\n");
+        prompt.append("- Khong duoc de xuat mon ma nguyen lieu chinh khong nam trong matchedIngredients.\n");
+        prompt.append("- Neu mot ten trong matchedIngredients khong nam trong danh sach hop le thi output do la sai.\n");
         prompt.append("Chi tra ve JSON hop le theo dung schema sau:\n");
         prompt.append('{').append("\n");
         prompt.append("  \"dishes\": [\n");

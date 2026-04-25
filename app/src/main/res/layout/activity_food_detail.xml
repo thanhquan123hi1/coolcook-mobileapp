@@ -114,7 +114,7 @@
                         android:paddingEnd="12dp"
                         android:textColor="@color/on_surface_variant"
                         android:textSize="12sp"
-                        tools:text="2-3 PORTIONS" />
+                        tools:text="2-3 phần" />
                 </LinearLayout>
 
                 <TextView
@@ -226,7 +226,7 @@
                     android:textColor="@color/on_surface_variant"
                     android:textSize="14sp"
                     android:visibility="gone"
-                    tools:text="Raw recipe fallback" />
+                    tools:text="Nội dung công thức gốc" />
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
@@ -270,7 +270,7 @@
             android:layout_height="44dp"
             android:background="@drawable/bg_food_icon_circle_light"
             android:clickable="true"
-            android:contentDescription="Yeu thich"
+            android:contentDescription="Yêu thích"
             android:focusable="true"
             android:padding="10dp"
             android:scaleType="centerInside"
