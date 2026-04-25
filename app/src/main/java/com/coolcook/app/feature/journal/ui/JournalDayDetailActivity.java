@@ -63,6 +63,7 @@ public class JournalDayDetailActivity extends AppCompatActivity {
     private TextView txtEmptyState;
     private View progressLoading;
     private FloatingActionButton fabAddPhoto;
+    private boolean fabClickLocked = false;
 
     private JournalViewModel viewModel;
     private JournalDayDetailAdapter detailAdapter;
@@ -90,6 +91,7 @@ public class JournalDayDetailActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        fabClickLocked = false;
         if (viewModel != null) {
             viewModel.loadEntriesOfDate(selectedDate);
         }
@@ -317,7 +319,8 @@ public class JournalDayDetailActivity extends AppCompatActivity {
     }
 
     private void playBounceThen(@NonNull View target, @NonNull Runnable action) {
-        target.setEnabled(false);
+        if (fabClickLocked) return;
+        fabClickLocked = true;
         target.animate().cancel();
         target.animate()
                 .scaleX(0.9f)
@@ -330,7 +333,7 @@ public class JournalDayDetailActivity extends AppCompatActivity {
                         .setDuration(220L)
                         .setInterpolator(new OvershootInterpolator(0.95f))
                         .withEndAction(() -> {
-                            target.setEnabled(true);
+                            fabClickLocked = false;
                             action.run();
                         })
                         .start())
