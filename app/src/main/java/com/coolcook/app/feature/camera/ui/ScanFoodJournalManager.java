@@ -39,6 +39,8 @@ final class ScanFoodJournalManager {
         void setProcessingUiEnabled(boolean enabled);
 
         void updateJournalStatus(@NonNull String status);
+
+        void setJournalPreviewUiVisible(boolean visible);
     }
 
     private static final int JOURNAL_LIST_LIMIT = 30;
@@ -208,6 +210,7 @@ final class ScanFoodJournalManager {
             pendingJournalImageBytes = null;
             pendingJournalSourceLabel = "camera";
         }
+        host.setJournalPreviewUiVisible(false);
         host.updateJournalStatus("Sáºµn sĂ ng chá»¥p moment má»›i.");
     }
 
@@ -378,6 +381,7 @@ final class ScanFoodJournalManager {
         setJournalPostLoading(false, "");
         showJournalPostError("");
         journalCaptureOverlay.setVisibility(View.VISIBLE);
+        host.setJournalPreviewUiVisible(true);
         host.updateJournalStatus("ThĂªm caption rá»“i báº¥m ÄÄƒng.");
     }
 

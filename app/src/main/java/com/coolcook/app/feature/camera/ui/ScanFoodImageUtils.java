@@ -4,14 +4,18 @@ import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.camera.core.ImageProxy;
+import androidx.exifinterface.media.ExifInterface;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +23,7 @@ import java.nio.ByteBuffer;
 
 final class ScanFoodImageUtils {
 
+    private static final String TAG = "ScanFoodImageUtils";
     private static final int MAX_RECOGNITION_DIMENSION = 1600;
 
     private ScanFoodImageUtils() {
@@ -144,6 +149,83 @@ final class ScanFoodImageUtils {
         return outputStream.toByteArray();
     }
 
+    @NonNull
+    static byte[] normalizeCapturedJpeg(
+            @NonNull byte[] jpegBytes,
+            int rotationDegrees,
+            boolean mirrorForFrontCamera,
+            @NonNull String lensFacingLabel,
+            int displayRotation) {
+        int exifOrientation = ExifInterface.ORIENTATION_UNDEFINED;
+        try (ByteArrayInputStream exifInput = new ByteArrayInputStream(jpegBytes)) {
+            ExifInterface exifInterface = new ExifInterface(exifInput);
+            exifOrientation = exifInterface.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL);
+        } catch (Exception error) {
+            Log.w(TAG, "Unable to read EXIF orientation", error);
+        }
+
+        int exifRotation = exifToDegrees(exifOrientation);
+        int appliedRotation = exifRotation != 0 ? exifRotation : normalizeDegrees(rotationDegrees);
+        boolean shouldMirror = mirrorForFrontCamera;
+
+        Log.d(TAG, "normalizeCapturedJpeg:"
+                + " lensFacing=" + lensFacingLabel
+                + ", displayRotation=" + displayRotation
+                + ", exifOrientation=" + exifOrientation
+                + ", exifRotation=" + exifRotation
+                + ", imageInfoRotation=" + rotationDegrees
+                + ", appliedRotation=" + appliedRotation
+                + ", mirror=" + shouldMirror);
+
+        if (appliedRotation == 0 && !shouldMirror) {
+            return jpegBytes;
+        }
+
+        BitmapFactory.Options decode = new BitmapFactory.Options();
+        decode.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap bitmap = BitmapFactory.decodeByteArray(jpegBytes, 0, jpegBytes.length, decode);
+        if (bitmap == null) {
+            Log.w(TAG, "normalizeCapturedJpeg: cannot decode bitmap, using raw bytes");
+            return jpegBytes;
+        }
+
+        Matrix matrix = new Matrix();
+        if (appliedRotation != 0) {
+            matrix.postRotate(appliedRotation);
+        }
+        if (shouldMirror) {
+            matrix.postScale(-1f, 1f, bitmap.getWidth() / 2f, bitmap.getHeight() / 2f);
+        }
+
+        Bitmap normalizedBitmap;
+        try {
+            normalizedBitmap = Bitmap.createBitmap(
+                    bitmap,
+                    0,
+                    0,
+                    bitmap.getWidth(),
+                    bitmap.getHeight(),
+                    matrix,
+                    true);
+        } catch (Exception error) {
+            Log.e(TAG, "normalizeCapturedJpeg: transform failed, using raw bytes", error);
+            bitmap.recycle();
+            return jpegBytes;
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        normalizedBitmap.compress(Bitmap.CompressFormat.JPEG, 92, outputStream);
+        if (normalizedBitmap != bitmap) {
+            normalizedBitmap.recycle();
+        }
+        bitmap.recycle();
+        byte[] normalized = outputStream.toByteArray();
+        Log.d(TAG, "normalizeCapturedJpeg: output=in-memory-jpeg, bytes=" + normalized.length);
+        return normalized;
+    }
+
     @Nullable
     private static byte[] readPlaneBytes(@NonNull ImageProxy.PlaneProxy plane) {
         ByteBuffer buffer = plane.getBuffer();
@@ -253,5 +335,26 @@ final class ScanFoodImageUtils {
             inSampleSize *= 2;
         }
         return Math.max(1, inSampleSize);
+    }
+
+    private static int exifToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        }
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180;
+        }
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
+    }
+
+    private static int normalizeDegrees(int degrees) {
+        int normalized = degrees % 360;
+        if (normalized < 0) {
+            normalized += 360;
+        }
+        return normalized;
     }
 }

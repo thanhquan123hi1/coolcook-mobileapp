@@ -128,6 +128,41 @@
                 android:clickable="false"
                 android:focusable="false" />
 
+            <ImageView
+                android:id="@+id/imgJournalPreviewInline"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="false"
+                android:contentDescription="@string/journal_photo_desc"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/edtJournalPreviewCaption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="18dp"
+                android:background="@drawable/bg_journal_preview_caption"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:gravity="center"
+                android:hint="Thêm một tin nhắn"
+                android:imeOptions="actionDone"
+                android:maxLength="180"
+                android:maxLines="1"
+                android:minHeight="52dp"
+                android:minWidth="196dp"
+                android:paddingStart="24dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="12dp"
+                android:textColor="#FFFFFFFF"
+                android:textColorHint="#F0FFFFFF"
+                android:textSize="17sp"
+                android:visibility="gone" />
+
             <FrameLayout
                 android:id="@+id/btnFlash"
                 android:layout_width="@dimen/camera_screen_flash_button_size"
@@ -558,15 +593,223 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/journalPreviewFooterContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="28dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cameraPreviewCard">
+
+            <LinearLayout
+                android:id="@+id/previewFooterDots"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:background="@drawable/bg_journal_preview_dot_active" />
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_journal_preview_dot_inactive" />
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_journal_preview_dot_inactive" />
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_journal_preview_dot_inactive" />
+
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_journal_preview_dot_inactive" />
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/journalPreviewActions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp">
+
+                <TextView
+                    android:id="@+id/btnPreviewCancel"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:fontFamily="@font/material_symbols_outlined"
+                    android:foreground="@drawable/fg_ripple_circle"
+                    android:gravity="center"
+                    android:text="close"
+                    android:textColor="@android:color/white"
+                    android:textSize="38sp"
+                    app:layout_constraintBottom_toBottomOf="@id/btnPreviewSend"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/btnPreviewSend" />
+
+                <FrameLayout
+                    android:id="@+id/btnPreviewSend"
+                    android:layout_width="112dp"
+                    android:layout_height="112dp"
+                    android:background="@drawable/bg_journal_preview_send_button"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="@drawable/fg_ripple_circle"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/material_symbols_outlined"
+                        android:gravity="center"
+                        android:text="send"
+                        android:textColor="@android:color/white"
+                        android:textSize="52sp" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/btnPreviewEffects"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:fontFamily="@font/material_symbols_outlined"
+                    android:foreground="@drawable/fg_ripple_circle"
+                    android:gravity="center"
+                    android:text="auto_awesome"
+                    android:textColor="@android:color/white"
+                    android:textSize="34sp"
+                    app:layout_constraintBottom_toBottomOf="@id/btnPreviewSend"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/btnPreviewSend" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/txtPreviewUploadProgressLegacy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:textColor="#B3FFFFFF"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/txtPreviewSaveError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/be_vietnam_pro_medium"
+                android:textColor="#FFFF8A80"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/capturePreviewLoading"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginTop="12dp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/journalPreviewRecipientSelector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/optionPreviewRecipientAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@drawable/bg_journal_recipient_active">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_camera_groups"
+                            app:tint="@android:color/white" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Tất cả"
+                        android:textColor="#F7B500"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/optionPreviewRecipientMe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="36dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@drawable/bg_journal_recipient_inactive">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="@font/be_vietnam_pro_bold"
+                            android:text="MD"
+                            android:textColor="#7A7A7A"
+                            android:textSize="22sp" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/be_vietnam_pro_bold"
+                        android:text="Mình"
+                        android:textColor="#9E9E9E"
+                        android:textSize="18sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/captureSaveOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#E6000000"
-        android:clickable="true"
-        android:focusable="true"
+        android:background="#00000000"
         android:paddingStart="20dp"
         android:paddingTop="28dp"
         android:paddingEnd="20dp"
@@ -574,6 +817,7 @@
         android:visibility="gone">
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_horizontal"
@@ -688,6 +932,168 @@
                 android:layout_marginTop="14dp"
                 android:visibility="gone" />
         </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/previewOverlayContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/txtPreviewSendToTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:text="Gửi đến"
+                android:textColor="@android:color/white"
+                android:textSize="26sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/btnPreviewDownload"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:foreground="@drawable/fg_ripple_circle"
+                android:gravity="center"
+                android:text="download"
+                android:textColor="@android:color/white"
+                android:textSize="28sp"
+                app:layout_constraintBottom_toBottomOf="@id/txtPreviewSendToTitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/txtPreviewSendToTitle" />
+
+            <LinearLayout
+                android:id="@+id/previewPagerDots"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtPreviewSendToTitle">
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:background="@drawable/bg_journal_preview_dot_active" />
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_journal_preview_dot_inactive" />
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_journal_preview_dot_inactive" />
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_journal_preview_dot_inactive" />
+
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_journal_preview_dot_inactive" />
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/previewBottomActionsLegacy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/previewPagerDots">
+
+                <TextView
+                    android:id="@+id/btnPreviewCancelLegacy"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:fontFamily="@font/material_symbols_outlined"
+                    android:foreground="@drawable/fg_ripple_circle"
+                    android:gravity="center"
+                    android:text="close"
+                    android:textColor="@android:color/white"
+                    android:textSize="38sp"
+                    app:layout_constraintBottom_toBottomOf="@id/btnPreviewSendLegacy"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/btnPreviewSendLegacy" />
+
+                <FrameLayout
+                    android:id="@+id/btnPreviewSendLegacy"
+                    android:layout_width="112dp"
+                    android:layout_height="112dp"
+                    android:background="@drawable/bg_journal_preview_send_button"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="@drawable/fg_ripple_circle"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/material_symbols_outlined"
+                        android:gravity="center"
+                        android:text="send"
+                        android:textColor="@android:color/white"
+                        android:textSize="52sp" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/btnPreviewEffectsLegacy"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:fontFamily="@font/material_symbols_outlined"
+                    android:foreground="@drawable/fg_ripple_circle"
+                    android:gravity="center"
+                    android:text="auto_awesome"
+                    android:textColor="@android:color/white"
+                    android:textSize="34sp"
+                    app:layout_constraintBottom_toBottomOf="@id/btnPreviewSendLegacy"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/btnPreviewSendLegacy" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/txtPreviewUploadProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:textColor="#B3FFFFFF"
+                android:textSize="13sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/previewBottomActionsLegacy" />
+
+            <TextView
+                android:id="@+id/txtPreviewSaveErrorLegacy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/be_vietnam_pro_medium"
+                android:textColor="#FFFF8A80"
+                android:textSize="13sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtPreviewUploadProgressLegacy" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 
 </FrameLayout>

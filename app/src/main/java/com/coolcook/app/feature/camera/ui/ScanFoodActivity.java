@@ -13,9 +13,11 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
@@ -46,6 +48,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -88,6 +92,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ScanFoodActivity extends AppCompatActivity {
+    private static final String TAG = "ScanFoodActivity";
     private static final int SUGGESTION_LIMIT = 3;
     private static final List<String> MAIN_INGREDIENT_TOKENS = java.util.Arrays.asList(
             "ga",
@@ -147,6 +152,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private View btnSaveSelectedDish;
     private View tabIndicator;
     private View captureSaveOverlay;
+    private View journalPreviewFooterContainer;
     private View btnBack;
     private View btnFlash;
     private View btnGallery;
@@ -154,6 +160,8 @@ public class ScanFoodActivity extends AppCompatActivity {
     private View btnFlipCamera;
     private View btnCaptureSaveCancel;
     private View btnCaptureSaveConfirm;
+    private View btnPreviewDownload;
+    private View btnPreviewEffects;
     private ProgressBar captureSaveLoading;
     private TextView txtScanStatus;
     private TextView txtDetectedIngredientsEmpty;
@@ -230,6 +238,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(Color.BLACK);
         getWindow().setNavigationBarColor(Color.BLACK);
         getWindow().setNavigationBarContrastEnforced(false);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         setContentView(R.layout.activity_scan_food);
 
         initViews();
@@ -266,6 +275,11 @@ public class ScanFoodActivity extends AppCompatActivity {
                     @Override
                     public void updateJournalStatus(@NonNull String status) {
                         ScanFoodActivity.this.updateEntryStatus(status);
+                    }
+
+                    @Override
+                    public void setJournalPreviewUiVisible(boolean visible) {
+                        ScanFoodActivity.this.setJournalPreviewUiVisible(visible);
                     }
                 },
                 null,
@@ -358,13 +372,14 @@ public class ScanFoodActivity extends AppCompatActivity {
         btnSaveSelectedDish = findViewById(R.id.btnSaveSelectedDish);
         tabIndicator = findViewById(R.id.tabIndicator);
         captureSaveOverlay = findViewById(R.id.captureSaveOverlay);
+        journalPreviewFooterContainer = findViewById(R.id.journalPreviewFooterContainer);
         txtScanStatus = findViewById(R.id.txtScanStatus);
         txtDetectedIngredientsEmpty = findViewById(R.id.txtDetectedIngredientsEmpty);
         txtDishSuggestionsEmpty = findViewById(R.id.txtDishSuggestionsEmpty);
         txtSelectedDishHint = findViewById(R.id.txtSelectedDishHint);
         txtExtraIngredientsHint = findViewById(R.id.txtExtraIngredientsHint);
-        txtCaptureUploadProgress = findViewById(R.id.txtCaptureUploadProgress);
-        txtCaptureSaveError = findViewById(R.id.txtCaptureSaveError);
+        txtCaptureUploadProgress = findViewById(R.id.txtPreviewUploadProgress);
+        txtCaptureSaveError = findViewById(R.id.txtPreviewSaveError);
         tabNhanDien = findViewById(R.id.tabNhanDien);
         tabNhatKy = findViewById(R.id.tabNhatKy);
         iconFlash = findViewById(R.id.iconFlash);
@@ -373,12 +388,14 @@ public class ScanFoodActivity extends AppCompatActivity {
         btnGallery = findViewById(R.id.btnGallery);
         btnShutter = findViewById(R.id.btnShutter);
         btnFlipCamera = findViewById(R.id.btnFlipCamera);
-        btnCaptureSaveCancel = findViewById(R.id.btnCaptureSaveCancel);
-        btnCaptureSaveConfirm = findViewById(R.id.btnCaptureSaveConfirm);
-        captureSaveLoading = findViewById(R.id.captureSaveLoading);
-        edtCaptureCaption = findViewById(R.id.edtCaptureCaption);
+        btnCaptureSaveCancel = findViewById(R.id.btnPreviewCancel);
+        btnCaptureSaveConfirm = findViewById(R.id.btnPreviewSend);
+        btnPreviewDownload = findViewById(R.id.btnPreviewDownload);
+        btnPreviewEffects = findViewById(R.id.btnPreviewEffects);
+        captureSaveLoading = findViewById(R.id.capturePreviewLoading);
+        edtCaptureCaption = findViewById(R.id.edtJournalPreviewCaption);
         edtManualExtraIngredient = findViewById(R.id.edtManualExtraIngredient);
-        imgCapturePreview = findViewById(R.id.imgCapturePreview);
+        imgCapturePreview = findViewById(R.id.imgJournalPreviewInline);
         imgCapturedRecognition = findViewById(R.id.imgCapturedRecognition);
         recognitionPreviewView = findViewById(R.id.previewView);
         rvDishSuggestions = findViewById(R.id.rvDishSuggestions);
@@ -490,6 +507,11 @@ public class ScanFoodActivity extends AppCompatActivity {
         final int footerEnd = footerContainer == null ? 0 : footerContainer.getPaddingEnd();
         final int footerBottom = footerContainer == null ? 0 : footerContainer.getPaddingBottom();
 
+        final int previewFooterStart = journalPreviewFooterContainer == null ? 0 : journalPreviewFooterContainer.getPaddingStart();
+        final int previewFooterTop = journalPreviewFooterContainer == null ? 0 : journalPreviewFooterContainer.getPaddingTop();
+        final int previewFooterEnd = journalPreviewFooterContainer == null ? 0 : journalPreviewFooterContainer.getPaddingEnd();
+        final int previewFooterBottom = journalPreviewFooterContainer == null ? 0 : journalPreviewFooterContainer.getPaddingBottom();
+
         final int overlayStart = captureSaveOverlay == null ? 0 : captureSaveOverlay.getPaddingStart();
         final int overlayTop = captureSaveOverlay == null ? 0 : captureSaveOverlay.getPaddingTop();
         final int overlayEnd = captureSaveOverlay == null ? 0 : captureSaveOverlay.getPaddingEnd();
@@ -512,6 +534,14 @@ public class ScanFoodActivity extends AppCompatActivity {
                         footerTop,
                         footerEnd + systemBars.right,
                         footerBottom + systemBars.bottom);
+            }
+
+            if (journalPreviewFooterContainer != null) {
+                journalPreviewFooterContainer.setPaddingRelative(
+                        previewFooterStart + systemBars.left,
+                        previewFooterTop,
+                        previewFooterEnd + systemBars.right,
+                        previewFooterBottom + systemBars.bottom);
             }
 
             if (captureSaveOverlay != null) {
@@ -804,6 +834,70 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
     }
 
+    private void setJournalPreviewUiVisible(boolean visible) {
+        updateCameraPreviewConstraintsForState(visible);
+        if (captureSaveOverlay != null) {
+            captureSaveOverlay.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+        if (journalPreviewFooterContainer != null) {
+            journalPreviewFooterContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+        if (imgCapturePreview != null) {
+            imgCapturePreview.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+        if (edtCaptureCaption != null) {
+            edtCaptureCaption.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+        if (topBar != null) {
+            topBar.setVisibility(visible ? View.GONE : View.VISIBLE);
+        }
+        if (footerContainer != null) {
+            footerContainer.setVisibility(visible ? View.GONE : View.VISIBLE);
+        }
+        if (btnFlash != null) {
+            btnFlash.setVisibility(visible ? View.GONE : View.VISIBLE);
+        }
+        if (previewView != null) {
+            previewView.setVisibility(visible ? View.INVISIBLE : View.VISIBLE);
+        }
+        if (previewInnerFrame != null) {
+            previewInnerFrame.setVisibility(visible ? View.GONE : View.VISIBLE);
+        }
+        if (detectionBox != null) {
+            detectionBox.setVisibility(visible ? View.GONE : (isRecognitionMode ? View.VISIBLE : View.INVISIBLE));
+        }
+        if (!visible) {
+            updateUiForMode(false);
+        }
+    }
+
+    private void updateCameraPreviewConstraintsForState(boolean previewVisible) {
+        if (!(recognitionSurface instanceof ConstraintLayout) || cameraPreviewCard == null) {
+            return;
+        }
+
+        ConstraintLayout rootLayout = (ConstraintLayout) recognitionSurface;
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(rootLayout);
+        constraintSet.clear(R.id.cameraPreviewCard, ConstraintSet.TOP);
+        constraintSet.clear(R.id.cameraPreviewCard, ConstraintSet.BOTTOM);
+
+        int topMargin = getResources().getDimensionPixelSize(
+                previewVisible
+                        ? R.dimen.camera_screen_preview_journal_top_gap
+                        : R.dimen.camera_screen_preview_top_gap);
+
+        if (previewVisible) {
+            constraintSet.connect(R.id.cameraPreviewCard, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, topMargin);
+            constraintSet.connect(R.id.cameraPreviewCard, ConstraintSet.BOTTOM, R.id.journalPreviewFooterContainer, ConstraintSet.TOP, 0);
+        } else {
+            constraintSet.connect(R.id.cameraPreviewCard, ConstraintSet.TOP, R.id.topBar, ConstraintSet.BOTTOM, topMargin);
+            constraintSet.connect(R.id.cameraPreviewCard, ConstraintSet.BOTTOM, R.id.footerContainer, ConstraintSet.TOP, 0);
+        }
+        constraintSet.setVerticalBias(R.id.cameraPreviewCard, 0f);
+        constraintSet.applyTo(rootLayout);
+    }
+
     private void moveIndicatorTo(View target, boolean animated) {
         if (target == null || tabIndicator == null) {
             return;
@@ -909,6 +1003,18 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (btnCaptureSaveConfirm != null) {
             btnCaptureSaveConfirm.setOnClickListener(v -> savePendingEntry());
         }
+        if (btnPreviewDownload != null) {
+            btnPreviewDownload.setOnClickListener(v -> Toast.makeText(
+                    this,
+                    "TODO: luu anh vao thiet bi",
+                    Toast.LENGTH_SHORT).show());
+        }
+        if (btnPreviewEffects != null) {
+            btnPreviewEffects.setOnClickListener(v -> Toast.makeText(
+                    this,
+                    "TODO: hieu ung dang duoc phat trien",
+                    Toast.LENGTH_SHORT).show());
+        }
         if (btnSaveSelectedDish != null) {
             btnSaveSelectedDish.setOnClickListener(v -> saveSelectedDish());
         }
@@ -964,6 +1070,11 @@ public class ScanFoodActivity extends AppCompatActivity {
                     public void onCaptureSuccess(@NonNull ImageProxy image) {
                         super.onCaptureSuccess(image);
                         byte[] bytes;
+                        int imageRotationDegrees = image.getImageInfo() == null
+                                ? 0
+                                : image.getImageInfo().getRotationDegrees();
+                        int displayRotation = getDisplay() == null ? -1 : getDisplay().getRotation();
+                        String lensFacingLabel = isUsingFrontCamera ? "front" : "back";
                         try {
                             bytes = ScanFoodImageUtils.imageProxyToJpeg(image);
                         } finally {
@@ -981,10 +1092,23 @@ public class ScanFoodActivity extends AppCompatActivity {
                             return;
                         }
 
+                        bytes = ScanFoodImageUtils.normalizeCapturedJpeg(
+                                bytes,
+                                imageRotationDegrees,
+                                isUsingFrontCamera,
+                                lensFacingLabel,
+                                displayRotation);
+                        final byte[] normalizedBytes = bytes;
+                        Log.d(TAG, "captureSuccess:"
+                                + " lensFacing=" + lensFacingLabel
+                                + ", displayRotation=" + displayRotation
+                                + ", imageRotationDegrees=" + imageRotationDegrees
+                                + ", normalizedBytes=" + normalizedBytes.length);
+
                         if (routeRecognition) {
-                            processImageBytesForRecognition(bytes, "image/jpeg", "camera");
+                            processImageBytesForRecognition(normalizedBytes, "image/jpeg", "camera");
                         } else {
-                            runOnUiThread(() -> processImageBytesForEntry(bytes, "camera"));
+                            runOnUiThread(() -> processImageBytesForEntry(normalizedBytes, "camera"));
                         }
                     }
 
@@ -2362,6 +2486,8 @@ public class ScanFoodActivity extends AppCompatActivity {
         setViewEnabled(btnFlipCamera, enabled);
         setViewEnabled(tabNhanDien, enabled);
         setViewEnabled(tabNhatKy, enabled);
+        setViewEnabled(btnPreviewDownload, enabled);
+        setViewEnabled(btnPreviewEffects, enabled);
     }
 
     private void setViewEnabled(@Nullable View view, boolean enabled) {

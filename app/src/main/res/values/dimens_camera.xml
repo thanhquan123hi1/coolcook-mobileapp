@@ -9,6 +9,7 @@
     <dimen name="camera_screen_top_right_size">48dp</dimen>
     <dimen name="camera_screen_preview_horizontal_margin">0dp</dimen>
     <dimen name="camera_screen_preview_top_gap">24dp</dimen>
+    <dimen name="camera_screen_preview_journal_top_gap">116dp</dimen>
     <dimen name="camera_screen_preview_corner_radius">60dp</dimen>
     <dimen name="camera_screen_flash_button_size">38dp</dimen>
     <dimen name="camera_screen_flash_margin_start">16dp</dimen>

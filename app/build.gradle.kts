@@ -126,6 +126,7 @@ dependencies {
     implementation("androidx.camera:camera-camera2:1.4.2")
     implementation("androidx.camera:camera-lifecycle:1.4.2")
     implementation("androidx.camera:camera-view:1.4.2")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
 
     // Thư viện Cloudinary cho Android
     implementation("com.cloudinary:cloudinary-android:3.1.2") // Vui lòng dùng version mới nhất
