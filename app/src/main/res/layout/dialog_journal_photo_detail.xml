@@ -26,7 +26,6 @@
         android:layout_marginEnd="20dp"
         android:background="@drawable/bg_camera_bottom_icon"
         android:clickable="true"
-        android:contentDescription="Đóng"
         android:focusable="true"
         android:foreground="@drawable/fg_ripple_circle"
         app:layout_constraintEnd_toEndOf="parent"
@@ -66,21 +65,32 @@
             android:background="@drawable/bg_edit_profile_handle" />
 
         <TextView
+            android:id="@+id/txtJournalPhotoTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/be_vietnam_pro_bold"
-            android:text="Thông tin ảnh"
+            android:text="Thong tin anh"
             android:textColor="@color/on_surface"
             android:textSize="16sp" />
 
+        <TextView
+            android:id="@+id/txtJournalPhotoMeta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:textColor="@color/on_surface_variant"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Coolcook.EditProfile.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:hint="Ngày"
-            style="@style/Widget.Coolcook.EditProfile.TextInputLayout"
-            app:endIconMode="custom"
-            app:endIconDrawable="@drawable/ic_edit_profile_calendar">
+            android:hint="Ngay"
+            app:endIconDrawable="@drawable/ic_edit_profile_calendar"
+            app:endIconMode="custom">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edtJournalPhotoDate"
@@ -96,11 +106,11 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Coolcook.EditProfile.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:hint="Caption"
-            style="@style/Widget.Coolcook.EditProfile.TextInputLayout">
+            android:hint="Caption">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edtJournalPhotoCaption"
@@ -121,7 +131,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="14dp"
             android:fontFamily="@font/be_vietnam_pro_bold"
-            android:text="Lưu thay đổi"
+            android:text="Luu thay doi"
             android:textAllCaps="false"
             android:textColor="@color/on_primary"
             android:textSize="15sp"

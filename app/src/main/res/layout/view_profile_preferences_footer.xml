@@ -5,6 +5,7 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/actionProfileDarkMode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/profile_footer_section_margin_top"
@@ -43,12 +44,14 @@
         </LinearLayout>
 
         <FrameLayout
+            android:id="@+id/layoutProfileDarkModeToggle"
             android:layout_width="@dimen/profile_toggle_track_width"
             android:layout_height="@dimen/profile_toggle_track_height"
             android:background="@drawable/bg_profile_dark_mode_track"
             android:contentDescription="@string/profile_footer_dark_mode_desc">
 
             <View
+                android:id="@+id/viewProfileDarkModeThumb"
                 android:layout_width="@dimen/profile_toggle_thumb_size"
                 android:layout_height="@dimen/profile_toggle_thumb_size"
                 android:layout_gravity="center_vertical|end"

@@ -25,9 +25,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.coolcook.app.R;
+import com.coolcook.app.feature.camera.ui.ScanFoodActivity;
 import com.coolcook.app.feature.journal.model.JournalEntry;
 import com.coolcook.app.feature.journal.ui.adapter.JournalDayDetailAdapter;
-import com.coolcook.app.feature.camera.ui.ScanFoodActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -50,9 +50,10 @@ public class JournalDayDetailActivity extends AppCompatActivity {
         return intent;
     }
 
-    private final DateTimeFormatter titleFormatter = DateTimeFormatter.ofPattern("'Ngày' d 'tháng' M, uuuu", Locale.forLanguageTag("vi-VN"));
-
-    private final DateTimeFormatter editDateFormatter = DateTimeFormatter.ofPattern("dd/MM/uuuu", Locale.forLanguageTag("vi-VN"));
+    private final DateTimeFormatter titleFormatter =
+            DateTimeFormatter.ofPattern("'Ngay' d 'thang' M, uuuu", Locale.forLanguageTag("vi-VN"));
+    private final DateTimeFormatter editDateFormatter =
+            DateTimeFormatter.ofPattern("dd/MM/uuuu", Locale.forLanguageTag("vi-VN"));
 
     private View root;
     private View topRow;
@@ -106,10 +107,7 @@ public class JournalDayDetailActivity extends AppCompatActivity {
     }
 
     private void setupRecycler() {
-        detailAdapter = new JournalDayDetailAdapter(
-                this::showPhotoDetailDialog,
-                this::showDeleteConfirmation);
-
+        detailAdapter = new JournalDayDetailAdapter(this::showPhotoDetailDialog, this::showDeleteConfirmation);
         rvPhotos.setLayoutManager(new GridLayoutManager(this, resolveSpanCount()));
         rvPhotos.setAdapter(detailAdapter);
         rvPhotos.setHasFixedSize(true);
@@ -176,7 +174,6 @@ public class JournalDayDetailActivity extends AppCompatActivity {
             try {
                 return LocalDate.parse(rawDate, DateTimeFormatter.ISO_LOCAL_DATE);
             } catch (DateTimeParseException ignored) {
-                // Fallback to today when incoming extra is malformed.
             }
         }
         return LocalDate.now();
@@ -188,21 +185,22 @@ public class JournalDayDetailActivity extends AppCompatActivity {
     }
 
     private void showDeleteConfirmation(@NonNull JournalEntry entry) {
+        String entryLabel = entry.isFoodEntry() ? "mon an" : "anh nhat ky";
         new MaterialAlertDialogBuilder(this)
-                .setTitle("Xóa ảnh nhật ký?")
-                .setMessage("Bạn có chắc muốn xóa ảnh này khỏi nhật ký không?")
-                .setNegativeButton("Giữ lại", null)
-                .setPositiveButton("Xóa", (dialog, which) -> deleteEntry(entry))
+                .setTitle("Xoa muc nhat ky?")
+                .setMessage("Ban co chac muon xoa " + entryLabel + " nay khoi nhat ky khong?")
+                .setNegativeButton("Giu lai", null)
+                .setPositiveButton("Xoa", (dialog, which) -> deleteEntry(entry))
                 .show();
     }
 
     private void deleteEntry(@NonNull JournalEntry entry) {
         viewModel.deleteEntry(entry, success -> runOnUiThread(() -> {
             if (success) {
-                Toast.makeText(this, "Đã xóa ảnh nhật ký", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Da xoa muc nhat ky", Toast.LENGTH_SHORT).show();
                 viewModel.loadEntriesOfDate(selectedDate);
             } else {
-                Toast.makeText(this, "Không thể xóa ảnh. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Khong the xoa muc nhat ky. Vui long thu lai.", Toast.LENGTH_SHORT).show();
             }
         }));
     }
@@ -214,19 +212,34 @@ public class JournalDayDetailActivity extends AppCompatActivity {
 
         ImageView imgPhoto = dialog.findViewById(R.id.imgJournalPhotoFull);
         View btnClose = dialog.findViewById(R.id.btnJournalPhotoClose);
+        TextView txtDialogTitle = dialog.findViewById(R.id.txtJournalPhotoTitle);
+        TextView txtDialogMeta = dialog.findViewById(R.id.txtJournalPhotoMeta);
         TextInputEditText edtDate = dialog.findViewById(R.id.edtJournalPhotoDate);
         TextInputEditText edtCaption = dialog.findViewById(R.id.edtJournalPhotoCaption);
         MaterialButton btnSave = dialog.findViewById(R.id.btnJournalPhotoSave);
 
         final LocalDate[] editableDate = new LocalDate[]{entry.getDate()};
-        Glide.with(this)
-                .load(entry.getImageUrl())
-                .placeholder(R.drawable.bg_journal_placeholder_cute)
-                .error(R.drawable.bg_journal_placeholder_cute_alt)
-                .into(imgPhoto);
+        if (entry.hasPreviewImage()) {
+            Glide.with(this)
+                    .load(entry.getImageUrl().isEmpty() ? entry.getPreviewUrl() : entry.getImageUrl())
+                    .placeholder(R.drawable.bg_journal_placeholder_cute)
+                    .error(R.drawable.bg_journal_placeholder_cute_alt)
+                    .into(imgPhoto);
+        } else {
+            imgPhoto.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            imgPhoto.setBackgroundResource(R.drawable.bg_journal_placeholder_cute);
+            imgPhoto.setImageResource(R.drawable.ic_journal_diary_soft);
+        }
 
         edtDate.setText(editableDate[0].format(editDateFormatter));
         edtCaption.setText(entry.getCaption());
+        if (txtDialogTitle != null) {
+            txtDialogTitle.setText(entry.isFoodEntry() ? "Thong tin mon an" : "Thong tin anh");
+        }
+        if (txtDialogMeta != null) {
+            txtDialogMeta.setVisibility(View.VISIBLE);
+            txtDialogMeta.setText(buildEntryMeta(entry));
+        }
 
         View.OnClickListener datePickerClick = v -> showPhotoDatePicker(editableDate[0], pickedDate -> {
             editableDate[0] = pickedDate;
@@ -246,11 +259,11 @@ public class JournalDayDetailActivity extends AppCompatActivity {
             viewModel.updateEntryMetadata(entry, editableDate[0], caption, success -> runOnUiThread(() -> {
                 btnSave.setEnabled(true);
                 if (success) {
-                    Toast.makeText(this, "Đã lưu thay đổi ảnh nhật ký", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Da luu thay doi nhat ky", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                     viewModel.loadEntriesOfDate(selectedDate);
                 } else {
-                    Toast.makeText(this, "Không thể lưu thay đổi. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Khong the luu thay doi. Vui long thu lai.", Toast.LENGTH_SHORT).show();
                 }
             }));
         });
@@ -282,6 +295,25 @@ public class JournalDayDetailActivity extends AppCompatActivity {
     private void finishWithSlideBack() {
         finish();
         overridePendingTransition(R.anim.slide_in_left_scale, R.anim.slide_out_right_scale);
+    }
+
+    @NonNull
+    private String buildEntryMeta(@NonNull JournalEntry entry) {
+        if (!entry.isFoodEntry()) {
+            return "Anh mon an da luu trong ngay nay.";
+        }
+
+        StringBuilder builder = new StringBuilder(entry.getDisplayTitle());
+        if (!TextUtils.isEmpty(entry.getMealType())) {
+            builder.append(" • ").append(entry.getMealType());
+        }
+        if (!TextUtils.isEmpty(entry.getHealthReason())) {
+            builder.append("\nGoi y tham khao: ").append(entry.getHealthReason());
+        }
+        if (!TextUtils.isEmpty(entry.getSource())) {
+            builder.append("\nNguon: ").append(entry.getSource());
+        }
+        return builder.toString();
     }
 
     private void playBounceThen(@NonNull View target, @NonNull Runnable action) {

@@ -31,6 +31,7 @@ import com.coolcook.app.core.navigation.HomeBottomNavigation;
 import com.coolcook.app.feature.chatbot.ui.ChatBotActivity;
 import com.coolcook.app.feature.journal.ui.JournalCalendarFragment;
 import com.coolcook.app.feature.camera.ui.ScanFoodActivity;
+import com.coolcook.app.feature.profile.ui.HealthTrackingActivity;
 import com.coolcook.app.feature.social.ui.FriendInviteActivity;
 import com.coolcook.app.feature.search.ui.FoodCatalogFragment;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -65,6 +66,7 @@ public class HomeActivity extends AppCompatActivity {
     private static final long LOGOUT_NAVIGATION_FALLBACK_DELAY_MS = 1200L;
 
     private View homeScroll;
+    private View homeSearchBar;
     private View searchContainer;
     private View journalContainer;
     private View profileScroll;
@@ -101,6 +103,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         homeScroll = findViewById(R.id.homeScroll);
+        homeSearchBar = findViewById(R.id.homeSearchBar);
         searchContainer = findViewById(R.id.searchContainer);
         journalContainer = findViewById(R.id.journalContainer);
         profileScroll = findViewById(R.id.profileScroll);
@@ -193,12 +196,20 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupQuickActions() {
+        setupSearchEntryAction(homeSearchBar);
         setupCameraEntryAction(homeSearchCameraButton);
         setupCameraEntryAction(homeFeatureActionButton);
         setupQuickActionCard(homeQuickScanCard, this::launchScanFoodScreen);
         setupQuickActionCard(homeQuickSuggestCard, this::launchFoodCatalogScreen);
-        setupQuickActionCard(homeQuickHealthCard, null);
+        setupQuickActionCard(homeQuickHealthCard, () -> startActivity(HealthTrackingActivity.createIntent(this)));
         setupQuickActionCard(homeQuickAiCard, () -> startActivity(ChatBotActivity.createIntent(this)));
+    }
+
+    private void setupSearchEntryAction(View entryView) {
+        if (entryView == null) {
+            return;
+        }
+        entryView.setOnClickListener(v -> animateQuickActionPress(v, this::launchFoodCatalogScreen));
     }
 
     private void setupCameraEntryAction(View entryView) {

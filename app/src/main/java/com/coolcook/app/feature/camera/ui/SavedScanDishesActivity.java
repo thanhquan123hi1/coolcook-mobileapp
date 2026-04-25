@@ -47,6 +47,10 @@ public class SavedScanDishesActivity extends AppCompatActivity {
             @Override
             public void onSaveDishClicked(@NonNull ScanDishItem item) {
             }
+
+            @Override
+            public void onAddToJournalClicked(@NonNull ScanDishItem item) {
+            }
         }, false);
 
         RecyclerView recyclerView = findViewById(R.id.rvSavedDishes);

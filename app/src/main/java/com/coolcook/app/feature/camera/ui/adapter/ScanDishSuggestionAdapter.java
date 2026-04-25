@@ -32,6 +32,8 @@ public class ScanDishSuggestionAdapter extends RecyclerView.Adapter<ScanDishSugg
         void onDishClicked(@NonNull ScanDishItem item);
 
         void onSaveDishClicked(@NonNull ScanDishItem item);
+
+        void onAddToJournalClicked(@NonNull ScanDishItem item);
     }
 
     @NonNull
@@ -79,9 +81,15 @@ public class ScanDishSuggestionAdapter extends RecyclerView.Adapter<ScanDishSugg
         bindHealthTags(holder.groupHealthTags, item.getHealthTags());
         bindBadge(holder.txtBadge, item.isLocal());
         holder.btnSaveDish.setVisibility(showSaveButton ? View.VISIBLE : View.GONE);
+        holder.btnJournalDish.setVisibility(showSaveButton ? View.VISIBLE : View.GONE);
         holder.btnSaveDish.setOnClickListener(v -> {
             if (actionListener != null) {
                 actionListener.onSaveDishClicked(item);
+            }
+        });
+        holder.btnJournalDish.setOnClickListener(v -> {
+            if (actionListener != null) {
+                actionListener.onAddToJournalClicked(item);
             }
         });
         holder.itemView.setOnClickListener(v -> {
@@ -177,6 +185,7 @@ public class ScanDishSuggestionAdapter extends RecyclerView.Adapter<ScanDishSugg
         final ChipGroup groupHealthTags;
         final TextView txtRecipePreview;
         final TextView btnSaveDish;
+        final TextView btnJournalDish;
 
         ScanDishViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -192,6 +201,7 @@ public class ScanDishSuggestionAdapter extends RecyclerView.Adapter<ScanDishSugg
             groupHealthTags = itemView.findViewById(R.id.groupDishHealthTags);
             txtRecipePreview = itemView.findViewById(R.id.txtDishRecipePreview);
             btnSaveDish = itemView.findViewById(R.id.btnDishSave);
+            btnJournalDish = itemView.findViewById(R.id.btnDishJournal);
         }
     }
 }

@@ -154,15 +154,7 @@ public class JournalViewModel extends ViewModel {
             return;
         }
 
-        JournalEntry updatedEntry = new JournalEntry(
-                originalEntry.getId(),
-                userId,
-                nextDate,
-                originalEntry.getImageUrl(),
-                originalEntry.getThumbnailUrl(),
-                originalEntry.getCapturedAt(),
-                nextCaption.trim(),
-                originalEntry.getMealType());
+        JournalEntry updatedEntry = originalEntry.copyWithMetadata(nextDate, nextCaption);
 
         loading.setValue(true);
         repository.saveEntry(userId, updatedEntry, error -> {

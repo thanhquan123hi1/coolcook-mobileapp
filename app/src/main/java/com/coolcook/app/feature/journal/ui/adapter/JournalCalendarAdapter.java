@@ -71,31 +71,27 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
 
     @Nullable
     private RenderModel buildRenderModel(@NonNull JournalDay day) {
-        List<String> urls = new ArrayList<>();
+        List<JournalEntry> previewEntries = new ArrayList<>();
         for (JournalEntry entry : day.getLatestEntries()) {
-            String previewUrl = entry.getPreviewUrl().trim();
-            if (previewUrl.isEmpty()) {
-                continue;
-            }
-            urls.add(previewUrl);
-            if (urls.size() == MAX_VISIBLE_PHOTOS) {
+            previewEntries.add(entry);
+            if (previewEntries.size() == MAX_VISIBLE_PHOTOS) {
                 break;
             }
         }
 
-        if (urls.isEmpty()) {
+        if (previewEntries.isEmpty()) {
             return null;
         }
-        return new RenderModel(urls, day.getTotalEntryCount());
+        return new RenderModel(previewEntries, day.getTotalEntryCount());
     }
 
     private static class RenderModel {
         @NonNull
-        final List<String> photoUrls;
+        final List<JournalEntry> entries;
         final int badgeCount;
 
-        RenderModel(@NonNull List<String> photoUrls, int badgeCount) {
-            this.photoUrls = photoUrls;
+        RenderModel(@NonNull List<JournalEntry> entries, int badgeCount) {
+            this.entries = entries;
             this.badgeCount = badgeCount;
         }
     }
@@ -170,7 +166,7 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
             txtDayNumber.setText(String.valueOf(day.getDayOfMonth()));
             txtDayNumber.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.on_surface));
 
-            if (renderModel == null || renderModel.photoUrls.isEmpty()) {
+            if (renderModel == null || renderModel.entries.isEmpty()) {
                 hidePhotos();
                 return;
             }
@@ -187,7 +183,7 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
         }
 
         private void showPhotos(@NonNull RenderModel renderModel) {
-            int sourceCount = Math.min(renderModel.photoUrls.size(), MAX_VISIBLE_PHOTOS);
+            int sourceCount = Math.min(renderModel.entries.size(), MAX_VISIBLE_PHOTOS);
             boolean showBadge = renderModel.badgeCount > MAX_VISIBLE_PHOTOS;
             FrameLayout.LayoutParams clusterParams = (FrameLayout.LayoutParams) photoCluster.getLayoutParams();
             clusterParams.width = photoWidthPx + dpToPx(16);
@@ -224,12 +220,21 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
                 card.setTranslationY(transform.translationY);
                 card.setVisibility(View.VISIBLE);
 
-                Glide.with(itemView)
-                        .load(renderModel.photoUrls.get(transform.sourceIndex))
-                        .centerCrop()
-                        .placeholder(R.drawable.bg_journal_placeholder_cute)
-                        .error(R.drawable.bg_journal_placeholder_cute_alt)
-                        .into(image);
+                JournalEntry entry = renderModel.entries.get(transform.sourceIndex);
+                if (entry.hasPreviewImage()) {
+                    image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    image.setBackground(null);
+                    Glide.with(itemView)
+                            .load(entry.getPreviewUrl())
+                            .centerCrop()
+                            .placeholder(R.drawable.bg_journal_placeholder_cute)
+                            .error(R.drawable.bg_journal_placeholder_cute_alt)
+                            .into(image);
+                } else {
+                    image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    image.setBackgroundResource(R.drawable.bg_journal_placeholder_cute);
+                    image.setImageResource(R.drawable.ic_journal_diary_soft);
+                }
             }
 
             if (showBadge) {

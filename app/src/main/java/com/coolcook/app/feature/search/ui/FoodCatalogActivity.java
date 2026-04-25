@@ -181,7 +181,8 @@ public class FoodCatalogActivity extends AppCompatActivity {
                 return true;
             }
         }
-        return false;
+
+        return SearchTextUtils.normalizeForSearch(food.getRecipe()).contains(normalizedQuery);
     }
 
     @NonNull

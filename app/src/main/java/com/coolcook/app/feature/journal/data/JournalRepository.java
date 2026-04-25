@@ -56,12 +56,7 @@ public class JournalRepository {
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     List<JournalEntry> entries = new ArrayList<>();
-                    snapshot.getDocuments().forEach(doc -> {
-                        JournalEntry entry = JournalEntry.fromSnapshot(doc);
-                        if (!entry.getImageUrl().isEmpty()) {
-                            entries.add(entry);
-                        }
-                    });
+                    snapshot.getDocuments().forEach(doc -> entries.add(JournalEntry.fromSnapshot(doc)));
                     sortNewestFirst(entries);
                     callback.onComplete(entries, null);
                 })
@@ -83,12 +78,7 @@ public class JournalRepository {
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     List<JournalEntry> entries = new ArrayList<>();
-                    snapshot.getDocuments().forEach(doc -> {
-                        JournalEntry entry = JournalEntry.fromSnapshot(doc);
-                        if (!entry.getImageUrl().isEmpty()) {
-                            entries.add(entry);
-                        }
-                    });
+                    snapshot.getDocuments().forEach(doc -> entries.add(JournalEntry.fromSnapshot(doc)));
                     sortNewestFirst(entries);
                     callback.onComplete(entries, null);
                 })

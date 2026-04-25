@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
+        android:name=".CoolCookApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -74,6 +75,11 @@
 
         <activity
             android:name=".feature.chatbot.ui.ChatBotActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Coolcook" />
+
+        <activity
+            android:name=".feature.profile.ui.HealthTrackingActivity"
             android:exported="false"
             android:theme="@style/Theme.Coolcook" />
 

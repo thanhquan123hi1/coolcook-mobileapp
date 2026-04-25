@@ -56,6 +56,8 @@ import com.coolcook.app.R;
 import com.coolcook.app.feature.camera.data.ScanFoodLocalMatcher;
 import com.coolcook.app.feature.camera.data.ScanHealthFilters;
 import com.coolcook.app.feature.camera.data.ScanSavedDishStore;
+import com.coolcook.app.feature.journal.data.JournalRepository;
+import com.coolcook.app.feature.journal.model.JournalEntry;
 import com.coolcook.app.feature.camera.model.DetectedIngredient;
 import com.coolcook.app.feature.camera.model.ScanDishItem;
 import com.coolcook.app.feature.camera.model.SuggestedDish;
@@ -78,6 +80,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -205,6 +208,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private ScanFoodLocalMatcher scanFoodLocalMatcher;
     private ScanSavedDishStore scanSavedDishStore;
     private ScanDishSuggestionAdapter scanDishSuggestionAdapter;
+    private JournalRepository journalRepository;
     private MediaUploadRepository mediaUploadRepository;
     private JournalFeedRepository journalFeedRepository;
     private FriendInviteRepository friendInviteRepository;
@@ -254,6 +258,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         geminiRepository = new GeminiRepository();
         scanFoodLocalMatcher = new ScanFoodLocalMatcher(getApplicationContext());
         scanSavedDishStore = new ScanSavedDishStore(getApplicationContext());
+        journalRepository = new JournalRepository(firestore);
         mediaUploadRepository = new MediaUploadRepository(getApplicationContext());
         journalFeedRepository = new JournalFeedRepository(firestore);
         friendInviteRepository = new FriendInviteRepository(firestore);
@@ -438,6 +443,11 @@ public class ScanFoodActivity extends AppCompatActivity {
             public void onSaveDishClicked(@NonNull ScanDishItem item) {
                 saveSuggestedDish(item);
             }
+
+            @Override
+            public void onAddToJournalClicked(@NonNull ScanDishItem item) {
+                addSuggestedDishToJournal(item);
+            }
         }, true);
         scanDishSuggestionAdapter = suggestionDialogAdapter;
         selectedHealthFilter = ScanHealthFilters.FILTER_ALL;
@@ -474,6 +484,47 @@ public class ScanFoodActivity extends AppCompatActivity {
             return;
         }
         ScanDishRecipeBottomSheet.show(this, item);
+    }
+
+    private void addSuggestedDishToJournal(@NonNull ScanDishItem item) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "Ban can dang nhap de luu nhat ky mon an.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String imageName = item.getLocalFood() == null ? "" : item.getLocalFood().getImage();
+        JournalEntry entry = JournalEntry.createFoodEntry(
+                user.getUid(),
+                java.time.LocalDate.now(),
+                item.getFoodId(),
+                item.getName(),
+                "",
+                imageName,
+                inferMealType(),
+                item.getReason(),
+                item.isLocal() ? "camera" : "ai",
+                null);
+
+        journalRepository.saveEntry(user.getUid(), entry, error -> runOnUiThread(() -> Toast.makeText(
+                this,
+                error == null ? "Da them mon vao nhat ky mon an." : "Khong the luu nhat ky mon an luc nay.",
+                Toast.LENGTH_SHORT).show()));
+    }
+
+    @NonNull
+    private static String inferMealType() {
+        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        if (hour < 10) {
+            return "breakfast";
+        }
+        if (hour < 15) {
+            return "lunch";
+        }
+        if (hour < 21) {
+            return "dinner";
+        }
+        return "snack";
     }
 
     @NonNull

@@ -1,5 +1,7 @@
 package com.coolcook.app.feature.journal.model;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -13,6 +15,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class JournalEntry {
 
@@ -26,6 +29,14 @@ public class JournalEntry {
     private final Date capturedAt;
     private final String caption;
     private final String mealType;
+    private final String foodId;
+    private final String foodName;
+    private final String foodImageUrl;
+    private final String localImageName;
+    private final String healthReason;
+    private final String source;
+    @Nullable
+    private final Double caloriesEstimate;
 
     public JournalEntry(
             @NonNull String id,
@@ -36,6 +47,40 @@ public class JournalEntry {
             @Nullable Date capturedAt,
             @NonNull String caption,
             @NonNull String mealType) {
+        this(
+                id,
+                userId,
+                date,
+                imageUrl,
+                thumbnailUrl,
+                capturedAt,
+                caption,
+                mealType,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                null);
+    }
+
+    public JournalEntry(
+            @NonNull String id,
+            @NonNull String userId,
+            @NonNull LocalDate date,
+            @NonNull String imageUrl,
+            @NonNull String thumbnailUrl,
+            @Nullable Date capturedAt,
+            @NonNull String caption,
+            @NonNull String mealType,
+            @NonNull String foodId,
+            @NonNull String foodName,
+            @NonNull String foodImageUrl,
+            @NonNull String localImageName,
+            @NonNull String healthReason,
+            @NonNull String source,
+            @Nullable Double caloriesEstimate) {
         this.id = id;
         this.userId = userId;
         this.date = date;
@@ -44,6 +89,13 @@ public class JournalEntry {
         this.capturedAt = capturedAt;
         this.caption = caption;
         this.mealType = mealType;
+        this.foodId = foodId;
+        this.foodName = foodName;
+        this.foodImageUrl = foodImageUrl;
+        this.localImageName = localImageName;
+        this.healthReason = healthReason;
+        this.source = source;
+        this.caloriesEstimate = caloriesEstimate;
     }
 
     @NonNull
@@ -87,13 +139,128 @@ public class JournalEntry {
     }
 
     @NonNull
+    public String getFoodId() {
+        return foodId;
+    }
+
+    @NonNull
+    public String getFoodName() {
+        return foodName;
+    }
+
+    @NonNull
+    public String getFoodImageUrl() {
+        return foodImageUrl;
+    }
+
+    @NonNull
+    public String getLocalImageName() {
+        return localImageName;
+    }
+
+    @NonNull
+    public String getHealthReason() {
+        return healthReason;
+    }
+
+    @NonNull
+    public String getSource() {
+        return source;
+    }
+
+    @Nullable
+    public Double getCaloriesEstimate() {
+        return caloriesEstimate;
+    }
+
+    public boolean isFoodEntry() {
+        return !foodId.isEmpty() || !foodName.isEmpty();
+    }
+
+    public boolean hasPreviewImage() {
+        return !getPreviewUrl().isEmpty();
+    }
+
+    @NonNull
     public String getPreviewUrl() {
-        return thumbnailUrl.isEmpty() ? imageUrl : thumbnailUrl;
+        if (!thumbnailUrl.isEmpty()) {
+            return thumbnailUrl;
+        }
+        if (!imageUrl.isEmpty()) {
+            return imageUrl;
+        }
+        return foodImageUrl;
+    }
+
+    @NonNull
+    public String getDisplayTitle() {
+        if (isFoodEntry() && !foodName.isEmpty()) {
+            return foodName;
+        }
+        if (!caption.isEmpty()) {
+            return caption;
+        }
+        return "Nhat ky mon an";
     }
 
     @NonNull
     public String getDateKey() {
         return date.format(ISO_DATE);
+    }
+
+    @NonNull
+    public static JournalEntry createFoodEntry(
+            @NonNull String userId,
+            @NonNull LocalDate date,
+            @NonNull String foodId,
+            @NonNull String foodName,
+            @NonNull String caption,
+            @NonNull String imageUrl,
+            @NonNull String mealType,
+            @NonNull String recommendationReason,
+            @NonNull String source,
+            @Nullable Object extra) {
+
+        String id = UUID.randomUUID().toString();
+        String finalCaption = TextUtils.isEmpty(caption) ? foodName : caption;
+        String normalizedImageUrl = normalizeFoodImage(imageUrl);
+
+        return new JournalEntry(
+                id,
+                userId,
+                date,
+                normalizedImageUrl,
+                normalizedImageUrl,
+                new Date(),
+                finalCaption,
+                mealType,
+                foodId,
+                foodName,
+                normalizedImageUrl,
+                imageUrl.trim(),
+                recommendationReason,
+                source,
+                null);
+    }
+
+    @NonNull
+    public JournalEntry copyWithMetadata(@NonNull LocalDate nextDate, @NonNull String nextCaption) {
+        return new JournalEntry(
+                id,
+                userId,
+                nextDate,
+                imageUrl,
+                thumbnailUrl,
+                capturedAt,
+                nextCaption.trim(),
+                mealType,
+                foodId,
+                foodName,
+                foodImageUrl,
+                localImageName,
+                healthReason,
+                source,
+                caloriesEstimate);
     }
 
     @NonNull
@@ -109,8 +276,16 @@ public class JournalEntry {
         payload.put("capturedAt", safeCapturedAt);
         payload.put("caption", caption);
         payload.put("mealType", mealType);
+        payload.put("foodId", foodId);
+        payload.put("foodName", foodName);
+        payload.put("foodImageUrl", foodImageUrl);
+        payload.put("localImageName", localImageName);
+        payload.put("healthReason", healthReason);
+        payload.put("source", source);
+        if (caloriesEstimate != null) {
+            payload.put("caloriesEstimate", caloriesEstimate);
+        }
 
-        // Compatibility fields for old readers in Scan mode.
         payload.put("thumbUrl", thumbnailUrl);
         payload.put("createdAt", safeCapturedAt);
         payload.put("updatedAt", new Date());
@@ -135,8 +310,30 @@ public class JournalEntry {
         String userId = value(snapshot.getString("userId"), "");
         String caption = value(snapshot.getString("caption"), "");
         String mealType = value(snapshot.getString("mealType"), "other");
+        String foodId = value(snapshot.getString("foodId"), "");
+        String foodName = value(snapshot.getString("foodName"), "");
+        String foodImageUrl = value(snapshot.getString("foodImageUrl"), "");
+        String localImageName = value(snapshot.getString("localImageName"), "");
+        String healthReason = value(snapshot.getString("healthReason"), "");
+        String source = value(snapshot.getString("source"), "");
+        Double caloriesEstimate = snapshot.getDouble("caloriesEstimate");
 
-        return new JournalEntry(id, userId, localDate, imageUrl, thumbnailUrl, capturedAt, caption, mealType);
+        return new JournalEntry(
+                id,
+                userId,
+                localDate,
+                imageUrl,
+                thumbnailUrl,
+                capturedAt,
+                caption,
+                mealType,
+                foodId,
+                foodName,
+                foodImageUrl,
+                localImageName,
+                healthReason,
+                source,
+                caloriesEstimate);
     }
 
     @NonNull
@@ -145,7 +342,6 @@ public class JournalEntry {
             try {
                 return LocalDate.parse(rawDate, ISO_DATE);
             } catch (DateTimeParseException ignored) {
-                // Use fallback captured date when the stored date format is malformed.
             }
         }
         if (fallbackDate != null) {
@@ -172,5 +368,27 @@ public class JournalEntry {
         }
         String trimmed = raw.trim();
         return trimmed.isEmpty() ? fallback : trimmed;
+    }
+
+    @NonNull
+    private static String normalizeFoodImage(@Nullable String rawImage) {
+        if (rawImage == null) {
+            return "";
+        }
+
+        String value = rawImage.trim();
+        if (value.isEmpty()) {
+            return "";
+        }
+
+        if (value.startsWith("http://")
+                || value.startsWith("https://")
+                || value.startsWith("content://")
+                || value.startsWith("file://")
+                || value.startsWith("android.resource://")) {
+            return value;
+        }
+
+        return "android.resource://com.coolcook.app/drawable/" + value;
     }
 }

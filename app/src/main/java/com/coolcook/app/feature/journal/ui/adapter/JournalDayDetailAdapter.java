@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,11 +51,22 @@ public class JournalDayDetailAdapter extends RecyclerView.Adapter<JournalDayDeta
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
         JournalEntry entry = entries.get(position);
-        Glide.with(holder.itemView)
-                .load(entry.getPreviewUrl())
-                .placeholder(R.drawable.bg_journal_placeholder_cute)
-                .error(R.drawable.bg_journal_placeholder_cute_alt)
-                .into(holder.photo);
+        holder.badge.setText(entry.isFoodEntry() ? "Mon an" : "Anh");
+        holder.placeholder.setVisibility(entry.hasPreviewImage() ? View.GONE : View.VISIBLE);
+
+        if (entry.hasPreviewImage()) {
+            holder.photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            holder.photo.setBackground(null);
+            Glide.with(holder.itemView)
+                    .load(entry.getPreviewUrl())
+                    .placeholder(R.drawable.bg_journal_placeholder_cute)
+                    .error(R.drawable.bg_journal_placeholder_cute_alt)
+                    .into(holder.photo);
+        } else {
+            holder.photo.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            holder.photo.setBackgroundResource(R.drawable.bg_journal_placeholder_cute);
+            holder.photo.setImageResource(R.drawable.ic_journal_diary_soft);
+        }
 
         holder.itemView.setOnClickListener(v -> onPhotoClickListener.onPhotoClick(entry));
         holder.itemView.setOnLongClickListener(v -> {
@@ -76,10 +88,14 @@ public class JournalDayDetailAdapter extends RecyclerView.Adapter<JournalDayDeta
 
     public static class PhotoViewHolder extends RecyclerView.ViewHolder {
         final ImageView photo;
+        final TextView placeholder;
+        final TextView badge;
 
         PhotoViewHolder(@NonNull View itemView) {
             super(itemView);
             photo = itemView.findViewById(R.id.imgJournalDayPhoto);
+            placeholder = itemView.findViewById(R.id.txtJournalDayPlaceholder);
+            badge = itemView.findViewById(R.id.txtJournalDayEntryBadge);
         }
     }
 }

@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutProfileHealthSection"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:text="Sức khỏe của tôi"
+        android:textColor="@color/textPrimary"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/txtProfileHealthDisclaimer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/be_vietnam_pro"
+        android:text="CoolCook chỉ gợi ý ăn uống tham khảo, không thay thế tư vấn y tế."
+        android:textColor="@color/textSecondary"
+        android:textSize="12sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_profile_stats_card"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilProfileWeight"
+            style="@style/Widget.Coolcook.EditProfile.TextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Cân nặng (kg)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtProfileWeight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textColor="@color/textPrimary" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilProfileSystolic"
+                style="@style/Widget.Coolcook.EditProfile.TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Tâm thu">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtProfileSystolic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textColor="@color/textPrimary" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="1dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilProfileDiastolic"
+                style="@style/Widget.Coolcook.EditProfile.TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Tâm trương">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtProfileDiastolic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textColor="@color/textPrimary" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilProfileHeartRate"
+            style="@style/Widget.Coolcook.EditProfile.TextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Nhịp tim (bpm)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtProfileHeartRate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:textColor="@color/textPrimary" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilProfileGoal"
+            style="@style/Widget.Coolcook.EditProfile.TextInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="Mục tiêu ăn uống">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtProfileGoal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:textColor="@color/textPrimary" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSaveHealthProfile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="Lưu sức khỏe"
+            android:textAllCaps="false"
+            app:backgroundTint="@color/accent"
+            app:cornerRadius="18dp"
+            app:iconTint="@color/on_primary" />
+
+        <TextView
+            android:id="@+id/txtProfileHealthStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:textColor="@color/textSecondary"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/cardProfileHealthRecommendations"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/bg_profile_action_item"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="CoolCook gợi ý hôm nay"
+            android:textColor="@color/textPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtProfileHealthSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Bạn chưa có hồ sơ sức khỏe. Hãy nhập chỉ số để nhận gợi ý tham khảo."
+            android:textColor="@color/textSecondary"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/txtProfileHealthWarning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_food_tip_card"
+            android:padding="12dp"
+            android:textColor="@color/textPrimary"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/txtProfileHealthShouldEat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/textPrimary"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/txtProfileHealthShouldLimit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textColor="@color/textPrimary"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:id="@+id/layoutProfileHealthRecommendationsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/txtProfileHealthRecommendationsEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/be_vietnam_pro"
+            android:text="Gợi ý sẽ xuất hiện sau khi bạn lưu hồ sơ sức khỏe."
+            android:textColor="@color/textSecondary"
+            android:textSize="13sp" />
+    </LinearLayout>
+</LinearLayout>

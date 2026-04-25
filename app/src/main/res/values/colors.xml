@@ -2,6 +2,12 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="textPrimary">#1F1B16</color>
+    <color name="textSecondary">#6F5B4B</color>
+    <color name="cardBackground">#FFFDF9</color>
+    <color name="accent">#FDBF47</color>
+    <color name="divider">#1FDAC2B1</color>
+    <color name="inputBackground">#FFFBF2E9</color>
     <color name="background">#FFF8F3</color>
     <color name="bg_background">#FFF8F3</color>
     <color name="primary">#8F4E00</color>

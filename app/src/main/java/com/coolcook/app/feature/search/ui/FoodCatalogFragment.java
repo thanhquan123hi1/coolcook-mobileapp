@@ -170,7 +170,7 @@ public class FoodCatalogFragment extends Fragment {
                 return true;
             }
         }
-        return false;
+        return SearchTextUtils.normalizeForSearch(food.getRecipe()).contains(normalizedQuery);
     }
 
     @NonNull

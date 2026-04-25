@@ -12,10 +12,13 @@ import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.coolcook.app.R;
+import com.coolcook.app.core.theme.ThemeManager;
 import com.coolcook.app.core.util.AvatarImageUtils;
 import com.coolcook.app.feature.camera.ui.SavedScanDishesActivity;
+import com.coolcook.app.feature.journal.ui.JournalCalendarActivity;
 import com.coolcook.app.feature.main.ui.MainActivity;
 import com.coolcook.app.feature.profile.ui.EditProfileDialogFragment;
+import com.coolcook.app.feature.profile.ui.HealthTrackingActivity;
 import com.coolcook.app.feature.search.ui.FoodCatalogActivity;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -99,6 +102,23 @@ final class HomeProfileController {
         if (savedFoodsAction != null) {
             savedFoodsAction.setOnClickListener(v -> openSavedDishes());
         }
+
+        View journalAction = activity.findViewById(R.id.actionProfileJournal);
+        if (journalAction != null) {
+            journalAction.setOnClickListener(v -> openJournal());
+        }
+
+        View healthAction = activity.findViewById(R.id.actionProfileHealth);
+        if (healthAction != null) {
+            healthAction.setOnClickListener(v -> openHealthTracking());
+        }
+
+        View darkModeAction = activity.findViewById(R.id.actionProfileDarkMode);
+        if (darkModeAction != null) {
+            darkModeAction.setOnClickListener(v -> toggleDarkMode());
+        }
+
+        syncDarkModeToggle();
     }
 
     void observeProfileUpdates() {
@@ -257,6 +277,41 @@ final class HomeProfileController {
         activity.overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
     }
 
+    private void openJournal() {
+        Intent intent = new Intent(activity, JournalCalendarActivity.class);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
+    }
+
+    private void openHealthTracking() {
+        Intent intent = HealthTrackingActivity.createIntent(activity);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
+    }
+
+    private void toggleDarkMode() {
+        String nextMode = ThemeManager.isDarkActive(activity)
+                ? ThemeManager.MODE_LIGHT
+                : ThemeManager.MODE_DARK;
+        ThemeManager.persistAndApply(activity, nextMode);
+        syncDarkModeToggle();
+        activity.recreate();
+    }
+
+    private void syncDarkModeToggle() {
+        View thumb = activity.findViewById(R.id.viewProfileDarkModeThumb);
+        View track = activity.findViewById(R.id.layoutProfileDarkModeToggle);
+        if (thumb == null || track == null) {
+            return;
+        }
+
+        track.post(() -> {
+            int available = track.getWidth() - thumb.getWidth() - dpToPx(6);
+            thumb.setTranslationX(ThemeManager.isDarkActive(activity) ? 0f : -Math.max(available, 0));
+            thumb.setAlpha(1f);
+        });
+    }
+
     private void performLogout() {
         if (isLogoutInProgress) {
             return;
@@ -311,5 +366,9 @@ final class HomeProfileController {
 
     private boolean isActivityAliveForUi() {
         return !activity.isFinishing() && !activity.isDestroyed();
+    }
+
+    private int dpToPx(int value) {
+        return Math.round(value * activity.getResources().getDisplayMetrics().density);
     }
 }
