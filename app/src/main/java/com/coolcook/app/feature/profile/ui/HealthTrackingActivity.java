@@ -2,6 +2,7 @@ package com.coolcook.app.feature.profile.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,9 +15,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.widget.NestedScrollView;
 
 import com.coolcook.app.R;
 import com.coolcook.app.core.theme.ThemeManager;
@@ -59,6 +62,8 @@ public class HealthTrackingActivity extends AppCompatActivity {
     private TextInputEditText edtHeartRate;
     private TextInputEditText edtGoal;
     private MaterialButton btnSaveHealthProfile;
+    private NestedScrollView healthTrackingScroll;
+    private View healthTrackingContent;
     private TextView txtHealthStatus;
     private TextView txtHealthSummary;
     private TextView txtHealthWarning;
@@ -107,6 +112,8 @@ public class HealthTrackingActivity extends AppCompatActivity {
         edtHeartRate = findViewById(R.id.edtProfileHeartRate);
         edtGoal = findViewById(R.id.edtProfileGoal);
         btnSaveHealthProfile = findViewById(R.id.btnSaveHealthProfile);
+        healthTrackingScroll = findViewById(R.id.healthTrackingScroll);
+        healthTrackingContent = findViewById(R.id.healthTrackingContent);
         txtHealthStatus = findViewById(R.id.txtProfileHealthStatus);
         txtHealthSummary = findViewById(R.id.txtProfileHealthSummary);
         txtHealthWarning = findViewById(R.id.txtProfileHealthWarning);
@@ -124,14 +131,20 @@ public class HealthTrackingActivity extends AppCompatActivity {
         if (btnSaveHealthProfile != null) {
             btnSaveHealthProfile.setOnClickListener(v -> saveHealthProfile());
         }
+        registerFieldScrollBehavior(edtWeight);
+        registerFieldScrollBehavior(edtSystolic);
+        registerFieldScrollBehavior(edtDiastolic);
+        registerFieldScrollBehavior(edtHeartRate);
+        registerFieldScrollBehavior(edtGoal);
     }
 
     private void applyInsets() {
         View root = findViewById(R.id.healthTrackingRoot);
         View header = findViewById(R.id.healthTrackingHeader);
-        View scroll = findViewById(R.id.healthTrackingScroll);
         ViewCompat.setOnApplyWindowInsetsListener(root, (view, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
+            boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
             if (header != null) {
                 header.setPadding(
                         header.getPaddingLeft(),
@@ -139,15 +152,70 @@ public class HealthTrackingActivity extends AppCompatActivity {
                         header.getPaddingRight(),
                         header.getPaddingBottom());
             }
-            if (scroll != null) {
-                scroll.setPadding(
-                        scroll.getPaddingLeft(),
-                        scroll.getPaddingTop(),
-                        scroll.getPaddingRight(),
+            if (healthTrackingScroll != null) {
+                healthTrackingScroll.setPadding(
+                        healthTrackingScroll.getPaddingLeft(),
+                        healthTrackingScroll.getPaddingTop(),
+                        healthTrackingScroll.getPaddingRight(),
                         systemBars.bottom);
+            }
+            if (healthTrackingContent != null) {
+                int bottomPadding = imeVisible
+                        ? imeInsets.bottom + dpToPx(120)
+                        : systemBars.bottom + dpToPx(32);
+                healthTrackingContent.setPadding(
+                        healthTrackingContent.getPaddingLeft(),
+                        healthTrackingContent.getPaddingTop(),
+                        healthTrackingContent.getPaddingRight(),
+                        bottomPadding);
+            }
+            if (imeVisible && edtGoal != null && edtGoal.hasFocus()) {
+                ensureSaveButtonVisible();
             }
             return insets;
         });
+        ViewCompat.requestApplyInsets(root);
+    }
+
+    private void registerFieldScrollBehavior(@Nullable View field) {
+        if (field == null) {
+            return;
+        }
+        field.setOnFocusChangeListener((view, hasFocus) -> {
+            if (!hasFocus || healthTrackingScroll == null) {
+                return;
+            }
+            if (view == edtGoal) {
+                ensureSaveButtonVisible();
+                return;
+            }
+            requestViewVisible(view, dpToPx(140));
+        });
+    }
+
+    private void ensureSaveButtonVisible() {
+        if (btnSaveHealthProfile == null) {
+            return;
+        }
+        requestViewVisible(btnSaveHealthProfile, dpToPx(28));
+    }
+
+    private void requestViewVisible(@NonNull View target, int extraBottomSpace) {
+        if (healthTrackingScroll == null) {
+            return;
+        }
+        healthTrackingScroll.postDelayed(() -> {
+            if (!target.isAttachedToWindow()) {
+                return;
+            }
+            target.requestRectangleOnScreen(
+                    new android.graphics.Rect(
+                            0,
+                            0,
+                            target.getWidth(),
+                            target.getHeight() + extraBottomSpace),
+                    true);
+        }, 120L);
     }
 
     private void loadHealthProfileAndRecommendations() {
@@ -316,8 +384,19 @@ public class HealthTrackingActivity extends AppCompatActivity {
             chip.setText(tag);
             chip.setCheckable(false);
             chip.setClickable(false);
-            chip.setChipBackgroundColorResource(R.color.surface_container_low);
-            chip.setTextColor(getColor(R.color.textSecondary));
+            chip.setEnsureMinTouchTargetSize(false);
+            chip.setChipMinHeight(dpToPx(38));
+            chip.setChipStartPadding(dpToPx(12));
+            chip.setChipEndPadding(dpToPx(14));
+            chip.setTextStartPadding(dpToPx(6));
+            chip.setChipIconVisible(true);
+            chip.setChipIconSize(dpToPx(18));
+            chip.setChipIcon(getHealthTagIcon(tag));
+            chip.setChipIconTint(null);
+            chip.setChipBackgroundColor(ColorStateList.valueOf(getHealthTagBackground(tag)));
+            chip.setChipStrokeWidth(dpToPx(1));
+            chip.setChipStrokeColor(ColorStateList.valueOf(getHealthTagStroke(tag)));
+            chip.setTextColor(getColor(R.color.food_detail_title));
             chipGroup.addView(chip);
         }
     }
@@ -502,6 +581,51 @@ public class HealthTrackingActivity extends AppCompatActivity {
 
     private int dpToPx(int dp) {
         return Math.round(dp * getResources().getDisplayMetrics().density);
+    }
+
+    @NonNull
+    private android.graphics.drawable.Drawable getHealthTagIcon(@NonNull String tag) {
+        String normalized = tag.toLowerCase(Locale.ROOT);
+        int drawableRes;
+        if (normalized.contains("dạ dày") || normalized.contains("thanh nhẹ") || normalized.contains("ăn thanh")) {
+            drawableRes = R.drawable.ic_leaf_cute;
+        } else if (normalized.contains("dầu") || normalized.contains("mỡ")) {
+            drawableRes = R.drawable.ic_food_chip_drop;
+        } else if (normalized.contains("cơ")) {
+            drawableRes = R.drawable.ic_home_goal_protein_figma;
+        } else {
+            drawableRes = R.drawable.ic_health_cute;
+        }
+        android.graphics.drawable.Drawable drawable = ContextCompat.getDrawable(this, drawableRes);
+        if (drawable == null) {
+            throw new IllegalStateException("Missing health tracking tag icon");
+        }
+        return drawable;
+    }
+
+    private int getHealthTagBackground(@NonNull String tag) {
+        String normalized = tag.toLowerCase(Locale.ROOT);
+        if (normalized.contains("dạ dày") || normalized.contains("thanh nhẹ") || normalized.contains("ăn thanh")) {
+            return getColor(R.color.home_soft_green_bg);
+        }
+        if (normalized.contains("dầu") || normalized.contains("mỡ")) {
+            return 0xFFF8E8C8;
+        }
+        if (normalized.contains("cơ")) {
+            return 0xFFF8DCE8;
+        }
+        return 0xFFF7E6CC;
+    }
+
+    private int getHealthTagStroke(@NonNull String tag) {
+        String normalized = tag.toLowerCase(Locale.ROOT);
+        if (normalized.contains("dầu") || normalized.contains("mỡ")) {
+            return 0x66E7B85B;
+        }
+        if (normalized.contains("cơ")) {
+            return 0x66E5AAC1;
+        }
+        return 0x55D5C2B1;
     }
 
     @Nullable

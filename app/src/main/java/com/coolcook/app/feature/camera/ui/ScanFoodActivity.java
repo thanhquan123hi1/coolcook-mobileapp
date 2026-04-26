@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.os.Environment;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -100,6 +101,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ScanFoodActivity extends AppCompatActivity {
+    private enum JournalCameraUiState {
+        LIVE_CAMERA,
+        CAPTURE_PREVIEW
+    }
+
     private static final String TAG = "ScanFoodActivity";
     private static final int SUGGESTION_LIMIT = 3;
     private static final List<String> MAIN_INGREDIENT_TOKENS = java.util.Arrays.asList(
@@ -122,6 +128,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private static final long PRESS_OUT_DURATION = 220L;
     private static final float PRESS_SCALE = 0.95f;
     private static final long MODE_TRANSITION_DURATION = 240L;
+    private static final long CAPTURE_DEBOUNCE_MS = 900L;
     private static final @ColorInt int TAB_ACTIVE_COLOR = Color.parseColor("#FABD00");
     private static final @ColorInt int TAB_INACTIVE_COLOR = Color.parseColor("#D4C5AB");
 
@@ -183,6 +190,9 @@ public class ScanFoodActivity extends AppCompatActivity {
     private View btnJournalCameraGallery;
     private View btnJournalCameraShutter;
     private View btnJournalCameraFlip;
+    private View journalCameraTopBar;
+    private View journalCameraControlRow;
+    private View txtJournalCameraHistoryTitle;
     private View btnCaptureSaveCancel;
     private View btnCaptureSaveConfirm;
     private View btnPreviewDownload;
@@ -223,6 +233,10 @@ public class ScanFoodActivity extends AppCompatActivity {
     private boolean isUsingFrontCamera;
     private boolean isCameraReady;
     private boolean isRecognitionInProgress;
+    private boolean isCaptureInProgress;
+    private long lastCaptureTimestamp;
+    @NonNull
+    private JournalCameraUiState currentJournalCameraUiState = JournalCameraUiState.LIVE_CAMERA;
 
     private ProcessCameraProvider cameraProvider;
     private ImageCapture imageCapture;
@@ -511,21 +525,27 @@ public class ScanFoodActivity extends AppCompatActivity {
 
                 @Override
                 public void onCameraPageBound(
+                        @NonNull View pageRoot,
                         @NonNull PreviewView pagePreviewView,
                         @NonNull View pagePreviewInnerFrame,
                         @NonNull View pageFlashButton,
                         @NonNull TextView pageFlashIcon,
                         @NonNull View pageGalleryButton,
                         @NonNull View pageShutterButton,
-                        @NonNull View pageFlipButton) {
+                        @NonNull View pageFlipButton,
+                        @NonNull View pageControlRow,
+                        @NonNull View pageHistoryTitle) {
                     bindJournalCameraPageViews(
+                            pageRoot,
                             pagePreviewView,
                             pagePreviewInnerFrame,
                             pageFlashButton,
                             pageFlashIcon,
                             pageGalleryButton,
                             pageShutterButton,
-                            pageFlipButton);
+                            pageFlipButton,
+                            pageControlRow,
+                            pageHistoryTitle);
                 }
             });
             vpJournalHistory.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
@@ -565,13 +585,17 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void bindJournalCameraPageViews(
+            @NonNull View pageTopBar,
             @NonNull PreviewView pagePreviewView,
             @NonNull View pagePreviewInnerFrame,
             @NonNull View pageFlashButton,
             @NonNull TextView pageFlashIcon,
             @NonNull View pageGalleryButton,
             @NonNull View pageShutterButton,
-            @NonNull View pageFlipButton) {
+            @NonNull View pageFlipButton,
+            @NonNull View pageControlRow,
+            @NonNull View pageHistoryTitle) {
+        journalCameraTopBar = pageTopBar;
         journalCameraPreviewView = pagePreviewView;
         journalCameraPreviewInnerFrame = pagePreviewInnerFrame;
         btnJournalCameraFlash = pageFlashButton;
@@ -579,6 +603,8 @@ public class ScanFoodActivity extends AppCompatActivity {
         btnJournalCameraGallery = pageGalleryButton;
         btnJournalCameraShutter = pageShutterButton;
         btnJournalCameraFlip = pageFlipButton;
+        journalCameraControlRow = pageControlRow;
+        txtJournalCameraHistoryTitle = pageHistoryTitle;
 
         btnJournalCameraFlash.setOnClickListener(v -> toggleFlash());
         btnJournalCameraGallery.setOnClickListener(v -> openGalleryPicker());
@@ -595,6 +621,7 @@ public class ScanFoodActivity extends AppCompatActivity {
             updateActivePreviewView();
             startCameraIfNeeded();
         }
+        applyJournalCameraUiState();
     }
 
     private void configureJournalHistoryPagerRecycler() {
@@ -612,6 +639,11 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void renderJournalPagerState(int pagePosition) {
+        if (currentJournalCameraUiState == JournalCameraUiState.CAPTURE_PREVIEW) {
+            renderJournalPagerChrome(false, 0f);
+            applyJournalCameraUiState();
+            return;
+        }
         boolean showingHistoryPage = pagePosition > 0;
         renderJournalPagerChrome(showingHistoryPage, showingHistoryPage ? 1f : 0f);
         if (journalHistoryEmptyFrame != null) {
@@ -635,6 +667,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (btnJournalMore != null) {
             btnJournalMore.setAlpha(showingHistoryPage ? 1f : 0.55f);
         }
+        applyJournalCameraUiState();
     }
 
     private void renderJournalPagerChrome(boolean visible, float alpha) {
@@ -1233,6 +1266,9 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void setJournalPreviewUiVisible(boolean visible) {
+        currentJournalCameraUiState = visible
+                ? JournalCameraUiState.CAPTURE_PREVIEW
+                : JournalCameraUiState.LIVE_CAMERA;
         updateCameraPreviewConstraintsForState(visible);
         if (captureSaveOverlay != null) {
             captureSaveOverlay.setVisibility(View.GONE);
@@ -1246,32 +1282,80 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (edtCaptureCaption != null) {
             edtCaptureCaption.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
-        if (topBar != null) {
-            topBar.setVisibility(visible ? View.GONE : View.VISIBLE);
-        }
-        if (footerContainer != null) {
-            footerContainer.setVisibility(visible ? View.GONE : View.VISIBLE);
-        }
         if (cameraPreviewCard != null && !isRecognitionMode) {
             cameraPreviewCard.setVisibility(View.VISIBLE);
         }
-        if (btnFlash != null) {
-            btnFlash.setVisibility(visible ? View.GONE : View.VISIBLE);
+        if (vpJournalHistory != null) {
+            vpJournalHistory.setUserInputEnabled(!visible);
+            if (visible && vpJournalHistory.getCurrentItem() != 0) {
+                vpJournalHistory.setCurrentItem(0, false);
+            }
         }
-        if (journalHistoryOverlay != null && !isRecognitionMode) {
-            journalHistoryOverlay.setVisibility(visible ? View.GONE : View.VISIBLE);
-        }
-        if (previewView != null) {
-            previewView.setVisibility(visible ? View.INVISIBLE : View.VISIBLE);
-        }
-        if (previewInnerFrame != null) {
-            previewInnerFrame.setVisibility(visible ? View.GONE : View.VISIBLE);
-        }
-        if (detectionBox != null) {
-            detectionBox.setVisibility(visible ? View.GONE : (isRecognitionMode ? View.VISIBLE : View.INVISIBLE));
-        }
+        applyJournalCameraUiState();
         if (!visible) {
             updateUiForMode(false);
+        }
+    }
+
+    private void applyJournalCameraUiState() {
+        boolean previewVisible = currentJournalCameraUiState == JournalCameraUiState.CAPTURE_PREVIEW;
+        if (isRecognitionMode) {
+            return;
+        }
+        if (captureSaveOverlay != null) {
+            captureSaveOverlay.setVisibility(View.GONE);
+        }
+        if (topBar != null) {
+            topBar.setVisibility(View.GONE);
+        }
+        if (footerContainer != null) {
+            footerContainer.setVisibility(View.GONE);
+        }
+        if (journalHistoryOverlay != null) {
+            journalHistoryOverlay.setVisibility(View.VISIBLE);
+        }
+        if (journalCameraTopBar != null) {
+            journalCameraTopBar.setVisibility(previewVisible ? View.GONE : View.VISIBLE);
+        }
+        if (journalCameraControlRow != null) {
+            journalCameraControlRow.setVisibility(previewVisible ? View.GONE : View.VISIBLE);
+        }
+        if (txtJournalCameraHistoryTitle != null) {
+            txtJournalCameraHistoryTitle.setVisibility(previewVisible ? View.GONE : View.VISIBLE);
+        }
+        if (btnJournalCameraFlash != null) {
+            btnJournalCameraFlash.setVisibility(previewVisible ? View.GONE : View.VISIBLE);
+        }
+        if (btnJournalCameraGallery != null) {
+            btnJournalCameraGallery.setVisibility(previewVisible ? View.GONE : View.VISIBLE);
+        }
+        if (btnJournalCameraShutter != null) {
+            btnJournalCameraShutter.setVisibility(previewVisible ? View.GONE : View.VISIBLE);
+        }
+        if (btnJournalCameraFlip != null) {
+            btnJournalCameraFlip.setVisibility(previewVisible ? View.GONE : View.VISIBLE);
+        }
+        if (journalHistoryBottomBar != null) {
+            journalHistoryBottomBar.setVisibility(previewVisible ? View.GONE : journalHistoryBottomBar.getVisibility());
+            if (previewVisible) {
+                journalHistoryBottomBar.setAlpha(0f);
+            }
+        }
+        View journalHistoryTopBar = findViewById(R.id.journalHistoryTopBar);
+        if (journalHistoryTopBar != null) {
+            journalHistoryTopBar.setVisibility(previewVisible ? View.GONE : journalHistoryTopBar.getVisibility());
+            if (previewVisible) {
+                journalHistoryTopBar.setAlpha(0f);
+            }
+        }
+        if (previewView != null) {
+            previewView.setVisibility(previewVisible ? View.GONE : View.VISIBLE);
+        }
+        if (previewInnerFrame != null) {
+            previewInnerFrame.setVisibility(previewVisible ? View.GONE : View.VISIBLE);
+        }
+        if (detectionBox != null) {
+            detectionBox.setVisibility(previewVisible ? View.GONE : View.INVISIBLE);
         }
     }
 
@@ -1503,7 +1587,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void showJournalHistoryOverlay() {
-        if (isRecognitionMode) {
+        if (isRecognitionMode || currentJournalCameraUiState == JournalCameraUiState.CAPTURE_PREVIEW) {
             return;
         }
         if (journalHistoryOverlay != null) {
@@ -1518,6 +1602,9 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private void hideJournalHistoryOverlay() {
+        if (currentJournalCameraUiState == JournalCameraUiState.CAPTURE_PREVIEW) {
+            return;
+        }
         if (vpJournalHistory != null) {
             vpJournalHistory.setCurrentItem(0, true);
         }
@@ -1656,6 +1743,17 @@ public class ScanFoodActivity extends AppCompatActivity {
             return;
         }
 
+        if (!isRecognitionMode && currentJournalCameraUiState == JournalCameraUiState.CAPTURE_PREVIEW) {
+            return;
+        }
+        long now = SystemClock.elapsedRealtime();
+        if (now - lastCaptureTimestamp < CAPTURE_DEBOUNCE_MS) {
+            return;
+        }
+        lastCaptureTimestamp = now;
+        isCaptureInProgress = true;
+        setProcessingUiEnabled(false);
+
         animateShutterFeedback();
         updateScanStatus(isRecognitionMode
                 ? "Đang chụp để nhận diện..."
@@ -1682,6 +1780,8 @@ public class ScanFoodActivity extends AppCompatActivity {
                         }
                         if (bytes == null || bytes.length == 0) {
                             runOnUiThread(() -> {
+                                isCaptureInProgress = false;
+                                setProcessingUiEnabled(true);
                                 updateScanStatus("Không đọc được ảnh chụp, vui lòng thử lại");
                                 updateEntryStatus("Không đọc được ảnh vừa chụp.");
                                 Toast.makeText(
@@ -1706,9 +1806,16 @@ public class ScanFoodActivity extends AppCompatActivity {
                                 + ", normalizedBytes=" + normalizedBytes.length);
 
                         if (routeRecognition) {
-                            processImageBytesForRecognition(normalizedBytes, "image/jpeg", "camera");
+                            runOnUiThread(() -> {
+                                isCaptureInProgress = false;
+                                processImageBytesForRecognition(normalizedBytes, "image/jpeg", "camera");
+                            });
                         } else {
-                            runOnUiThread(() -> processImageBytesForEntry(normalizedBytes, "camera"));
+                            runOnUiThread(() -> {
+                                isCaptureInProgress = false;
+                                setProcessingUiEnabled(true);
+                                processImageBytesForEntry(normalizedBytes, "camera");
+                            });
                         }
                     }
 
@@ -1716,6 +1823,8 @@ public class ScanFoodActivity extends AppCompatActivity {
                     public void onError(@NonNull ImageCaptureException exception) {
                         super.onError(exception);
                         runOnUiThread(() -> {
+                            isCaptureInProgress = false;
+                            setProcessingUiEnabled(true);
                                 updateScanStatus("Chụp thất bại, vui lòng thử lại");
                                 updateEntryStatus("Chụp thất bại, vui lòng thử lại.");
                             Toast.makeText(
@@ -2440,6 +2549,11 @@ public class ScanFoodActivity extends AppCompatActivity {
             behavior.setHideable(false);
             behavior.setSkipCollapsed(true);
             behavior.setDraggable(false);
+            FrameLayout bottomSheet = suggestionDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                bottomSheet.setBackgroundColor(Color.TRANSPARENT);
+                bottomSheet.setPadding(0, 0, 0, 0);
+            }
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
     }
@@ -2552,11 +2666,16 @@ public class ScanFoodActivity extends AppCompatActivity {
         chip.setOnCloseIconClickListener(v -> removeIngredientFromSelection(ingredient.getName()));
         chip.setOnClickListener(v -> openDishIngredientRemovalHint());
         chip.setTypeface(getResources().getFont(R.font.be_vietnam_pro_medium));
-        chip.setTextColor(Color.parseColor("#4D3B2E"));
-        chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#F7EEE5")));
-        chip.setChipStrokeColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#E4D6C6")));
+        chip.setTextColor(Color.parseColor("#4F392D"));
+        chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#FFFFF7F9")));
+        chip.setChipStrokeColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#4AF1C7D2")));
         chip.setChipStrokeWidth(dp(1f));
-        chip.setChipMinHeight(dp(34f));
+        chip.setChipMinHeight(dp(40f));
+        chip.setChipStartPadding(dp(14f));
+        chip.setChipEndPadding(dp(14f));
+        chip.setTextStartPadding(dp(4f));
+        chip.setCloseIconStartPadding(dp(6f));
+        chip.setCloseIconEndPadding(dp(2f));
         chip.setEnsureMinTouchTargetSize(false);
         return chip;
     }
@@ -3110,7 +3229,8 @@ public class ScanFoodActivity extends AppCompatActivity {
     }
 
     private boolean isBusyProcessing() {
-        return isRecognitionInProgress
+        return isCaptureInProgress
+                || isRecognitionInProgress
                 || (journalManager != null && journalManager.isJournalSaveInProgress());
     }
 
@@ -3142,4 +3262,9 @@ public class ScanFoodActivity extends AppCompatActivity {
         overridePendingTransition(0, R.anim.slide_out_right_scale);
     }
 }
+
+
+
+
+
 

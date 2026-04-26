@@ -79,6 +79,7 @@
         <activity
             android:name=".feature.profile.ui.HealthTrackingActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.Coolcook" />
 
         <activity

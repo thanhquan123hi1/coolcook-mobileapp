@@ -2,10 +2,14 @@ package com.coolcook.app.feature.search.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,20 +18,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.coolcook.app.R;
+import com.coolcook.app.core.util.MarkdownRenderer;
 import com.coolcook.app.feature.search.data.FavoriteFoodStore;
 import com.coolcook.app.feature.search.data.FoodJsonRepository;
-import com.coolcook.app.core.util.MarkdownRenderer;
 import com.coolcook.app.feature.search.model.FoodItem;
 import com.coolcook.app.feature.search.model.ParsedRecipe;
 import com.coolcook.app.feature.search.parser.RecipeParser;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.Locale;
 
@@ -39,6 +45,7 @@ public class FoodDetailActivity extends AppCompatActivity {
     private FoodItem foodItem;
     private AppCompatImageView imgFoodHero;
     private AppCompatImageView btnFavorite;
+    private MaterialCardView cardFoodHero;
 
     @NonNull
     public static Intent createIntent(@NonNull Context context, @NonNull String foodId) {
@@ -75,9 +82,11 @@ public class FoodDetailActivity extends AppCompatActivity {
     private void bindViews() {
         imgFoodHero = findViewById(R.id.imgFoodHero);
         btnFavorite = findViewById(R.id.btnFoodFavorite);
+        cardFoodHero = findViewById(R.id.cardFoodHero);
 
         findViewById(R.id.btnFoodBack).setOnClickListener(v -> finish());
         btnFavorite.setOnClickListener(v -> toggleFavorite());
+        ensureSquareHeroCard();
     }
 
     private void bindFoodDetail() {
@@ -91,7 +100,7 @@ public class FoodDetailActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.txtFoodDetailServing)).setText(formatServing(parsedRecipe.getServing()));
 
         bindFavoriteState();
-        bindSuitableChips((ChipGroup) findViewById(R.id.groupFoodSuitable));
+        bindSuitableChips(findViewById(R.id.groupFoodSuitable));
 
         if (!parsedRecipe.isParsed()) {
             showRawRecipe(parsedRecipe.getRawText());
@@ -105,7 +114,7 @@ public class FoodDetailActivity extends AppCompatActivity {
 
     @NonNull
     private String formatServing(@NonNull String serving) {
-        return serving.isEmpty() ? "2-3 phần" : serving;
+        return serving.isEmpty() ? "2-3 người" : serving;
     }
 
     private void bindSuitableChips(@NonNull ChipGroup chipGroup) {
@@ -115,9 +124,20 @@ public class FoodDetailActivity extends AppCompatActivity {
             chip.setText(suitable);
             chip.setCheckable(false);
             chip.setClickable(false);
-            chip.setTextColor(getColor(R.color.on_surface_variant));
-            chip.setChipBackgroundColorResource(R.color.surface_container_low);
-            chip.setChipStrokeColorResource(R.color.home_card_border_soft);
+            chip.setEnsureMinTouchTargetSize(false);
+            chip.setMinHeight(dpToPx(40));
+            chip.setChipMinHeight(dpToPx(40));
+            chip.setChipStartPadding(dpToPx(14));
+            chip.setChipEndPadding(dpToPx(16));
+            chip.setTextStartPadding(dpToPx(6));
+            chip.setTextEndPadding(0f);
+            chip.setChipIconVisible(true);
+            chip.setChipIconSize(dpToPx(18));
+            chip.setChipIcon(getChipIconForSuitable(suitable));
+            chip.setChipIconTint(null);
+            chip.setTextColor(getColor(R.color.food_detail_brown));
+            chip.setChipBackgroundColor(ColorStateList.valueOf(getColor(R.color.food_detail_cream)));
+            chip.setChipStrokeColor(ColorStateList.valueOf(getColor(R.color.food_detail_card_stroke)));
             chip.setChipStrokeWidth(dpToPx(1));
             chip.setTextSize(12);
             chip.setTypeface(getResources().getFont(R.font.be_vietnam_pro_medium));
@@ -135,15 +155,21 @@ public class FoodDetailActivity extends AppCompatActivity {
             row.setGravity(Gravity.CENTER_VERTICAL);
             row.setPadding(0, dpToPx(8), 0, dpToPx(8));
 
-            TextView name = createBodyText(ingredient.getName(), 14, R.color.on_surface);
+            View bullet = new View(this);
+            bullet.setBackgroundResource(R.drawable.bg_journal_day_entry_dot);
+            LinearLayout.LayoutParams bulletParams = new LinearLayout.LayoutParams(dpToPx(8), dpToPx(8));
+            bulletParams.setMarginEnd(dpToPx(12));
+            row.addView(bullet, bulletParams);
+
+            TextView name = createBodyText(ingredient.getName(), 14, R.color.food_detail_title);
             name.setTypeface(getResources().getFont(R.font.be_vietnam_pro_medium));
             row.addView(name, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
             if (!ingredient.getAmount().isEmpty()) {
-                TextView amount = createBodyText(ingredient.getAmount(), 12, R.color.home_accent);
+                TextView amount = createBodyText(ingredient.getAmount(), 12, R.color.food_detail_brown);
                 amount.setGravity(Gravity.CENTER);
-                amount.setBackgroundResource(R.drawable.bg_food_ingredient_quantity);
-                amount.setPadding(dpToPx(10), dpToPx(5), dpToPx(10), dpToPx(5));
+                amount.setBackgroundResource(R.drawable.bg_food_detail_quantity_badge);
+                amount.setPadding(dpToPx(14), dpToPx(7), dpToPx(14), dpToPx(7));
                 row.addView(amount, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -161,24 +187,38 @@ public class FoodDetailActivity extends AppCompatActivity {
         for (int index = 0; index < parsedRecipe.getSteps().size(); index++) {
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setGravity(Gravity.TOP);
-            row.setPadding(0, dpToPx(8), 0, dpToPx(10));
+            row.setGravity(Gravity.TOP | Gravity.CENTER_VERTICAL);
+            row.setBackgroundResource(R.drawable.bg_food_detail_step_item);
+            row.setClickable(true);
+            row.setFocusable(true);
+            row.setPadding(dpToPx(14), dpToPx(14), dpToPx(14), dpToPx(14));
+            attachStepTouchFeedback(row);
 
             TextView number = createBodyText(String.valueOf(index + 1), 13, R.color.on_primary);
             number.setGravity(Gravity.CENTER);
             number.setTypeface(getResources().getFont(R.font.be_vietnam_pro_bold));
-            number.setBackgroundResource(R.drawable.bg_food_step_number);
-            row.addView(number, new LinearLayout.LayoutParams(dpToPx(30), dpToPx(30)));
+            number.setBackgroundResource(R.drawable.bg_food_detail_step_number);
+            row.addView(number, new LinearLayout.LayoutParams(dpToPx(32), dpToPx(32)));
 
-            TextView step = createBodyText(parsedRecipe.getSteps().get(index), 14, R.color.on_surface_variant);
-            step.setLineSpacing(dpToPx(2), 1f);
+            TextView step = createBodyText(parsedRecipe.getSteps().get(index), 14, R.color.food_detail_title);
+            step.setLineSpacing(dpToPx(4), 1f);
             LinearLayout.LayoutParams stepParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-            stepParams.setMarginStart(dpToPx(12));
+            stepParams.setMarginStart(dpToPx(14));
+            stepParams.setMarginEnd(dpToPx(10));
             row.addView(step, stepParams);
 
-            container.addView(row, new LinearLayout.LayoutParams(
+            AppCompatImageView arrow = new AppCompatImageView(this);
+            arrow.setImageResource(R.drawable.ic_home_row_arrow_figma);
+            arrow.setColorFilter(getColor(R.color.food_detail_pink));
+            row.addView(arrow, new LinearLayout.LayoutParams(dpToPx(18), dpToPx(18)));
+
+            LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT));
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            if (index > 0) {
+                rowParams.topMargin = dpToPx(8);
+            }
+            container.addView(row, rowParams);
         }
     }
 
@@ -187,10 +227,26 @@ public class FoodDetailActivity extends AppCompatActivity {
         container.removeAllViews();
 
         for (String tip : parsedRecipe.getTips()) {
-            TextView view = createBodyText("• " + tip, 14, R.color.on_surface_variant);
-            view.setLineSpacing(dpToPx(2), 1f);
-            view.setPadding(0, dpToPx(4), 0, dpToPx(4));
-            container.addView(view, new LinearLayout.LayoutParams(
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setGravity(Gravity.TOP | Gravity.CENTER_VERTICAL);
+            row.setPadding(0, dpToPx(4), 0, dpToPx(4));
+
+            View bullet = new View(this);
+            bullet.setBackgroundResource(R.drawable.bg_journal_day_entry_dot);
+            LinearLayout.LayoutParams bulletParams = new LinearLayout.LayoutParams(dpToPx(8), dpToPx(8));
+            bulletParams.topMargin = dpToPx(7);
+            bulletParams.setMarginEnd(dpToPx(12));
+            row.addView(bullet, bulletParams);
+
+            TextView tipView = createBodyText(tip, 14, R.color.food_detail_title);
+            tipView.setLineSpacing(dpToPx(4), 1f);
+            row.addView(tipView, new LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1f));
+
+            container.addView(row, new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
         }
@@ -224,13 +280,35 @@ public class FoodDetailActivity extends AppCompatActivity {
 
     private void bindFavoriteState() {
         boolean favorite = favoriteFoodStore.isFavorite(foodItem.getId());
-        btnFavorite.setImageResource(favorite ? R.drawable.ic_favorite_filled : R.drawable.ic_favorite_outline);
-        btnFavorite.setColorFilter(getColor(favorite ? R.color.error : R.color.on_surface_variant));
+        btnFavorite.setImageResource(favorite ? R.drawable.ic_heart_cute_filled : R.drawable.ic_heart_cute);
+        btnFavorite.clearColorFilter();
         btnFavorite.setContentDescription(favorite ? "Bỏ yêu thích" : "Yêu thích");
     }
 
     private int dpToPx(float dp) {
         return Math.round(dp * getResources().getDisplayMetrics().density);
+    }
+
+    private void attachStepTouchFeedback(@NonNull View stepView) {
+        stepView.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                animateStepPressed(v, 0.978f, dpToPx(2));
+            } else if (event.getAction() == MotionEvent.ACTION_UP
+                    || event.getAction() == MotionEvent.ACTION_CANCEL) {
+                animateStepPressed(v, 1f, 0f);
+            }
+            return false;
+        });
+    }
+
+    private void animateStepPressed(@NonNull View view, float scale, float translationY) {
+        view.animate()
+                .scaleX(scale)
+                .scaleY(scale)
+                .translationY(translationY)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .setDuration(140)
+                .start();
     }
 
     private void applyInsets() {
@@ -261,5 +339,29 @@ public class FoodDetailActivity extends AppCompatActivity {
                     contentBottom + systemBars.bottom);
             return insets;
         });
+    }
+
+    private void ensureSquareHeroCard() {
+        cardFoodHero.post(() -> {
+            ViewGroup.LayoutParams layoutParams = cardFoodHero.getLayoutParams();
+            int width = cardFoodHero.getWidth();
+            if (width > 0 && layoutParams.height != width) {
+                layoutParams.height = width;
+                cardFoodHero.setLayoutParams(layoutParams);
+            }
+        });
+    }
+
+    @NonNull
+    private Drawable getChipIconForSuitable(@NonNull String suitable) {
+        String normalized = suitable.toLowerCase(Locale.ROOT);
+        int drawableRes = normalized.contains("cơ")
+                ? R.drawable.ic_flex_arm_cute
+                : R.drawable.ic_people_cute;
+        Drawable drawable = ContextCompat.getDrawable(this, drawableRes);
+        if (drawable == null) {
+            throw new IllegalStateException("Missing suitable chip icon");
+        }
+        return drawable;
     }
 }

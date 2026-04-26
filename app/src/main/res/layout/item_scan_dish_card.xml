@@ -7,11 +7,11 @@
     android:layout_marginBottom="12dp"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?attr/selectableItemBackground"
-    app:cardBackgroundColor="#FFFCF8"
-    app:cardCornerRadius="24dp"
-    app:cardElevation="0dp"
-    app:strokeColor="#E6D9CA"
+    android:foreground="@drawable/bg_scan_suggestion_card"
+    app:cardBackgroundColor="#FFFFFBF8"
+    app:cardCornerRadius="32dp"
+    app:cardElevation="7dp"
+    app:strokeColor="#3AE6D8CC"
     app:strokeWidth="1dp">
 
     <LinearLayout
@@ -26,13 +26,21 @@
             android:gravity="top"
             android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/imgDishSuggestion"
-                android:layout_width="76dp"
-                android:layout_height="76dp"
-                android:background="#F2E5D8"
-                android:scaleType="centerCrop"
-                android:src="@drawable/img_scan_food_salad" />
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="106dp"
+                android:layout_height="106dp"
+                app:cardBackgroundColor="#F4E7DB"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="5dp">
+
+                <ImageView
+                    android:id="@+id/imgDishSuggestion"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_scan_suggestion_image"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img_scan_food_salad" />
+            </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -45,12 +53,13 @@
                     android:id="@+id/txtDishBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingStart="10dp"
-                    android:paddingTop="5dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="5dp"
+                    android:background="@drawable/bg_scan_suggestion_status_local"
+                    android:paddingStart="14dp"
+                    android:paddingTop="7dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="7dp"
                     android:text="Có sẵn"
-                    android:textColor="#235C43"
+                    android:textColor="#3E6B48"
                     android:textSize="11sp"
                     android:textStyle="bold" />
 
@@ -61,28 +70,29 @@
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/be_vietnam_pro_bold"
                     android:text="Tên món ăn"
-                    android:textColor="#26180F"
-                    android:textSize="17sp" />
+                    android:textColor="#3A241C"
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/txtDishConfidence"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:fontFamily="@font/be_vietnam_pro_medium"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
                     android:text="Độ phù hợp 90%"
-                    android:textColor="#9B7A5E"
-                    android:textSize="12sp" />
+                    android:textColor="#F58BA8"
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/txtDishReason"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="7dp"
                     android:fontFamily="@font/be_vietnam_pro"
+                    android:lineSpacingExtra="2dp"
                     android:maxLines="3"
                     android:text="Lý do món này phù hợp"
-                    android:textColor="#5E4A3B"
+                    android:textColor="#6E5648"
                     android:textSize="13sp" />
             </LinearLayout>
         </LinearLayout>
@@ -91,19 +101,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:fontFamily="@font/be_vietnam_pro_medium"
+            android:fontFamily="@font/be_vietnam_pro_bold"
             android:text="Nguyên liệu khớp"
-            android:textColor="#26180F"
+            android:textColor="#3A241C"
             android:textSize="13sp" />
 
         <TextView
             android:id="@+id/txtDishUsedIngredients"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="5dp"
             android:fontFamily="@font/be_vietnam_pro"
+            android:lineSpacingExtra="2dp"
             android:text="thịt gà, hành, gừng"
-            android:textColor="#5E4A3B"
+            android:textColor="#6E5648"
             android:textSize="13sp" />
 
         <LinearLayout
@@ -116,19 +127,20 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/be_vietnam_pro_medium"
+                android:fontFamily="@font/be_vietnam_pro_bold"
                 android:text="Nguyên liệu còn thiếu"
-                android:textColor="#26180F"
+                android:textColor="#3A241C"
                 android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/txtDishMissingIngredients"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="5dp"
                 android:fontFamily="@font/be_vietnam_pro"
+                android:lineSpacingExtra="2dp"
                 android:text="tiêu, nước mắm"
-                android:textColor="#5E4A3B"
+                android:textColor="#6E5648"
                 android:textSize="13sp" />
         </LinearLayout>
 
@@ -138,19 +150,59 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             app:chipSpacingHorizontal="8dp"
-            app:chipSpacingVertical="8dp"
+            app:chipSpacingVertical="6dp"
             app:singleLine="false" />
 
-        <TextView
-            android:id="@+id/txtDishRecipePreview"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:fontFamily="@font/be_vietnam_pro"
-            android:maxLines="4"
-            android:text="Tóm tắt công thức"
-            android:textColor="#7A6554"
-            android:textSize="12sp" />
+            android:layout_marginTop="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_scan_suggestion_preview"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingTop="15dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="15dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_flower_cute" />
+
+                    <TextView
+                        android:id="@+id/txtDishRecipePreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/be_vietnam_pro_medium"
+                        android:lineSpacingExtra="2dp"
+                        android:maxLines="4"
+                        android:text="Tóm tắt công thức"
+                        android:textColor="#6E5648"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_flower_cute" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -161,35 +213,37 @@
 
             <TextView
                 android:id="@+id/btnDishJournal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="#F7EEE5"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_scan_suggestion_button_secondary"
+                android:drawableStart="@drawable/ic_journal_cute"
+                android:drawablePadding="8dp"
+                android:elevation="4dp"
                 android:fontFamily="@font/be_vietnam_pro_bold"
                 android:gravity="center"
-                android:minWidth="112dp"
                 android:paddingStart="16dp"
-                android:paddingTop="10dp"
                 android:paddingEnd="16dp"
-                android:paddingBottom="10dp"
                 android:text="Vào nhật ký"
-                android:textColor="#4D3B2E"
+                android:textColor="#4C3529"
                 android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/btnDishSave"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:background="#E39A22"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_scan_suggestion_button_primary"
+                android:drawableStart="@drawable/ic_save_cute"
+                android:drawablePadding="8dp"
+                android:elevation="5dp"
                 android:fontFamily="@font/be_vietnam_pro_bold"
                 android:gravity="center"
-                android:minWidth="96dp"
                 android:paddingStart="16dp"
-                android:paddingTop="10dp"
                 android:paddingEnd="16dp"
-                android:paddingBottom="10dp"
                 android:text="Lưu món"
-                android:textColor="#1A1203"
+                android:textColor="@android:color/white"
                 android:textSize="13sp" />
         </LinearLayout>
     </LinearLayout>

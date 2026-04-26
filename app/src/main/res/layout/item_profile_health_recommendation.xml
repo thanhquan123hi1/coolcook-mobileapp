@@ -3,10 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:background="@drawable/bg_profile_stats_card"
+    android:layout_marginBottom="14dp"
+    android:background="@drawable/bg_health_form_card"
+    android:elevation="4dp"
     android:orientation="vertical"
-    android:padding="14dp">
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,18 +15,26 @@
         android:gravity="top"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/imgHealthRecommendation"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:background="@color/surface_container"
-            android:scaleType="centerCrop"
-            android:src="@drawable/img_scan_food_salad" />
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="98dp"
+            android:layout_height="98dp"
+            app:cardBackgroundColor="#FFF4E7DB"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="4dp">
+
+            <ImageView
+                android:id="@+id/imgHealthRecommendation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_health_recommendation_image"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img_scan_food_salad" />
+        </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="14dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -33,16 +42,18 @@
                 android:id="@+id/txtHealthRecommendationName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/textPrimary"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:textColor="#3D2B1F"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/txtHealthRecommendationReason"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:textColor="@color/textSecondary"
+                android:fontFamily="@font/be_vietnam_pro"
+                android:lineSpacingExtra="2dp"
+                android:textColor="@color/food_detail_secondary"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
@@ -51,50 +62,87 @@
         android:id="@+id/groupHealthRecommendationTags"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
         app:chipSpacingHorizontal="8dp"
-        app:chipSpacingVertical="8dp" />
+        app:chipSpacingVertical="6dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="14dp"
         android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnHealthRecommendationRecipe"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="54dp"
             android:layout_weight="1"
+            android:background="@drawable/bg_health_recipe_button"
+            android:elevation="4dp"
+            android:fontFamily="@font/be_vietnam_pro_bold"
+            android:maxLines="1"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:singleLine="true"
             android:text="Xem công thức"
             android:textAllCaps="false"
-            app:backgroundTint="@color/accent"
-            app:cornerRadius="16dp" />
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            app:backgroundTint="@android:color/transparent"
+            app:cornerRadius="22dp"
+            app:icon="@drawable/ic_journal_book_cute"
+            app:iconGravity="textStart"
+            app:iconPadding="6dp"
+            app:iconTint="@android:color/white" />
 
         <Space
-            android:layout_width="8dp"
+            android:layout_width="10dp"
             android:layout_height="1dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnHealthRecommendationSave"
-            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="54dp"
             android:layout_weight="1"
+            android:background="@drawable/bg_health_save_outline_button"
+            android:elevation="2dp"
+            android:fontFamily="@font/be_vietnam_pro_bold"
+            android:maxLines="1"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:singleLine="true"
             android:text="Lưu món"
             android:textAllCaps="false"
-            app:cornerRadius="16dp"
-            app:strokeColor="@color/accent" />
+            android:textColor="#6D4CFF"
+            android:textSize="12sp"
+            app:backgroundTint="@android:color/transparent"
+            app:cornerRadius="22dp"
+            app:icon="@drawable/ic_bookmark_cute"
+            app:iconGravity="textStart"
+            app:iconPadding="6dp"
+            app:iconTint="#6D4CFF" />
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnHealthRecommendationJournal"
-        style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_health_journal_button"
+        android:elevation="2dp"
+        android:fontFamily="@font/be_vietnam_pro_bold"
+        android:maxLines="1"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:singleLine="true"
         android:text="Thêm vào nhật ký món ăn"
         android:textAllCaps="false"
-        app:cornerRadius="16dp"
-        app:strokeColor="@color/outline_variant" />
+        android:textColor="#E56BA0"
+        android:textSize="12sp"
+        app:backgroundTint="@android:color/transparent"
+        app:cornerRadius="22dp"
+        app:icon="@drawable/ic_journal_cute"
+        app:iconGravity="textStart"
+        app:iconPadding="6dp"
+        app:iconTint="#E56BA0" />
 </LinearLayout>

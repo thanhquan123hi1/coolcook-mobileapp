@@ -4,13 +4,13 @@
     android:id="@+id/healthTrackingRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@drawable/bg_health_tracking_screen">
 
     <LinearLayout
         android:id="@+id/healthTrackingHeader"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
+        android:gravity="top|center_vertical"
         android:orientation="horizontal"
         android:paddingStart="20dp"
         android:paddingTop="20dp"
@@ -22,49 +22,73 @@
 
         <FrameLayout
             android:id="@+id/btnHealthTrackingBack"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="@drawable/bg_home_icon_button"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/bg_scan_suggestion_close_button"
             android:clickable="true"
+            android:elevation="5dp"
             android:focusable="true"
             android:foreground="@drawable/fg_ripple_circle">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_gravity="center"
-                android:fontFamily="@font/material_symbols_outlined"
-                android:fontVariationSettings="'wght' 600"
-                android:text="arrow_back"
-                android:textColor="@color/home_accent"
-                android:textSize="22sp" />
+                app:srcCompat="@drawable/ic_back_cute" />
         </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
+            android:layout_marginStart="16dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/be_vietnam_pro"
-                android:text="Theo dõi sức khỏe"
-                android:textColor="@color/on_surface"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:text="Theo dõi sức khỏe"
+                    android:textColor="@color/food_detail_title"
+                    android:textSize="22sp" />
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_home_decor_heart_figma" />
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="6dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_sparkle_cute" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="4dp"
                 android:fontFamily="@font/be_vietnam_pro"
                 android:text="Quản lý chỉ số và xem gợi ý món ăn phù hợp."
-                android:textColor="@color/on_surface_variant"
+                android:textColor="@color/food_detail_secondary"
                 android:textSize="13sp" />
         </LinearLayout>
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_home_decor_bunny_figma" />
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -81,6 +105,7 @@
         app:layout_constraintTop_toBottomOf="@id/healthTrackingHeader">
 
         <LinearLayout
+            android:id="@+id/healthTrackingContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"

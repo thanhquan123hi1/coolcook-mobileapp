@@ -73,6 +73,19 @@
         <item name="startIconTint">@color/on_surface_variant</item>
     </style>
 
+    <style name="Widget.Coolcook.Health.TextInputLayout" parent="Widget.Coolcook.EditProfile.TextInputLayout">
+        <item name="boxBackgroundColor">@color/food_detail_cream</item>
+        <item name="boxStrokeColor">@color/profile_edit_stroke</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="boxCornerRadiusTopStart">24dp</item>
+        <item name="boxCornerRadiusTopEnd">24dp</item>
+        <item name="boxCornerRadiusBottomStart">24dp</item>
+        <item name="boxCornerRadiusBottomEnd">24dp</item>
+        <item name="hintTextColor">@color/food_detail_secondary</item>
+        <item name="startIconTint">@color/food_detail_pink</item>
+    </style>
+
     <style name="Widget.Coolcook.Home.SurfaceCard" parent="Widget.Material3.CardView.Elevated">
         <item name="android:outlineAmbientShadowColor">@color/home_shadow_ambient</item>
         <item name="android:outlineSpotShadowColor">@color/home_shadow_spot</item>

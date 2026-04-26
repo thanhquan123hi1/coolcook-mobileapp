@@ -3,7 +3,6 @@ package com.coolcook.app.feature.camera.ui.adapter;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -100,8 +100,8 @@ public class ScanDishSuggestionAdapter extends RecyclerView.Adapter<ScanDishSugg
         });
         boolean selected = item.getStableId().equals(selectedDishId);
         holder.cardRoot.setStrokeWidth((int) dp(holder.itemView, selected ? 2 : 1));
-        holder.cardRoot.setStrokeColor(Color.parseColor(selected ? "#E39A22" : "#E6D9CA"));
-        holder.cardRoot.setCardBackgroundColor(Color.parseColor(selected ? "#FFF6E7" : "#FFFCF8"));
+        holder.cardRoot.setStrokeColor(Color.parseColor(selected ? "#F58BA8" : "#3AE6D8CC"));
+        holder.cardRoot.setCardBackgroundColor(Color.parseColor(selected ? "#FFFFF2F6" : "#FFFFFBF8"));
     }
 
     @Override
@@ -121,11 +121,10 @@ public class ScanDishSuggestionAdapter extends RecyclerView.Adapter<ScanDishSugg
     }
 
     private void bindBadge(@NonNull TextView view, boolean local) {
-        GradientDrawable drawable = new GradientDrawable();
-        drawable.setCornerRadius(dp(view, 999));
-        drawable.setColor(Color.parseColor(local ? "#DFF3E7" : "#FBE7D6"));
-        view.setBackground(drawable);
-        view.setTextColor(Color.parseColor(local ? "#235C43" : "#9A4F16"));
+        view.setBackgroundResource(local
+                ? R.drawable.bg_scan_suggestion_status_local
+                : R.drawable.bg_scan_suggestion_status_ai);
+        view.setTextColor(Color.parseColor(local ? "#416A49" : "#A25D2A"));
     }
 
     private void bindHealthTags(@NonNull ChipGroup chipGroup, @NonNull List<String> tags) {
@@ -144,10 +143,19 @@ public class ScanDishSuggestionAdapter extends RecyclerView.Adapter<ScanDishSugg
             chip.setText(tag);
             chip.setCheckable(false);
             chip.setClickable(false);
-            chip.setTextColor(Color.parseColor("#4D3B2E"));
-            chip.setChipBackgroundColor(ColorStateList.valueOf(Color.parseColor("#F7EEE5")));
+            chip.setEnsureMinTouchTargetSize(false);
+            chip.setChipMinHeight(dp(chipGroup, 40));
+            chip.setChipStartPadding(dp(chipGroup, 12));
+            chip.setChipEndPadding(dp(chipGroup, 14));
+            chip.setTextStartPadding(dp(chipGroup, 6));
+            chip.setChipIconVisible(true);
+            chip.setChipIconSize(dp(chipGroup, 18));
+            chip.setChipIcon(getHealthTagIcon(chipGroup, tag));
+            chip.setChipIconTint(null);
+            chip.setTextColor(Color.parseColor("#4F392D"));
+            chip.setChipBackgroundColor(ColorStateList.valueOf(getHealthTagBackground(tag)));
             chip.setChipStrokeWidth(dp(chipGroup, 1));
-            chip.setChipStrokeColor(ColorStateList.valueOf(Color.parseColor("#E4D6C6")));
+            chip.setChipStrokeColor(ColorStateList.valueOf(Color.parseColor("#38E8D8CC")));
             if (typeface != null) {
                 chip.setTypeface(typeface);
             }
@@ -171,6 +179,35 @@ public class ScanDishSuggestionAdapter extends RecyclerView.Adapter<ScanDishSugg
 
     private static float dp(@NonNull View view, float value) {
         return value * view.getResources().getDisplayMetrics().density;
+    }
+
+    @NonNull
+    private static android.graphics.drawable.Drawable getHealthTagIcon(@NonNull ChipGroup chipGroup, @NonNull String tag) {
+        String normalized = tag.toLowerCase(Locale.ROOT);
+        int drawableRes;
+        if (normalized.contains("cơ")) {
+            drawableRes = R.drawable.ic_flex_arm_cute;
+        } else if (normalized.contains("ốm") || normalized.contains("khỏe") || normalized.contains("sức")) {
+            drawableRes = R.drawable.ic_health_cute;
+        } else {
+            drawableRes = R.drawable.ic_people_cute;
+        }
+        android.graphics.drawable.Drawable drawable = ContextCompat.getDrawable(chipGroup.getContext(), drawableRes);
+        if (drawable == null) {
+            throw new IllegalStateException("Missing health chip icon");
+        }
+        return drawable;
+    }
+
+    private static int getHealthTagBackground(@NonNull String tag) {
+        String normalized = tag.toLowerCase(Locale.ROOT);
+        if (normalized.contains("cơ")) {
+            return Color.parseColor("#FFFFEEDF");
+        }
+        if (normalized.contains("ốm") || normalized.contains("khỏe") || normalized.contains("sức")) {
+            return Color.parseColor("#FFF4EDFF");
+        }
+        return Color.parseColor("#FFFFF1F6");
     }
 
     static class ScanDishViewHolder extends RecyclerView.ViewHolder {

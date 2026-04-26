@@ -223,6 +223,7 @@ final class ScanFoodJournalManager {
         if (edtJournalCaption != null) {
             edtJournalCaption.setText("");
         }
+        resetJournalPostActionState();
         setJournalPostLoading(false, "");
         showJournalPostError("");
         if (clearPendingState) {
@@ -452,6 +453,7 @@ final class ScanFoodJournalManager {
         if (edtJournalCaption != null) {
             edtJournalCaption.setText("");
         }
+        resetJournalPostActionState();
         setJournalPostLoading(false, "");
         showJournalPostError("");
         journalCaptureOverlay.setVisibility(View.VISIBLE);
@@ -481,9 +483,18 @@ final class ScanFoodJournalManager {
         }
         if (iconJournalPostSend != null) {
             iconJournalPostSend.setVisibility(loading ? View.GONE : View.VISIBLE);
+            iconJournalPostSend.setAlpha(1f);
+            iconJournalPostSend.setScaleX(1f);
+            iconJournalPostSend.setScaleY(1f);
         }
-        if (iconJournalPostSuccess != null && loading) {
-            iconJournalPostSuccess.setVisibility(View.GONE);
+        if (iconJournalPostSuccess != null) {
+            if (loading) {
+                iconJournalPostSuccess.animate().cancel();
+                iconJournalPostSuccess.setVisibility(View.GONE);
+            }
+            iconJournalPostSuccess.setAlpha(0f);
+            iconJournalPostSuccess.setScaleX(1f);
+            iconJournalPostSuccess.setScaleY(1f);
         }
         if (txtJournalUploadProgress != null) {
             txtJournalUploadProgress.setText("");
@@ -544,6 +555,23 @@ final class ScanFoodJournalManager {
             hideJournalCapturePreview(true);
             host.updateJournalStatus("");
         }, 700L);
+    }
+
+    private void resetJournalPostActionState() {
+        if (iconJournalPostSuccess != null) {
+            iconJournalPostSuccess.animate().cancel();
+            iconJournalPostSuccess.setVisibility(View.GONE);
+            iconJournalPostSuccess.setAlpha(0f);
+            iconJournalPostSuccess.setScaleX(1f);
+            iconJournalPostSuccess.setScaleY(1f);
+        }
+        if (iconJournalPostSend != null) {
+            iconJournalPostSend.animate().cancel();
+            iconJournalPostSend.setVisibility(View.VISIBLE);
+            iconJournalPostSend.setAlpha(1f);
+            iconJournalPostSend.setScaleX(1f);
+            iconJournalPostSend.setScaleY(1f);
+        }
     }
 
     private void shareInvite(@NonNull FriendInvite invite) {
