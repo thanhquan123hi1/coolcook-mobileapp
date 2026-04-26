@@ -130,7 +130,7 @@ public final class HomeBottomNavigation {
     }
 
     private void updateState() {
-        int activeColor = ContextCompat.getColor(activity, R.color.primary);
+        int activeColor = ContextCompat.getColor(activity, R.color.home_nav_active);
         int inactiveColor = ContextCompat.getColor(activity, R.color.home_nav_inactive);
 
         applyItemState(R.id.homeNavIconHome, R.id.homeNavLabelHome, activeTab == Tab.HOME, activeColor, inactiveColor);
@@ -148,10 +148,11 @@ public final class HomeBottomNavigation {
 
         if (icon != null) {
             icon.setSelected(active);
-            icon.setImageTintList(ColorStateList.valueOf(color));
-            icon.setScaleX(active ? 1.14f : 1f);
-            icon.setScaleY(active ? 1.14f : 1f);
-            icon.setTranslationY(active ? -activity.getResources().getDimension(R.dimen.home_bottom_nav_icon_lift) : 0f);
+            icon.setImageResource(resolveNavIcon(iconId, active));
+            icon.setImageTintList(null);
+            icon.setScaleX(1f);
+            icon.setScaleY(1f);
+            icon.setTranslationY(0f);
         }
         if (label != null) {
             label.setTextColor(color);
@@ -161,12 +162,32 @@ public final class HomeBottomNavigation {
     private void applyCameraState() {
         AppCompatImageView cameraIcon = (AppCompatImageView) findInNav(resolveNavigationRoot(), R.id.homeNavIconCamera);
         if (cameraIcon != null) {
-            cameraIcon.setImageTintList(ColorStateList.valueOf(
-                    ContextCompat.getColor(activity, R.color.on_primary)));
+            cameraIcon.setImageResource(R.drawable.ic_home_nav_camera_figma);
+            cameraIcon.setImageTintList(null);
             cameraIcon.setScaleX(1f);
             cameraIcon.setScaleY(1f);
             cameraIcon.setTranslationY(0f);
         }
+    }
+
+    private int resolveNavIcon(int iconId, boolean active) {
+        if (iconId == R.id.homeNavIconHome) {
+            return active ? R.drawable.ic_home_nav_home_active_figma
+                    : R.drawable.ic_home_nav_home_inactive_figma;
+        }
+        if (iconId == R.id.homeNavIconSearch) {
+            return active ? R.drawable.ic_home_nav_search_active_figma
+                    : R.drawable.ic_home_nav_search_inactive_figma;
+        }
+        if (iconId == R.id.homeNavIconHistory) {
+            return active ? R.drawable.ic_home_nav_history_active_figma
+                    : R.drawable.ic_home_nav_history_inactive_figma;
+        }
+        if (iconId == R.id.homeNavIconProfile) {
+            return active ? R.drawable.ic_home_nav_profile_active_figma
+                    : R.drawable.ic_home_nav_profile_inactive_figma;
+        }
+        return R.drawable.ic_home_nav_camera_figma;
     }
 
     private void openHome() {

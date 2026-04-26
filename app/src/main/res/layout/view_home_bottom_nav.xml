@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/homeBottomNav"
     android:layout_width="0dp"
@@ -8,38 +8,66 @@
     android:clipChildren="false"
     android:clipToPadding="false"
     android:elevation="@dimen/home_bottom_nav_elevation"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:paddingStart="@dimen/home_bottom_nav_padding_horizontal"
-    android:paddingTop="@dimen/home_bottom_nav_padding_vertical"
-    android:paddingEnd="@dimen/home_bottom_nav_padding_horizontal"
-    android:paddingBottom="@dimen/home_bottom_nav_padding_vertical"
-    android:weightSum="5"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintWidth_max="448dp"
     app:layout_constraintWidth_percent="0.9">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/homeNavGuideHome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.125" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/homeNavGuideSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.296875" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/homeNavGuideCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/homeNavGuideHistory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.703125" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/homeNavGuideProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.875" />
+
+    <FrameLayout
         android:id="@+id/homeNavItemHome"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:background="@drawable/bg_home_nav_item_ripple"
         android:clickable="true"
         android:focusable="true"
-        android:gravity="center"
-        android:minHeight="@dimen/home_bottom_nav_item_min_height"
-        android:orientation="vertical">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/homeNavGuideHome"
+        app:layout_constraintStart_toStartOf="@id/homeNavGuideHome"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/homeNavIconHome"
             android:layout_width="@dimen/home_bottom_nav_icon_size"
             android:layout_height="@dimen/home_bottom_nav_icon_size"
+            android:layout_gravity="center"
             android:contentDescription="@string/home_nav_home"
-            app:srcCompat="@drawable/ic_nav_home"
-            app:tint="@color/home_nav_inactive" />
+            app:srcCompat="@drawable/ic_home_nav_home_active_figma" />
 
         <TextView
             android:id="@+id/homeNavLabelHome"
@@ -48,27 +76,27 @@
             android:layout_height="0dp"
             android:text="@string/home_nav_home"
             android:visibility="gone" />
-    </LinearLayout>
+    </FrameLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/homeNavItemSearch"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:background="@drawable/bg_home_nav_item_ripple"
         android:clickable="true"
         android:focusable="true"
-        android:gravity="center"
-        android:minHeight="@dimen/home_bottom_nav_item_min_height"
-        android:orientation="vertical">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/homeNavGuideSearch"
+        app:layout_constraintStart_toStartOf="@id/homeNavGuideSearch"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/homeNavIconSearch"
             android:layout_width="@dimen/home_bottom_nav_icon_size"
             android:layout_height="@dimen/home_bottom_nav_icon_size"
+            android:layout_gravity="center"
             android:contentDescription="@string/home_nav_search"
-            app:srcCompat="@drawable/ic_nav_search"
-            app:tint="@color/home_nav_inactive" />
+            app:srcCompat="@drawable/ic_home_nav_search_inactive_figma" />
 
         <TextView
             android:id="@+id/homeNavLabelSearch"
@@ -77,18 +105,27 @@
             android:layout_height="0dp"
             android:text="@string/home_nav_search"
             android:visibility="gone" />
-    </LinearLayout>
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/homeNavItemCamera"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@drawable/bg_home_nav_item_ripple"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
         android:clickable="true"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:focusable="true">
+        android:focusable="true"
+        android:translationY="-36dp"
+        app:layout_constraintEnd_toEndOf="@id/homeNavGuideCenter"
+        app:layout_constraintStart_toStartOf="@id/homeNavGuideCenter"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <View
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:alpha="0.85"
+            android:background="@drawable/bg_home_nav_center_glow" />
 
         <FrameLayout
             android:id="@+id/homeNavCameraButton"
@@ -98,8 +135,7 @@
             android:background="@drawable/bg_home_nav_center_ripple"
             android:clickable="true"
             android:elevation="@dimen/home_bottom_nav_center_elevation"
-            android:focusable="true"
-            android:translationY="@dimen/home_bottom_nav_center_button_offset">
+            android:focusable="true">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/homeNavIconCamera"
@@ -107,30 +143,48 @@
                 android:layout_height="@dimen/home_bottom_nav_center_icon_size"
                 android:layout_gravity="center"
                 android:contentDescription="@string/home_nav_camera"
-                app:srcCompat="@drawable/ic_nav_camera"
-                app:tint="@color/white" />
+                app:srcCompat="@drawable/ic_home_nav_camera_figma" />
         </FrameLayout>
     </FrameLayout>
 
-    <LinearLayout
+    <ImageView
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginBottom="68dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_home_decor_sparkle_pink_figma"
+        app:layout_constraintEnd_toStartOf="@id/homeNavItemCamera"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="62dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_home_decor_heart_figma"
+        app:layout_constraintStart_toEndOf="@id/homeNavItemCamera"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
         android:id="@+id/homeNavItemHistory"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:background="@drawable/bg_home_nav_item_ripple"
         android:clickable="true"
         android:focusable="true"
-        android:gravity="center"
-        android:minHeight="@dimen/home_bottom_nav_item_min_height"
-        android:orientation="vertical">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/homeNavGuideHistory"
+        app:layout_constraintStart_toStartOf="@id/homeNavGuideHistory"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/homeNavIconHistory"
             android:layout_width="@dimen/home_bottom_nav_icon_size"
             android:layout_height="@dimen/home_bottom_nav_icon_size"
+            android:layout_gravity="center"
             android:contentDescription="@string/home_nav_history"
-            app:srcCompat="@drawable/ic_nav_diary"
-            app:tint="@color/home_nav_inactive" />
+            app:srcCompat="@drawable/ic_home_nav_history_inactive_figma" />
 
         <TextView
             android:id="@+id/homeNavLabelHistory"
@@ -139,27 +193,27 @@
             android:layout_height="0dp"
             android:text="@string/home_nav_history"
             android:visibility="gone" />
-    </LinearLayout>
+    </FrameLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/homeNavItemProfile"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:background="@drawable/bg_home_nav_item_ripple"
         android:clickable="true"
         android:focusable="true"
-        android:gravity="center"
-        android:minHeight="@dimen/home_bottom_nav_item_min_height"
-        android:orientation="vertical">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/homeNavGuideProfile"
+        app:layout_constraintStart_toStartOf="@id/homeNavGuideProfile"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/homeNavIconProfile"
             android:layout_width="@dimen/home_bottom_nav_icon_size"
             android:layout_height="@dimen/home_bottom_nav_icon_size"
+            android:layout_gravity="center"
             android:contentDescription="@string/home_nav_profile"
-            app:srcCompat="@drawable/ic_nav_profile"
-            app:tint="@color/home_nav_inactive" />
+            app:srcCompat="@drawable/ic_home_nav_profile_inactive_figma" />
 
         <TextView
             android:id="@+id/homeNavLabelProfile"
@@ -168,5 +222,5 @@
             android:layout_height="0dp"
             android:text="@string/home_nav_profile"
             android:visibility="gone" />
-    </LinearLayout>
-</LinearLayout>
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

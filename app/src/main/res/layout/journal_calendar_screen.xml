@@ -4,7 +4,9 @@
     android:id="@+id/journalCalendarRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@drawable/bg_journal_screen_soft"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <TextView
         android:id="@+id/txtJournalCalendarTitle"
@@ -12,15 +14,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/journal_screen_padding_horizontal"
         android:layout_marginTop="@dimen/journal_screen_padding_top"
-        android:layout_marginEnd="@dimen/journal_screen_padding_horizontal"
-        android:fontFamily="@font/be_vietnam_pro_bold"
-        android:lineSpacingExtra="2dp"
+        android:layout_marginEnd="12dp"
+        android:fontFamily="@font/manrope"
+        android:lineSpacingExtra="3dp"
         android:maxLines="2"
         android:text="@string/journal_calendar_title"
-        android:textColor="@color/on_surface"
+        android:textColor="@color/home_text_primary"
         android:textSize="@dimen/journal_title_text_size"
+        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@id/journalHeaderIcon"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,12 +31,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/journal_screen_padding_horizontal"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="@dimen/journal_screen_padding_horizontal"
-        android:fontFamily="@font/be_vietnam_pro"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="12dp"
+        android:fontFamily="@font/manrope"
         android:text="@string/journal_calendar_subtitle"
-        android:textColor="@color/on_surface_variant"
-        android:textSize="13sp"
+        android:textColor="@color/home_text_secondary"
+        android:textSize="15sp"
         app:layout_constraintEnd_toStartOf="@id/journalHeaderIcon"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtJournalCalendarTitle" />
@@ -44,7 +46,7 @@
         android:layout_width="@dimen/journal_top_icon_card_size"
         android:layout_height="@dimen/journal_top_icon_card_size"
         android:layout_marginEnd="@dimen/journal_screen_padding_horizontal"
-        android:background="@drawable/bg_home_icon_button"
+        android:background="@drawable/bg_journal_header_icon_card_soft"
         android:elevation="@dimen/home_surface_elevation"
         android:outlineAmbientShadowColor="@color/home_shadow_ambient"
         android:outlineProvider="background"
@@ -53,17 +55,51 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/txtJournalCalendarTitle">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:layout_width="34dp"
+            android:layout_height="34dp"
             android:layout_gravity="center"
-            android:fontFamily="@font/material_symbols_outlined"
-            android:fontVariationSettings="'wght' 600"
-            android:text="auto_stories"
-            android:textColor="@color/primary"
-            android:textSize="@dimen/journal_top_icon_size" />
+            android:contentDescription="@null"
+            android:src="@drawable/ic_journal_book_cute" />
 
+        <ImageView
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="-2dp"
+            android:layout_marginEnd="-3dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_home_decor_bow_figma" />
+
+        <ImageView
+            android:layout_width="11dp"
+            android:layout_height="11dp"
+            android:layout_gravity="bottom|start"
+            android:layout_marginStart="7dp"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_home_decor_flower_figma" />
     </FrameLayout>
+
+    <ImageView
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="6dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_home_decor_heart_figma"
+        app:layout_constraintStart_toEndOf="@id/txtJournalCalendarTitle"
+        app:layout_constraintTop_toTopOf="@id/txtJournalCalendarTitle" />
+
+    <ImageView
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_home_decor_flower_figma"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/journalHeaderIcon" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardJournalCalendar"
@@ -72,189 +108,221 @@
         android:layout_marginStart="@dimen/journal_screen_padding_horizontal"
         android:layout_marginTop="@dimen/journal_calendar_card_margin_top"
         android:layout_marginEnd="@dimen/journal_screen_padding_horizontal"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:outlineAmbientShadowColor="@color/home_shadow_ambient"
         android:outlineSpotShadowColor="@color/home_shadow_spot"
-        app:cardBackgroundColor="@color/surface_container_lowest"
+        app:cardBackgroundColor="#FFFFFEFD"
         app:cardCornerRadius="@dimen/journal_calendar_card_corner"
         app:cardElevation="@dimen/journal_calendar_card_elevation"
         app:layout_constraintBottom_toTopOf="@id/homeBottomNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtJournalCalendarSubtitle"
-        app:strokeColor="@color/home_card_border_soft"
+        app:strokeColor="#24EBCED8"
         app:strokeWidth="1dp">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="@dimen/journal_calendar_card_padding_horizontal"
-            android:paddingTop="@dimen/journal_calendar_card_padding_top"
-            android:paddingEnd="@dimen/journal_calendar_card_padding_horizontal"
-            android:paddingBottom="@dimen/journal_calendar_card_padding_bottom">
+            android:layout_height="match_parent"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <ImageView
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="26dp"
+                android:layout_marginTop="34dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_home_decor_sparkle_pink_figma" />
+
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="-8dp"
+                android:layout_marginTop="-132dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_home_decor_flower_figma" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="bottom|start"
+                android:layout_marginStart="18dp"
+                android:layout_marginBottom="18dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_home_decor_flower_figma" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:paddingStart="@dimen/journal_calendar_card_padding_horizontal"
+                android:paddingTop="@dimen/journal_calendar_card_padding_top"
+                android:paddingEnd="@dimen/journal_calendar_card_padding_horizontal"
+                android:paddingBottom="@dimen/journal_calendar_card_padding_bottom">
 
-                <FrameLayout
-                    android:id="@+id/btnJournalPrevMonth"
-                    android:layout_width="@dimen/journal_month_nav_size"
-                    android:layout_height="@dimen/journal_month_nav_size"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="@drawable/fg_ripple_circle"
-                    android:contentDescription="@string/journal_prev_month">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:id="@+id/btnJournalPrevMonth"
+                        android:layout_width="@dimen/journal_month_nav_size"
+                        android:layout_height="@dimen/journal_month_nav_size"
+                        android:background="@drawable/bg_journal_month_nav_soft"
+                        android:clickable="true"
+                        android:contentDescription="@string/journal_prev_month"
+                        android:focusable="true"
+                        android:foreground="@drawable/fg_ripple_circle">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_journal_chevron_left_soft" />
+                    </FrameLayout>
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/txtJournalCurrentMonth"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:fontFamily="@font/material_symbols_outlined"
-                        android:fontVariationSettings="'wght' 600"
-                        android:text="chevron_left"
-                        android:textColor="@color/primary"
-                        android:textSize="24sp" />
-                </FrameLayout>
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:fontFamily="@font/manrope"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:gravity="center"
+                        android:text="Tháng 4, 2026"
+                        android:textColor="@color/home_text_primary"
+                        android:textSize="@dimen/journal_month_title_text_size"
+                        android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/txtJournalCurrentMonth"
-                    android:layout_width="0dp"
+                    <FrameLayout
+                        android:id="@+id/btnJournalNextMonth"
+                        android:layout_width="@dimen/journal_month_nav_size"
+                        android:layout_height="@dimen/journal_month_nav_size"
+                        android:background="@drawable/bg_journal_month_nav_soft"
+                        android:clickable="true"
+                        android:contentDescription="@string/journal_next_month"
+                        android:focusable="true"
+                        android:foreground="@drawable/fg_ripple_circle">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="@null"
+                            android:src="@drawable/ic_journal_chevron_right_soft" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rowJournalWeekdays"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:fontFamily="@font/be_vietnam_pro_bold"
-                    android:foreground="?attr/selectableItemBackgroundBorderless"
-                    android:gravity="center"
-                    android:text="Tháng 4, 2026"
-                    android:textColor="@color/on_surface"
-                    android:textSize="@dimen/journal_month_title_text_size" />
-
-                <FrameLayout
-                    android:id="@+id/btnJournalNextMonth"
-                    android:layout_width="@dimen/journal_month_nav_size"
-                    android:layout_height="@dimen/journal_month_nav_size"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="@drawable/fg_ripple_circle"
-                    android:contentDescription="@string/journal_next_month">
+                    android:layout_marginTop="@dimen/journal_weekday_margin_top"
+                    android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:fontFamily="@font/material_symbols_outlined"
-                        android:fontVariationSettings="'wght' 600"
-                        android:text="chevron_right"
-                        android:textColor="@color/primary"
-                        android:textSize="24sp" />
-                </FrameLayout>
+                        android:layout_weight="1"
+                        android:fontFamily="@font/manrope"
+                        android:gravity="center"
+                        android:text="@string/journal_weekday_t2"
+                        android:textColor="#7D6258"
+                        android:textSize="@dimen/journal_weekday_text_size" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/manrope"
+                        android:gravity="center"
+                        android:text="@string/journal_weekday_t3"
+                        android:textColor="#7D6258"
+                        android:textSize="@dimen/journal_weekday_text_size" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/manrope"
+                        android:gravity="center"
+                        android:text="@string/journal_weekday_t4"
+                        android:textColor="#7D6258"
+                        android:textSize="@dimen/journal_weekday_text_size" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/manrope"
+                        android:gravity="center"
+                        android:text="@string/journal_weekday_t5"
+                        android:textColor="#7D6258"
+                        android:textSize="@dimen/journal_weekday_text_size" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/manrope"
+                        android:gravity="center"
+                        android:text="@string/journal_weekday_t6"
+                        android:textColor="#7D6258"
+                        android:textSize="@dimen/journal_weekday_text_size" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/manrope"
+                        android:gravity="center"
+                        android:text="@string/journal_weekday_t7"
+                        android:textColor="#7D6258"
+                        android:textSize="@dimen/journal_weekday_text_size" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/manrope"
+                        android:gravity="center"
+                        android:text="@string/journal_weekday_cn"
+                        android:textColor="#7D6258"
+                        android:textSize="@dimen/journal_weekday_text_size" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvJournalCalendarDays"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/journal_grid_margin_top"
+                    android:clipToPadding="false"
+                    android:overScrollMode="never"
+                    android:paddingBottom="@dimen/journal_grid_bottom_padding"
+                    android:scrollbars="none" />
+
+                <TextView
+                    android:id="@+id/txtJournalCalendarEmptyState"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/journal_empty_text_margin_top"
+                    android:fontFamily="@font/manrope"
+                    android:gravity="center"
+                    android:text="@string/journal_empty_month"
+                    android:textColor="@color/home_text_secondary"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
             </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/rowJournalWeekdays"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/journal_weekday_margin_top"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/be_vietnam_pro_medium"
-                    android:gravity="center"
-                    android:text="@string/journal_weekday_t2"
-                    android:textColor="@color/on_surface_variant"
-                    android:textSize="@dimen/journal_weekday_text_size" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/be_vietnam_pro_medium"
-                    android:gravity="center"
-                    android:text="@string/journal_weekday_t3"
-                    android:textColor="@color/on_surface_variant"
-                    android:textSize="@dimen/journal_weekday_text_size" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/be_vietnam_pro_medium"
-                    android:gravity="center"
-                    android:text="@string/journal_weekday_t4"
-                    android:textColor="@color/on_surface_variant"
-                    android:textSize="@dimen/journal_weekday_text_size" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/be_vietnam_pro_medium"
-                    android:gravity="center"
-                    android:text="@string/journal_weekday_t5"
-                    android:textColor="@color/on_surface_variant"
-                    android:textSize="@dimen/journal_weekday_text_size" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/be_vietnam_pro_medium"
-                    android:gravity="center"
-                    android:text="@string/journal_weekday_t6"
-                    android:textColor="@color/on_surface_variant"
-                    android:textSize="@dimen/journal_weekday_text_size" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/be_vietnam_pro_medium"
-                    android:gravity="center"
-                    android:text="@string/journal_weekday_t7"
-                    android:textColor="@color/on_surface_variant"
-                    android:textSize="@dimen/journal_weekday_text_size" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/be_vietnam_pro_medium"
-                    android:gravity="center"
-                    android:text="@string/journal_weekday_cn"
-                    android:textColor="@color/on_surface_variant"
-                    android:textSize="@dimen/journal_weekday_text_size" />
-            </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvJournalCalendarDays"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/journal_grid_margin_top"
-                android:clipToPadding="false"
-                android:overScrollMode="never"
-                android:paddingBottom="@dimen/journal_grid_bottom_padding"
-                android:scrollbars="none" />
-
-            <TextView
-                android:id="@+id/txtJournalCalendarEmptyState"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/journal_empty_text_margin_top"
-                android:fontFamily="@font/be_vietnam_pro"
-                android:gravity="center"
-                android:text="@string/journal_empty_month"
-                android:textColor="@color/on_surface_variant"
-                android:textSize="13sp"
-                android:visibility="gone" />
-
-        </LinearLayout>
+        </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <ProgressBar
@@ -282,25 +350,53 @@
         app:layout_constraintWidth_max="448dp"
         app:layout_constraintWidth_percent="0.9" />
 
+    <View
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:alpha="0.85"
+        android:background="@drawable/bg_journal_fab_glow"
+        app:layout_constraintBottom_toBottomOf="@id/cardJournalCalendar"
+        app:layout_constraintEnd_toEndOf="@id/cardJournalCalendar" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabJournalAddPhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/journal_fab_margin"
-        android:layout_marginBottom="@dimen/journal_fab_margin"
+        android:layout_marginEnd="28dp"
+        android:layout_marginBottom="26dp"
         android:contentDescription="@string/journal_add_photo_desc"
         android:elevation="@dimen/journal_fab_elevation"
-        android:stateListAnimator="@null"
         android:src="@drawable/ic_journal_plus"
-        app:backgroundTint="@color/primary"
+        android:stateListAnimator="@null"
+        android:translationZ="0dp"
+        app:backgroundTint="#C88D68"
         app:fabCustomSize="@dimen/journal_fab_size"
+        app:layout_constraintBottom_toBottomOf="@id/cardJournalCalendar"
+        app:layout_constraintEnd_toEndOf="@id/cardJournalCalendar"
         app:maxImageSize="26dp"
         app:rippleColor="@color/home_nav_center_ripple"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Coolcook.CircleFab"
-        app:tint="@color/on_primary"
-        android:translationZ="0dp"
-        app:useCompatPadding="false"
-        app:layout_constraintBottom_toTopOf="@id/homeBottomNav"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:tint="#FFFFFBF7"
+        app:useCompatPadding="false" />
+
+    <ImageView
+        android:layout_width="11dp"
+        android:layout_height="11dp"
+        android:layout_marginEnd="116dp"
+        android:layout_marginBottom="88dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_home_decor_sparkle_pink_figma"
+        app:layout_constraintBottom_toBottomOf="@id/cardJournalCalendar"
+        app:layout_constraintEnd_toEndOf="@id/cardJournalCalendar" />
+
+    <ImageView
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="100dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_home_decor_heart_figma"
+        app:layout_constraintBottom_toBottomOf="@id/cardJournalCalendar"
+        app:layout_constraintEnd_toEndOf="@id/cardJournalCalendar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

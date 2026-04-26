@@ -2,17 +2,44 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/profile_section_title_margin_top"
-        android:fontFamily="@font/be_vietnam_pro"
-        android:text="@string/profile_section_activity"
-        android:textColor="@color/on_surface"
-        android:textSize="@dimen/profile_section_title_text_size"
-        android:textStyle="bold" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/be_vietnam_pro_bold"
+            android:text="@string/profile_section_activity"
+            android:textColor="@color/home_text_primary"
+            android:textSize="@dimen/profile_section_title_text_size"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_home_decor_heart_figma" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_home_decor_teddy_figma" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/actionProfileSavedFoods"
@@ -20,6 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/profile_action_item_margin_top"
         android:background="@drawable/bg_profile_action_item"
+        android:elevation="10dp"
         android:gravity="center_vertical"
         android:minHeight="@dimen/profile_action_item_min_height"
         android:orientation="horizontal"
@@ -29,16 +57,17 @@
         <FrameLayout
             android:layout_width="@dimen/profile_action_icon_container_size"
             android:layout_height="@dimen/profile_action_icon_container_size"
-            android:background="@drawable/bg_profile_menu_icon_circle">
+            android:background="@drawable/bg_profile_pastel_icon_circle"
+            android:backgroundTint="@color/profile_icon_pink_bg">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/material_symbols_outlined"
-                android:fontVariationSettings="'wght' 600"
+                android:fontVariationSettings="'wght' 400"
                 android:text="bookmark"
-                android:textColor="@color/primary"
+                android:textColor="@color/profile_icon_pink_fg"
                 android:textSize="@dimen/profile_action_icon_size" />
         </FrameLayout>
 
@@ -49,7 +78,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/be_vietnam_pro"
             android:text="@string/profile_action_saved"
-            android:textColor="@color/on_surface"
+            android:textColor="@color/home_text_primary"
             android:textSize="@dimen/profile_action_text_size"
             android:textStyle="bold" />
 
@@ -57,8 +86,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/material_symbols_outlined"
+            android:fontVariationSettings="'wght' 300"
             android:text="chevron_right"
-            android:textColor="@color/on_surface_variant"
+            android:textColor="@color/home_text_secondary"
             android:textSize="22sp" />
     </LinearLayout>
 
@@ -68,6 +98,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/profile_action_item_margin_top"
         android:background="@drawable/bg_profile_action_item"
+        android:elevation="10dp"
         android:gravity="center_vertical"
         android:minHeight="@dimen/profile_action_item_min_height"
         android:orientation="horizontal"
@@ -77,16 +108,17 @@
         <FrameLayout
             android:layout_width="@dimen/profile_action_icon_container_size"
             android:layout_height="@dimen/profile_action_icon_container_size"
-            android:background="@drawable/bg_profile_menu_icon_circle">
+            android:background="@drawable/bg_profile_pastel_icon_circle"
+            android:backgroundTint="@color/profile_icon_yellow_bg">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/material_symbols_outlined"
-                android:fontVariationSettings="'wght' 600"
+                android:fontVariationSettings="'wght' 400"
                 android:text="auto_stories"
-                android:textColor="@color/primary"
+                android:textColor="@color/profile_icon_yellow_fg"
                 android:textSize="@dimen/profile_action_icon_size" />
         </FrameLayout>
 
@@ -97,7 +129,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/be_vietnam_pro"
             android:text="@string/profile_action_journal"
-            android:textColor="@color/on_surface"
+            android:textColor="@color/home_text_primary"
             android:textSize="@dimen/profile_action_text_size"
             android:textStyle="bold" />
 
@@ -105,8 +137,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/material_symbols_outlined"
+            android:fontVariationSettings="'wght' 300"
             android:text="chevron_right"
-            android:textColor="@color/on_surface_variant"
+            android:textColor="@color/home_text_secondary"
             android:textSize="22sp" />
     </LinearLayout>
 
@@ -116,6 +149,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/profile_action_item_margin_top"
         android:background="@drawable/bg_profile_action_item"
+        android:elevation="10dp"
         android:gravity="center_vertical"
         android:minHeight="@dimen/profile_action_item_min_height"
         android:orientation="horizontal"
@@ -125,16 +159,17 @@
         <FrameLayout
             android:layout_width="@dimen/profile_action_icon_container_size"
             android:layout_height="@dimen/profile_action_icon_container_size"
-            android:background="@drawable/bg_profile_menu_icon_circle">
+            android:background="@drawable/bg_profile_pastel_icon_circle"
+            android:backgroundTint="@color/profile_icon_pink_bg">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/material_symbols_outlined"
-                android:fontVariationSettings="'FILL' 1, 'wght' 600"
+                android:fontVariationSettings="'wght' 350"
                 android:text="favorite"
-                android:textColor="@color/error"
+                android:textColor="@color/profile_icon_pink_fg"
                 android:textSize="@dimen/profile_action_icon_size" />
         </FrameLayout>
 
@@ -145,7 +180,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/be_vietnam_pro"
             android:text="@string/profile_action_favorites"
-            android:textColor="@color/on_surface"
+            android:textColor="@color/home_text_primary"
             android:textSize="@dimen/profile_action_text_size"
             android:textStyle="bold" />
 
@@ -153,8 +188,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/material_symbols_outlined"
+            android:fontVariationSettings="'wght' 300"
             android:text="chevron_right"
-            android:textColor="@color/on_surface_variant"
+            android:textColor="@color/home_text_secondary"
             android:textSize="22sp" />
     </LinearLayout>
 
@@ -164,6 +200,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/profile_action_item_margin_top"
         android:background="@drawable/bg_profile_action_item"
+        android:elevation="10dp"
         android:gravity="center_vertical"
         android:minHeight="@dimen/profile_action_item_min_height"
         android:orientation="horizontal"
@@ -173,16 +210,17 @@
         <FrameLayout
             android:layout_width="@dimen/profile_action_icon_container_size"
             android:layout_height="@dimen/profile_action_icon_container_size"
-            android:background="@drawable/bg_profile_menu_icon_circle">
+            android:background="@drawable/bg_profile_pastel_icon_circle"
+            android:backgroundTint="@color/profile_icon_green_bg">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/material_symbols_outlined"
-                android:fontVariationSettings="'wght' 600"
+                android:fontVariationSettings="'wght' 400"
                 android:text="monitor_heart"
-                android:textColor="@color/primary"
+                android:textColor="@color/profile_icon_green_fg"
                 android:textSize="@dimen/profile_action_icon_size" />
         </FrameLayout>
 
@@ -193,7 +231,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/be_vietnam_pro"
             android:text="@string/profile_action_health"
-            android:textColor="@color/on_surface"
+            android:textColor="@color/home_text_primary"
             android:textSize="@dimen/profile_action_text_size"
             android:textStyle="bold" />
 
@@ -201,8 +239,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/material_symbols_outlined"
+            android:fontVariationSettings="'wght' 300"
             android:text="chevron_right"
-            android:textColor="@color/on_surface_variant"
+            android:textColor="@color/home_text_secondary"
             android:textSize="22sp" />
     </LinearLayout>
 
@@ -212,6 +251,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/profile_action_item_margin_top"
         android:background="@drawable/bg_profile_action_item"
+        android:elevation="10dp"
         android:gravity="center_vertical"
         android:minHeight="@dimen/profile_action_item_min_height"
         android:orientation="horizontal"
@@ -221,16 +261,17 @@
         <FrameLayout
             android:layout_width="@dimen/profile_action_icon_container_size"
             android:layout_height="@dimen/profile_action_icon_container_size"
-            android:background="@drawable/bg_profile_menu_icon_circle">
+            android:background="@drawable/bg_profile_pastel_icon_circle"
+            android:backgroundTint="@color/profile_icon_purple_bg">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/material_symbols_outlined"
-                android:fontVariationSettings="'wght' 600"
+                android:fontVariationSettings="'wght' 400"
                 android:text="settings"
-                android:textColor="@color/primary"
+                android:textColor="@color/profile_icon_purple_fg"
                 android:textSize="@dimen/profile_action_icon_size" />
         </FrameLayout>
 
@@ -241,7 +282,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/be_vietnam_pro"
             android:text="@string/profile_action_settings"
-            android:textColor="@color/on_surface"
+            android:textColor="@color/home_text_primary"
             android:textSize="@dimen/profile_action_text_size"
             android:textStyle="bold" />
 
@@ -249,8 +290,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/material_symbols_outlined"
+            android:fontVariationSettings="'wght' 300"
             android:text="chevron_right"
-            android:textColor="@color/on_surface_variant"
+            android:textColor="@color/home_text_secondary"
             android:textSize="22sp" />
     </LinearLayout>
 </LinearLayout>

@@ -3,6 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
@@ -13,16 +15,44 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imgProfileAvatar"
-            android:layout_width="@dimen/profile_avatar_size"
-            android:layout_height="@dimen/profile_avatar_size"
-            android:contentDescription="@string/profile_avatar_desc"
-            android:scaleType="centerCrop"
-            android:src="@drawable/img_home_profile"
-            app:shapeAppearanceOverlay="@style/CircleImageView"
-            app:strokeColor="@color/home_avatar_border"
-            app:strokeWidth="2dp" />
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="-6dp"
+                android:layout_marginTop="-4dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_home_decor_sparkle_peach_figma" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="bottom|start"
+                android:layout_marginStart="-8dp"
+                android:layout_marginBottom="-4dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_home_decor_flower_figma" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imgProfileAvatar"
+                android:layout_width="@dimen/profile_avatar_size"
+                android:layout_height="@dimen/profile_avatar_size"
+                android:contentDescription="@string/profile_avatar_desc"
+                android:elevation="10dp"
+                android:outlineAmbientShadowColor="@color/profile_avatar_shadow"
+                android:outlineSpotShadowColor="@color/profile_avatar_shadow"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img_home_profile"
+                app:shapeAppearanceOverlay="@style/CircleImageView"
+                app:strokeColor="@color/profile_avatar_stroke"
+                app:strokeWidth="3dp" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -34,9 +64,10 @@
                 android:id="@+id/txtProfileName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/be_vietnam_pro"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:letterSpacing="0.01"
                 android:text="@string/profile_default_name"
-                android:textColor="@color/on_surface"
+                android:textColor="@color/home_text_primary"
                 android:textSize="@dimen/profile_header_name_text_size"
                 android:textStyle="bold" />
 
@@ -46,32 +77,59 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/be_vietnam_pro"
+                android:letterSpacing="0.01"
                 android:text="email@example.com"
-                android:textColor="@color/on_surface_variant"
+                android:textColor="@color/home_text_secondary"
                 android:textSize="@dimen/profile_header_email_text_size" />
         </LinearLayout>
     </LinearLayout>
 
     <FrameLayout
-        android:id="@+id/btnProfileEdit"
-        android:layout_width="@dimen/profile_edit_button_size"
-        android:layout_height="@dimen/profile_edit_button_size"
-        android:background="@drawable/bg_profile_edit_button"
-        android:clickable="true"
-        android:clipToOutline="true"
-        android:contentDescription="@string/profile_edit_desc"
-        android:focusable="true"
-        android:foreground="@drawable/fg_ripple_circle"
-        android:outlineProvider="background">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:fontFamily="@font/material_symbols_outlined"
-            android:fontVariationSettings="'wght' 600"
-            android:text="edit"
-            android:textColor="@color/primary"
-            android:textSize="26sp" />
+        <FrameLayout
+            android:id="@+id/btnProfileEdit"
+            android:layout_width="@dimen/profile_edit_button_size"
+            android:layout_height="@dimen/profile_edit_button_size"
+            android:background="@drawable/bg_profile_edit_button"
+            android:clickable="true"
+            android:clipToOutline="true"
+            android:contentDescription="@string/profile_edit_desc"
+            android:elevation="10dp"
+            android:focusable="true"
+            android:foreground="@drawable/fg_ripple_circle"
+            android:outlineProvider="background">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:fontVariationSettings="'wght' 500"
+                android:text="edit"
+                android:textColor="@color/profile_edit_icon"
+                android:textSize="26sp" />
+        </FrameLayout>
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="bottom|start"
+            android:layout_marginStart="-16dp"
+            android:layout_marginBottom="-10dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_home_decor_bunny_figma" />
+
+        <ImageView
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="-2dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_home_decor_heart_figma" />
     </FrameLayout>
 </LinearLayout>

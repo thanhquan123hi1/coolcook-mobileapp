@@ -1,8 +1,14 @@
+import com.google.gms.googleservices.GoogleServicesTask
 import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
+}
+
+tasks.withType<GoogleServicesTask>().configureEach {
+    // Avoid the plugin's default generated/res/<taskName> path, which can stay locked on Windows.
+    outputDirectory.set(layout.buildDirectory.dir("generated/google-services/$name"))
 }
 
 val envProperties = Properties().apply {
@@ -40,6 +46,7 @@ fun fbLoginScheme(appId: String): String {
     return if (appId.startsWith("fb", ignoreCase = true)) appId else "fb$appId"
 }
 
+// layout.buildDirectory.set(rootProject.layout.projectDirectory.dir(".gradle-build/app"))
 android {
     namespace = "com.coolcook.app"
     compileSdk {

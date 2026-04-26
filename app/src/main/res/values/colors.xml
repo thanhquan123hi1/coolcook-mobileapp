@@ -28,11 +28,12 @@
     <color name="error_container">#FFDAD6</color>
 
     <color name="home_accent">#EA580C</color>
-    <color name="home_search_placeholder">#6F5B4B</color>
+    <color name="home_search_placeholder">#805A3E36</color>
     <color name="home_feature_start">#F8DFC3</color>
     <color name="home_feature_end">#F7BB7A</color>
     <color name="home_quick_icon_bg">#FFF2E5</color>
-    <color name="home_nav_inactive">#80443428</color>
+    <color name="home_nav_active">#F8AFC4</color>
+    <color name="home_nav_inactive">#C7B0A4</color>
     <color name="home_nav_ripple">#1F8F4E00</color>
     <color name="home_nav_center_ripple">#33FFFFFF</color>
     <color name="home_ripple_soft">#168F4E00</color>
@@ -109,11 +110,34 @@
     <color name="home_soft_blue_bg">#DFF0FF</color>
     <color name="home_soft_blue_icon">#6BA8E6</color>
     <color name="home_avatar_stroke">#FFFFFFFF</color>
-    <color name="home_bottom_nav_stroke">#F9EBE3</color>
-    <color name="home_bottom_nav_fill">#FCFFFEFB</color>
+    <color name="home_bottom_nav_stroke">#00FFFFFF</color>
+    <color name="home_bottom_nav_fill">#FFFFFFFF</color>
     <color name="auth_input_hint">#8A6F5B4B</color>
     <color name="auth_input_error">#C35A4A</color>
     <color name="auth_checkbox_border">#96C9B2A0</color>
     <color name="auth_checkbox_fill">#8F4E00</color>
+    <color name="profile_card_fill">#FFFFFCF8</color>
+    <color name="profile_card_stroke">#33E8DCCF</color>
+    <color name="profile_divider_soft">#26E4D6CA</color>
+    <color name="profile_avatar_stroke">#FFF8F0F6</color>
+    <color name="profile_avatar_shadow">#1A8C6B57</color>
+    <color name="profile_edit_fill">#FFF7EDE3</color>
+    <color name="profile_edit_stroke">#40E8D6CA</color>
+    <color name="profile_edit_icon">#A46A47</color>
+    <color name="profile_toggle_fill">#FFF3E6EE</color>
+    <color name="profile_toggle_thumb_fill">#FFFFFFFF</color>
+    <color name="profile_toggle_thumb_stroke">#33E8D6CA</color>
+    <color name="profile_logout_fill">#FFF8EFE6</color>
+    <color name="profile_logout_icon">#B27A59</color>
+    <color name="profile_icon_pink_bg">#FFFCE7EF</color>
+    <color name="profile_icon_pink_fg">#F09BB5</color>
+    <color name="profile_icon_yellow_bg">#FFFFF4DD</color>
+    <color name="profile_icon_yellow_fg">#EDBF5F</color>
+    <color name="profile_icon_green_bg">#FFECF6E8</color>
+    <color name="profile_icon_green_fg">#71C488</color>
+    <color name="profile_icon_purple_bg">#FFF1EBFF</color>
+    <color name="profile_icon_purple_fg">#B296EE</color>
+    <color name="profile_icon_beige_bg">#FFF8EFE7</color>
+    <color name="profile_icon_beige_fg">#C39B7A</color>
 
 </resources>
