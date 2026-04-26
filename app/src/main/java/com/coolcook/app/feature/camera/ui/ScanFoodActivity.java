@@ -4,16 +4,21 @@ import android.Manifest;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.DownloadManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.os.Environment;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -86,7 +91,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -196,6 +204,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private View btnCaptureSaveCancel;
     private View btnCaptureSaveConfirm;
     private View btnPreviewDownload;
+    private View journalPreviewTopBarInline;
     private View btnPreviewEffects;
     private ProgressBar captureSaveLoading;
     private TextView txtScanStatus;
@@ -226,6 +235,7 @@ public class ScanFoodActivity extends AppCompatActivity {
 
     private ActivityResultLauncher<String> galleryPickerLauncher;
     private ActivityResultLauncher<String> cameraPermissionLauncher;
+    private ActivityResultLauncher<String> storagePermissionLauncher;
 
     private Animation detectionPulseAnimation;
     private boolean isRecognitionMode = true;
@@ -268,6 +278,23 @@ public class ScanFoodActivity extends AppCompatActivity {
     private ScanDishSuggestionAdapter suggestionDialogAdapter;
     private ChipGroup suggestionIngredientGroup;
     private TextView txtSuggestionEmpty;
+    @Nullable
+    private PendingGallerySaveRequest pendingGallerySaveRequest;
+
+    private static final class PendingGallerySaveRequest {
+        final byte[] imageBytes;
+        final String fileName;
+        final ScanFoodJournalManager.ImageSaveCallback callback;
+
+        PendingGallerySaveRequest(
+                @NonNull byte[] imageBytes,
+                @NonNull String fileName,
+                @NonNull ScanFoodJournalManager.ImageSaveCallback callback) {
+            this.imageBytes = imageBytes;
+            this.fileName = fileName;
+            this.callback = callback;
+        }
+    }
 
     public static Intent createIntent(Context context) {
         return new Intent(context, ScanFoodActivity.class);
@@ -329,6 +356,14 @@ public class ScanFoodActivity extends AppCompatActivity {
                     @Override
                     public void setJournalPreviewUiVisible(boolean visible) {
                         ScanFoodActivity.this.setJournalPreviewUiVisible(visible);
+                    }
+
+                    @Override
+                    public void saveJournalPreviewImageToGallery(
+                            @NonNull byte[] imageBytes,
+                            @NonNull String fileName,
+                            @NonNull ScanFoodJournalManager.ImageSaveCallback callback) {
+                        ScanFoodActivity.this.saveJournalPreviewImageToGallery(imageBytes, fileName, callback);
                     }
                 },
                 null,
@@ -460,7 +495,8 @@ public class ScanFoodActivity extends AppCompatActivity {
         btnFlipCamera = findViewById(R.id.btnFlipCamera);
         btnCaptureSaveCancel = findViewById(R.id.btnPreviewCancelOld);
         btnCaptureSaveConfirm = findViewById(R.id.btnPreviewSendOld);
-        btnPreviewDownload = findViewById(R.id.btnPreviewDownload);
+        btnPreviewDownload = findViewById(R.id.btnPreviewDownloadInlineTop);
+        journalPreviewTopBarInline = findViewById(R.id.journalPreviewTopBarInline);
         btnPreviewEffects = findViewById(R.id.btnPreviewEffectsOld);
         captureSaveLoading = findViewById(R.id.capturePreviewLoadingOldInline);
         edtCaptureCaption = findViewById(R.id.edtJournalPreviewCaptionOld);
@@ -954,6 +990,23 @@ public class ScanFoodActivity extends AppCompatActivity {
                         Toast.makeText(this, "Vui lòng cấp quyền camera", Toast.LENGTH_SHORT).show();
                     }
                 });
+        storagePermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    PendingGallerySaveRequest request = pendingGallerySaveRequest;
+                    pendingGallerySaveRequest = null;
+                    if (request == null) {
+                        return;
+                    }
+                    if (isGranted) {
+                        persistJournalPreviewImageToGallery(
+                                request.imageBytes,
+                                request.fileName,
+                                request.callback);
+                    } else {
+                        request.callback.onError("KhÃ´ng cÃ³ quyá»n lÆ°u áº£nh");
+                    }
+                });
     }
 
     private void ensureCameraPermissionAndStart() {
@@ -1276,6 +1329,9 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (journalPreviewFooterContainer != null) {
             journalPreviewFooterContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
+        if (journalPreviewTopBarInline != null) {
+            journalPreviewTopBarInline.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
         if (imgCapturePreview != null) {
             imgCapturePreview.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
@@ -1579,6 +1635,13 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
         if (btnSaveSelectedDish != null) {
             btnSaveSelectedDish.setOnClickListener(v -> saveSelectedDish());
+        }
+        if (btnPreviewDownload != null) {
+            btnPreviewDownload.setOnClickListener(v -> {
+                if (journalManager != null) {
+                    journalManager.downloadPendingJournalImage(v);
+                }
+            });
         }
         View btnAddManualExtraIngredient = findViewById(R.id.btnAddManualExtraIngredient);
         if (btnAddManualExtraIngredient != null) {
@@ -3202,6 +3265,98 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (journalManager != null) {
             journalManager.publishPendingJournalMoment(isUsingFrontCamera);
         }
+    }
+
+    private void saveJournalPreviewImageToGallery(
+            @NonNull byte[] imageBytes,
+            @NonNull String fileName,
+            @NonNull ScanFoodJournalManager.ImageSaveCallback callback) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && !hasLegacyWriteStoragePermission()) {
+            pendingGallerySaveRequest = new PendingGallerySaveRequest(
+                    imageBytes.clone(),
+                    fileName,
+                    callback);
+            if (storagePermissionLauncher != null) {
+                storagePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            } else {
+                callback.onError("KhÃ´ng thá»ƒ xin quyá»n lÆ°u áº£nh");
+            }
+            return;
+        }
+        persistJournalPreviewImageToGallery(imageBytes, fileName, callback);
+    }
+
+    private boolean hasLegacyWriteStoragePermission() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void persistJournalPreviewImageToGallery(
+            @NonNull byte[] imageBytes,
+            @NonNull String fileName,
+            @NonNull ScanFoodJournalManager.ImageSaveCallback callback) {
+        new Thread(() -> {
+            Bitmap bitmap = ScanFoodImageUtils.decodePreviewBitmap(imageBytes);
+            if (bitmap == null) {
+                runOnUiThread(() -> callback.onError("KhÃ´ng táº£i Ä‘Æ°á»£c áº£nh Ä‘á»ƒ lÆ°u"));
+                return;
+            }
+
+            Uri savedUri = null;
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+                    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                    values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/CoolCook");
+                    values.put(MediaStore.Images.Media.IS_PENDING, 1);
+
+                    savedUri = getContentResolver().insert(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            values);
+                    if (savedUri == null) {
+                        throw new IOException("MediaStore insert returned null");
+                    }
+
+                    try (OutputStream outputStream = getContentResolver().openOutputStream(savedUri, "w")) {
+                        if (outputStream == null || !bitmap.compress(Bitmap.CompressFormat.JPEG, 96, outputStream)) {
+                            throw new IOException("Bitmap compression failed");
+                        }
+                    }
+
+                    ContentValues completedValues = new ContentValues();
+                    completedValues.put(MediaStore.Images.Media.IS_PENDING, 0);
+                    getContentResolver().update(savedUri, completedValues, null, null);
+                } else {
+                    File picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                    File coolCookDir = new File(picturesDir, "CoolCook");
+                    if (!coolCookDir.exists() && !coolCookDir.mkdirs()) {
+                        throw new IOException("Cannot create output directory");
+                    }
+
+                    File outputFile = new File(coolCookDir, fileName);
+                    try (OutputStream outputStream = new FileOutputStream(outputFile)) {
+                        if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 96, outputStream)) {
+                            throw new IOException("Bitmap compression failed");
+                        }
+                    }
+                    MediaScannerConnection.scanFile(
+                            this,
+                            new String[]{outputFile.getAbsolutePath()},
+                            new String[]{"image/jpeg"},
+                            null);
+                }
+
+                runOnUiThread(callback::onSuccess);
+            } catch (Exception error) {
+                if (savedUri != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    getContentResolver().delete(savedUri, null, null);
+                }
+                runOnUiThread(() -> callback.onError("LÆ°u áº£nh tháº¥t báº¡i"));
+            } finally {
+                bitmap.recycle();
+            }
+        }, "coolcook-journal-download").start();
     }
 
     private void setProcessingUiEnabled(boolean enabled) {
