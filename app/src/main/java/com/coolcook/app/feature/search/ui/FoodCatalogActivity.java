@@ -245,9 +245,9 @@ public class FoodCatalogActivity extends AppCompatActivity {
     private void setChipSelected(@NonNull TextView chip, boolean selected) {
         chip.setSelected(selected);
         chip.setBackgroundResource(selected
-                ? R.drawable.bg_food_filter_chip_selected
-                : R.drawable.bg_food_filter_chip_unselected);
-        chip.setTextColor(getColor(selected ? R.color.on_primary : R.color.on_surface_variant));
+                ? R.drawable.bg_food_filter_chip_selected_pastel
+                : R.drawable.bg_food_filter_chip_unselected_pastel);
+        chip.setTextColor(getColor(selected ? R.color.home_link_pink : R.color.home_text_primary));
     }
 
     private void openFoodDetail(@NonNull FoodItem foodItem) {

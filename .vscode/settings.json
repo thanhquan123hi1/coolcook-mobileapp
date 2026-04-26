@@ -1,3 +1,6 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.import.gradle.java.home": "C:\\Program Files\\Java\\jdk-21",
+    "java.jdt.ls.java.home": "C:\\Program Files\\Java\\jdk-21",
+    "git.ignoreLimitWarning": true
 }

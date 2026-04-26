@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/profile_footer_section_margin_top"
         android:background="@drawable/bg_profile_action_item"
+        android:elevation="10dp"
         android:gravity="center_vertical"
         android:minHeight="@dimen/profile_action_item_min_height"
         android:orientation="horizontal"
@@ -27,18 +28,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/material_symbols_outlined"
-                android:fontVariationSettings="'wght' 500"
+                android:fontVariationSettings="'wght' 400"
                 android:text="dark_mode"
-                android:textColor="@color/on_surface_variant"
+                android:textColor="@color/profile_icon_purple_fg"
                 android:textSize="@dimen/profile_action_icon_size" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/profile_action_text_margin_start"
-                android:fontFamily="@font/be_vietnam_pro"
+                android:fontFamily="@font/be_vietnam_pro_bold"
                 android:text="@string/profile_footer_dark_mode"
-                android:textColor="@color/on_surface"
+                android:textColor="@color/home_text_primary"
                 android:textSize="@dimen/profile_action_text_size"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -68,6 +69,7 @@
         android:background="@drawable/bg_profile_logout_button"
         android:clickable="true"
         android:clipToOutline="true"
+        android:elevation="10dp"
         android:focusable="true"
         android:foreground="@drawable/fg_ripple_rounded_large"
         android:gravity="center"
@@ -78,18 +80,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/material_symbols_outlined"
-            android:fontVariationSettings="'wght' 600"
+            android:fontVariationSettings="'wght' 500"
             android:text="logout"
-            android:textColor="@color/primary"
+            android:textColor="@color/profile_logout_icon"
             android:textSize="28sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:fontFamily="@font/be_vietnam_pro"
+            android:fontFamily="@font/be_vietnam_pro_bold"
             android:text="@string/profile_footer_logout"
-            android:textColor="@color/primary"
+            android:textColor="@color/profile_logout_icon"
             android:textSize="@dimen/profile_action_text_size"
             android:textStyle="bold" />
     </LinearLayout>

@@ -3,6 +3,8 @@
     android:id="@+id/profileContentContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:orientation="vertical"
     android:paddingStart="@dimen/profile_content_padding_horizontal"
     android:paddingTop="@dimen/profile_content_padding_top"

@@ -367,8 +367,8 @@
                             android:adjustViewBounds="true"
                             android:contentDescription="@string/home_feature_image_desc"
                             android:scaleType="fitCenter"
-                            android:src="@drawable/img_scan_food_burger"
-                            tools:src="@drawable/img_scan_food_burger" />
+                            android:src="@drawable/img_home_banner_burger_figma"
+                            tools:src="@drawable/img_home_banner_burger_figma" />
                     </FrameLayout>
 
                     <ImageView

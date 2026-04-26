@@ -486,7 +486,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void updateBottomNavigationState(int activeTab) {
-        int activeColor = ContextCompat.getColor(this, R.color.primary);
+        int activeColor = ContextCompat.getColor(this, R.color.home_nav_active);
         int inactiveColor = ContextCompat.getColor(this, R.color.home_nav_inactive);
 
         applyNavItemState(navIconHome, navLabelHome, activeTab == TAB_HOME, activeColor, inactiveColor);
@@ -508,8 +508,12 @@ public class HomeActivity extends AppCompatActivity {
 
         icon.setSelected(active);
         int targetColor = active ? activeColor : inactiveColor;
-        animateIconTint(icon, targetColor);
-        animateIconTransform(icon, active);
+        icon.setImageResource(resolveBottomNavIcon(icon.getId(), active));
+        icon.setImageTintList(null);
+        icon.animate().cancel();
+        icon.setScaleX(1f);
+        icon.setScaleY(1f);
+        icon.setTranslationY(0f);
         animateLabelColor(label, targetColor);
     }
 
@@ -536,7 +540,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private void applyCameraIconState() {
         if (navIconCamera != null) {
-            navIconCamera.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.on_primary)));
+            navIconCamera.setImageResource(R.drawable.ic_home_nav_camera_figma);
+            navIconCamera.setImageTintList(null);
             navIconCamera.animate().cancel();
             navIconCamera.animate()
                     .scaleX(1f)
@@ -546,6 +551,26 @@ public class HomeActivity extends AppCompatActivity {
                     .setInterpolator(new DecelerateInterpolator())
                     .start();
         }
+    }
+
+    private int resolveBottomNavIcon(int iconId, boolean active) {
+        if (iconId == R.id.homeNavIconHome) {
+            return active ? R.drawable.ic_home_nav_home_active_figma
+                    : R.drawable.ic_home_nav_home_inactive_figma;
+        }
+        if (iconId == R.id.homeNavIconSearch) {
+            return active ? R.drawable.ic_home_nav_search_active_figma
+                    : R.drawable.ic_home_nav_search_inactive_figma;
+        }
+        if (iconId == R.id.homeNavIconHistory) {
+            return active ? R.drawable.ic_home_nav_history_active_figma
+                    : R.drawable.ic_home_nav_history_inactive_figma;
+        }
+        if (iconId == R.id.homeNavIconProfile) {
+            return active ? R.drawable.ic_home_nav_profile_active_figma
+                    : R.drawable.ic_home_nav_profile_inactive_figma;
+        }
+        return R.drawable.ic_home_nav_camera_figma;
     }
 
     private void animateIconTint(AppCompatImageView icon, int targetColor) {

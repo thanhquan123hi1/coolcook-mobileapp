@@ -11,6 +11,13 @@ local.properties
 
 # Build outputs
 **/build/
+.gradle-build/
+.gradle_verify/
+.gradle_verify_project/
+build_garbage/
+**/build_garbage/
+*.apk
+*.jks
 
 # IDE and temp files
 .idea/workspace.xml
