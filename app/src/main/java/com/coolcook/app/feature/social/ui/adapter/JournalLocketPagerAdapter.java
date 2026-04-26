@@ -28,13 +28,16 @@ public class JournalLocketPagerAdapter extends RecyclerView.Adapter<RecyclerView
         void onHistoryPageVisible(@Nullable JournalFeedItem item);
 
         void onCameraPageBound(
+                @NonNull View pageRoot,
                 @NonNull PreviewView previewView,
                 @NonNull View previewInnerFrame,
                 @NonNull View flashButton,
                 @NonNull TextView flashIcon,
                 @NonNull View galleryButton,
                 @NonNull View shutterButton,
-                @NonNull View flipButton);
+                @NonNull View flipButton,
+                @NonNull View controlRow,
+                @NonNull View historyTitle);
     }
 
     private static final int VIEW_TYPE_CAMERA = 0;
@@ -70,13 +73,16 @@ public class JournalLocketPagerAdapter extends RecyclerView.Adapter<RecyclerView
         if (holder instanceof CameraPageViewHolder) {
             CameraPageViewHolder cameraHolder = (CameraPageViewHolder) holder;
             listener.onCameraPageBound(
+                    cameraHolder.itemView,
                     cameraHolder.previewView,
                     cameraHolder.previewInnerFrame,
                     cameraHolder.flashButton,
                     cameraHolder.flashIcon,
                     cameraHolder.galleryButton,
                     cameraHolder.shutterButton,
-                    cameraHolder.flipButton);
+                    cameraHolder.flipButton,
+                    cameraHolder.controlRow,
+                    cameraHolder.historyTitle);
             listener.onHistoryPageVisible(null);
             return;
         }
@@ -169,6 +175,8 @@ public class JournalLocketPagerAdapter extends RecyclerView.Adapter<RecyclerView
         final View galleryButton;
         final View shutterButton;
         final View flipButton;
+        final View controlRow;
+        final View historyTitle;
 
         CameraPageViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -179,6 +187,8 @@ public class JournalLocketPagerAdapter extends RecyclerView.Adapter<RecyclerView
             galleryButton = itemView.findViewById(R.id.btnJournalCameraGallery);
             shutterButton = itemView.findViewById(R.id.btnJournalCameraShutter);
             flipButton = itemView.findViewById(R.id.btnJournalCameraFlip);
+            controlRow = itemView.findViewById(R.id.journalCameraControlRow);
+            historyTitle = itemView.findViewById(R.id.txtJournalCameraHistoryTitle);
         }
     }
 
