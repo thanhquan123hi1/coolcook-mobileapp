@@ -96,6 +96,45 @@
             </FrameLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/journalPreviewTopBarInline"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="24dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/txtPreviewSendToTitleInline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/be_vietnam_pro_bold"
+                android:text="Gửi đến..."
+                android:textColor="@android:color/white"
+                android:textSize="26sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/btnPreviewDownloadInlineTop"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:fontFamily="@font/material_symbols_outlined"
+                android:foreground="@drawable/fg_ripple_circle"
+                android:gravity="center"
+                android:text="download"
+                android:textColor="@android:color/white"
+                android:textSize="28sp"
+                app:layout_constraintBottom_toBottomOf="@id/txtPreviewSendToTitleInline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/txtPreviewSendToTitleInline" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <FrameLayout
             android:id="@+id/cameraPreviewCard"
             android:layout_width="0dp"
@@ -742,6 +781,25 @@
                     app:layout_constraintBottom_toBottomOf="@id/btnPreviewSendOld"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/btnPreviewSendOld" />
+
+                <TextView
+                    android:id="@+id/txtPreviewSentBadgeOld"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/bg_journal_preview_caption"
+                    android:fontFamily="@font/be_vietnam_pro_bold"
+                    android:gravity="center"
+                    android:paddingStart="14dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="8dp"
+                    android:text="Đã gửi"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@id/btnPreviewSendOld"
+                    app:layout_constraintStart_toEndOf="@id/btnPreviewSendOld" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView

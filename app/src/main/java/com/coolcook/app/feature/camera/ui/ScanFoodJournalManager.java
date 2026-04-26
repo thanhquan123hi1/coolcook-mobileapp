@@ -2,6 +2,7 @@ package com.coolcook.app.feature.camera.ui;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -33,9 +34,16 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 final class ScanFoodJournalManager {
+
+    interface ImageSaveCallback {
+        void onSuccess();
+
+        void onError(@NonNull String message);
+    }
 
     interface Host {
         void setProcessingUiEnabled(boolean enabled);
@@ -43,6 +51,11 @@ final class ScanFoodJournalManager {
         void updateJournalStatus(@NonNull String status);
 
         void setJournalPreviewUiVisible(boolean visible);
+
+        void saveJournalPreviewImageToGallery(
+                @NonNull byte[] imageBytes,
+                @NonNull String fileName,
+                @NonNull ImageSaveCallback callback);
     }
 
     private static final int JOURNAL_LIST_LIMIT = 30;
@@ -60,6 +73,7 @@ final class ScanFoodJournalManager {
     private final View btnJournalPostCancel;
     private final View btnJournalPostPublish;
     private final ProgressBar journalPostLoading;
+    private final TextView txtJournalPostSentBadge;
     private final TextView iconJournalPostSend;
     private final TextView iconJournalPostSuccess;
     private final MediaUploadRepository mediaUploadRepository;
@@ -72,6 +86,11 @@ final class ScanFoodJournalManager {
     private byte[] pendingJournalImageBytes;
     private String pendingJournalSourceLabel = "camera";
     private boolean isJournalSaveInProgress;
+    private boolean isJournalDownloadInProgress;
+    @Nullable
+    private String activeDownloadToken;
+    @Nullable
+    private String lastDownloadedToken;
 
     ScanFoodJournalManager(
             @NonNull ScanFoodActivity activity,
@@ -103,6 +122,7 @@ final class ScanFoodJournalManager {
         this.btnJournalPostCancel = btnJournalPostCancel;
         this.btnJournalPostPublish = btnJournalPostPublish;
         this.journalPostLoading = journalPostLoading;
+        this.txtJournalPostSentBadge = resolveTextView(journalCaptureOverlay, R.id.txtPreviewSentBadgeOld, R.id.txtPreviewSentBadgeOld);
         this.iconJournalPostSend = resolveTextView(btnJournalPostPublish, R.id.iconPreviewSend, R.id.iconPreviewSendOld);
         this.iconJournalPostSuccess = resolveTextView(btnJournalPostPublish, R.id.iconPreviewSuccess, R.id.iconPreviewSuccessOld);
         this.mediaUploadRepository = mediaUploadRepository;
@@ -222,12 +242,58 @@ final class ScanFoodJournalManager {
         resetJournalPostActionState();
         setJournalPostLoading(false, "");
         showJournalPostError("");
+        setJournalPostSentBadgeVisible(false);
         if (clearPendingState) {
             pendingJournalImageBytes = null;
             pendingJournalSourceLabel = "camera";
+            resetJournalDownloadState();
         }
         host.setJournalPreviewUiVisible(false);
         host.updateJournalStatus("Sẵn sàng chụp moment mới.");
+    }
+
+    void downloadPendingJournalImage(@Nullable View downloadButton) {
+        if (pendingJournalImageBytes == null || pendingJournalImageBytes.length == 0) {
+            Toast.makeText(activity, "KhÃ´ng cÃ³ áº£nh Ä‘á»ƒ táº£i", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String imageToken = buildImageToken(pendingJournalImageBytes);
+        if (isJournalDownloadInProgress && TextUtils.equals(activeDownloadToken, imageToken)) {
+            Toast.makeText(activity, "áº¢nh Ä‘ang Ä‘Æ°á»£c lÆ°u", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.equals(lastDownloadedToken, imageToken)) {
+            Toast.makeText(activity, "áº¢nh nÃ y Ä‘Ã£ táº£i vá» rá»“i", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        isJournalDownloadInProgress = true;
+        activeDownloadToken = imageToken;
+        updateDownloadButtonState(downloadButton, false);
+        animateDownloadButtonTap(downloadButton);
+
+        host.saveJournalPreviewImageToGallery(
+                pendingJournalImageBytes.clone(),
+                "coolcook-journal-" + System.currentTimeMillis() + ".jpg",
+                new ImageSaveCallback() {
+                    @Override
+                    public void onSuccess() {
+                        isJournalDownloadInProgress = false;
+                        activeDownloadToken = null;
+                        lastDownloadedToken = imageToken;
+                        updateDownloadButtonState(downloadButton, true);
+                        Toast.makeText(activity, "ÄÃ£ táº£i vá»", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(@NonNull String message) {
+                        isJournalDownloadInProgress = false;
+                        activeDownloadToken = null;
+                        updateDownloadButtonState(downloadButton, true);
+                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     void publishPendingJournalMoment(boolean isUsingFrontCamera) {
@@ -385,6 +451,7 @@ final class ScanFoodJournalManager {
 
         pendingJournalImageBytes = imageBytes;
         pendingJournalSourceLabel = sourceLabel;
+        resetJournalDownloadState();
         imgJournalCapturedPreview.setImageBitmap(bitmap);
         if (edtJournalCaption != null) {
             edtJournalCaption.setText("");
@@ -392,6 +459,7 @@ final class ScanFoodJournalManager {
         resetJournalPostActionState();
         setJournalPostLoading(false, "");
         showJournalPostError("");
+        setJournalPostSentBadgeVisible(false);
         journalCaptureOverlay.setVisibility(View.VISIBLE);
         host.setJournalPreviewUiVisible(true);
         host.updateJournalStatus("Thêm caption rồi bấm Đăng.");
@@ -487,6 +555,7 @@ final class ScanFoodJournalManager {
                     .setDuration(180L)
                     .start();
         }
+        setJournalPostSentBadgeVisible(true);
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             hideJournalCapturePreview(true);
             host.updateJournalStatus("");
@@ -508,6 +577,68 @@ final class ScanFoodJournalManager {
             iconJournalPostSend.setScaleX(1f);
             iconJournalPostSend.setScaleY(1f);
         }
+        setJournalPostSentBadgeVisible(false);
+    }
+
+    private void setJournalPostSentBadgeVisible(boolean visible) {
+        if (txtJournalPostSentBadge == null) {
+            return;
+        }
+        txtJournalPostSentBadge.animate().cancel();
+        if (!visible) {
+            txtJournalPostSentBadge.setVisibility(View.GONE);
+            txtJournalPostSentBadge.setAlpha(0f);
+            txtJournalPostSentBadge.setTranslationY(0f);
+            return;
+        }
+        txtJournalPostSentBadge.setVisibility(View.VISIBLE);
+        txtJournalPostSentBadge.setAlpha(0f);
+        txtJournalPostSentBadge.setTranslationY(10f);
+        txtJournalPostSentBadge.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(180L)
+                .start();
+    }
+
+    private void resetJournalDownloadState() {
+        isJournalDownloadInProgress = false;
+        activeDownloadToken = null;
+        lastDownloadedToken = null;
+    }
+
+    @NonNull
+    private static String buildImageToken(@NonNull byte[] imageBytes) {
+        return imageBytes.length + ":" + Arrays.hashCode(imageBytes);
+    }
+
+    private void updateDownloadButtonState(@Nullable View downloadButton, boolean enabled) {
+        if (downloadButton == null) {
+            return;
+        }
+        downloadButton.setEnabled(enabled);
+        downloadButton.setAlpha(enabled ? 1f : 0.6f);
+    }
+
+    private void animateDownloadButtonTap(@Nullable View downloadButton) {
+        if (downloadButton == null) {
+            return;
+        }
+        Drawable background = downloadButton.getBackground();
+        if (background != null) {
+            background.mutate().setAlpha(220);
+        }
+        downloadButton.animate().cancel();
+        downloadButton.animate()
+                .scaleX(0.9f)
+                .scaleY(0.9f)
+                .setDuration(90L)
+                .withEndAction(() -> downloadButton.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(140L)
+                        .start())
+                .start();
     }
 
     private void shareInvite(@NonNull FriendInvite invite) {
