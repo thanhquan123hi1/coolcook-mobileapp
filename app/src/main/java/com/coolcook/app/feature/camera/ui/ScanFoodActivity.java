@@ -2388,6 +2388,11 @@ public class ScanFoodActivity extends AppCompatActivity {
             behavior.setHideable(false);
             behavior.setSkipCollapsed(true);
             behavior.setDraggable(false);
+            FrameLayout bottomSheet = suggestionDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                bottomSheet.setBackgroundColor(Color.TRANSPARENT);
+                bottomSheet.setPadding(0, 0, 0, 0);
+            }
             behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
     }
@@ -2500,11 +2505,16 @@ public class ScanFoodActivity extends AppCompatActivity {
         chip.setOnCloseIconClickListener(v -> removeIngredientFromSelection(ingredient.getName()));
         chip.setOnClickListener(v -> openDishIngredientRemovalHint());
         chip.setTypeface(getResources().getFont(R.font.be_vietnam_pro_medium));
-        chip.setTextColor(Color.parseColor("#4D3B2E"));
-        chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#F7EEE5")));
-        chip.setChipStrokeColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#E4D6C6")));
+        chip.setTextColor(Color.parseColor("#4F392D"));
+        chip.setChipBackgroundColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#FFFFF7F9")));
+        chip.setChipStrokeColor(android.content.res.ColorStateList.valueOf(Color.parseColor("#4AF1C7D2")));
         chip.setChipStrokeWidth(dp(1f));
-        chip.setChipMinHeight(dp(34f));
+        chip.setChipMinHeight(dp(40f));
+        chip.setChipStartPadding(dp(14f));
+        chip.setChipEndPadding(dp(14f));
+        chip.setTextStartPadding(dp(4f));
+        chip.setCloseIconStartPadding(dp(6f));
+        chip.setCloseIconEndPadding(dp(2f));
         chip.setEnsureMinTouchTargetSize(false);
         return chip;
     }
