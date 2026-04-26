@@ -8,8 +8,11 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import android.widget.TextView;
+import androidx.core.content.ContextCompat;
+import androidx.credentials.ClearCredentialStateRequest;
+import androidx.credentials.CredentialManager;
+import androidx.credentials.CredentialManagerCallback;
+import androidx.credentials.exceptions.ClearCredentialException;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -19,22 +22,19 @@ import com.coolcook.app.core.util.AvatarImageUtils;
 import com.coolcook.app.feature.camera.data.ScanSavedDishStore;
 import com.coolcook.app.feature.camera.ui.SavedScanDishesActivity;
 import com.coolcook.app.feature.journal.data.JournalRepository;
-import com.coolcook.app.feature.journal.model.JournalEntry;
 import com.coolcook.app.feature.journal.ui.JournalCalendarActivity;
-
 import com.coolcook.app.feature.main.ui.MainActivity;
 import com.coolcook.app.feature.profile.ui.EditProfileDialogFragment;
 import com.coolcook.app.feature.profile.ui.HealthTrackingActivity;
 import com.coolcook.app.feature.search.ui.FoodCatalogActivity;
 import com.facebook.login.LoginManager;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
+
+import android.widget.TextView;
 
 final class HomeProfileController {
 
@@ -341,9 +341,24 @@ final class HomeProfileController {
     }
 
     private void signOutGoogleAsync() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(activity.getApplicationContext(), gso);
-        googleSignInClient.signOut().addOnCompleteListener(activity, task -> finishLogoutIfNeeded());
+        CredentialManager credentialManager = CredentialManager.create(activity.getApplicationContext());
+        ClearCredentialStateRequest request = new ClearCredentialStateRequest();
+        credentialManager.clearCredentialStateAsync(
+                request,
+                null,
+                ContextCompat.getMainExecutor(activity),
+                new CredentialManagerCallback<Void, ClearCredentialException>() {
+                    @Override
+                    public void onResult(Void unused) {
+                        finishLogoutIfNeeded();
+                    }
+
+                    @Override
+                    public void onError(@NonNull ClearCredentialException e) {
+                        Log.w(TAG, "Khong the xoa trang thai Google credential", e);
+                        finishLogoutIfNeeded();
+                    }
+                });
     }
 
     private void signOutFacebookAsync() {
@@ -404,7 +419,9 @@ final class HomeProfileController {
 
         if (txtPhotos != null && user != null) {
             new JournalRepository(firestore).countPhotoEntries(user.getUid(), (count, error) -> {
-                if (!isActivityAliveForUi()) return;
+                if (!isActivityAliveForUi()) {
+                    return;
+                }
                 activity.runOnUiThread(() -> txtPhotos.setText(String.valueOf(count)));
             });
         }
