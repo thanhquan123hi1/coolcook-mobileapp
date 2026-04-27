@@ -190,6 +190,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private View btnJournalMore;
     private View btnJournalHistoryShutter;
     private View btnJournalFriends;
+    private View btnJournalHistoryInviteEmpty;
     private View journalPreviewFooterContainer;
     private View btnBack;
     private View btnFlash;
@@ -221,6 +222,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private TextView txtCaptureSaveError;
     private TextView txtTopCenterActionLabel;
     private TextView txtJournalCameraFriendsLabel;
+    private TextView txtJournalHistoryFriendsCount;
     private TextView tabNhanDien;
     private TextView tabNhatKy;
     private TextView iconFlash;

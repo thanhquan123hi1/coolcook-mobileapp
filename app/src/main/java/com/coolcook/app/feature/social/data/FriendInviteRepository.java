@@ -161,41 +161,6 @@ public class FriendInviteRepository {
         });
     }
 
-    public void rejectInvite(
-            @NonNull String inviteId,
-            @NonNull FirebaseUser currentUser,
-            @NonNull RejectInviteCallback callback) {
-        if (TextUtils.isEmpty(inviteId)) {
-            callback.onError("Link mời không hợp lệ.");
-            return;
-        }
-
-        DocumentReference inviteRef = firestore.collection(INVITES_COLLECTION).document(inviteId);
-        firestore.runTransaction(transaction -> {
-                    DocumentSnapshot inviteSnapshot = transaction.get(inviteRef);
-                    if (!inviteSnapshot.exists()) {
-                        throw new InviteFlowException("Link mời không tồn tại.");
-                    }
-
-                    FriendInvite invite = FriendInvite.fromSnapshot(inviteSnapshot);
-                    if (invite.getCreatedByUid().equals(currentUser.getUid())) {
-                        throw new InviteFlowException("Bạn không thể tự kết bạn với chính mình.");
-                    }
-                    if (!invite.isActive()) {
-                        throw new InviteFlowException(statusMessage(invite));
-                    }
-
-                    Map<String, Object> inviteUpdate = new HashMap<>();
-                    inviteUpdate.put("status", FriendInvite.STATUS_REJECTED);
-                    inviteUpdate.put("rejectedByUid", currentUser.getUid());
-                    inviteUpdate.put("rejectedAt", new Date());
-                    transaction.set(inviteRef, inviteUpdate, SetOptions.merge());
-                    return null;
-                })
-                .addOnSuccessListener(unused -> callback.onSuccess("Đã từ chối lời mời."))
-                .addOnFailureListener(error -> callback.onError(readableError(error)));
-    }
-
     @NonNull
     public static String parseInviteId(@Nullable Uri uri) {
         if (uri == null) {
@@ -209,6 +174,27 @@ public class FriendInviteRepository {
 
         String lastPath = uri.getLastPathSegment();
         return lastPath == null ? "" : lastPath;
+    }
+
+    @NonNull
+    public static String parseInviteInput(@Nullable String rawInput) {
+        if (TextUtils.isEmpty(rawInput)) {
+            return "";
+        }
+
+        String trimmed = rawInput == null ? "" : rawInput.trim();
+        if (TextUtils.isEmpty(trimmed)) {
+            return "";
+        }
+
+        if (trimmed.contains("://") || trimmed.contains("?") || trimmed.contains("/")) {
+            String fromLink = parseInviteId(Uri.parse(trimmed));
+            if (!TextUtils.isEmpty(fromLink)) {
+                return normalizeFriendCode(fromLink);
+            }
+        }
+
+        return normalizeFriendCode(trimmed);
     }
 
     private void acceptInviteInternal(

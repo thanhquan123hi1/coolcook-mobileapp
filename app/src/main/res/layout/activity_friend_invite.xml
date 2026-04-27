@@ -186,7 +186,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/btnInviteClose"
+                android:id="@+id/btnRejectInvite"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"

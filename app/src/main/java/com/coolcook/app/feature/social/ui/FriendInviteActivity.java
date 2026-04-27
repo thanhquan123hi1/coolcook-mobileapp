@@ -251,7 +251,10 @@ public class FriendInviteActivity extends AppCompatActivity {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             return;
         }
-        savePendingInvite(this, inviteId);
+        String pendingCode = resolveInputCode();
+        if (!TextUtils.isEmpty(pendingCode)) {
+            savePendingInvite(this, pendingCode);
+        }
         Toast.makeText(this, "Vui lòng đăng nhập để xác nhận lời mời.", Toast.LENGTH_SHORT).show();
         startActivity(AuthActivity.createIntent(this, AuthActivity.MODE_LOGIN));
     }
@@ -305,34 +308,7 @@ public class FriendInviteActivity extends AppCompatActivity {
         if (isLoading) {
             return;
         }
-        if (currentInvite == null) {
-            renderError("Link mời không còn dùng được.");
-            return;
-        }
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            redirectToLoginIfNeeded();
-            return;
-        }
-
-        setLoading(true);
-        txtInviteStatus.setText("Đang từ chối...");
-        friendInviteRepository.rejectInvite(inviteId, user, new FriendInviteRepository.RejectInviteCallback() {
-            @Override
-            public void onSuccess(@NonNull String message) {
-                setLoading(false);
-                Toast.makeText(FriendInviteActivity.this, message, Toast.LENGTH_SHORT).show();
-                finish();
-            }
-
-            @Override
-            public void onError(@NonNull String message) {
-                setLoading(false);
-                txtInviteStatus.setText(message);
-                Toast.makeText(FriendInviteActivity.this, message, Toast.LENGTH_SHORT).show();
-            }
-        });
+        finish();
     }
 
     private void setLoading(boolean loading) {
@@ -346,6 +322,8 @@ public class FriendInviteActivity extends AppCompatActivity {
         btnShareInviteCode.setAlpha(loading ? 0.65f : 1f);
         btnAcceptInvite.setEnabled(!loading);
         btnAcceptInvite.setAlpha(loading ? 0.65f : 1f);
+        btnRejectInvite.setEnabled(!loading);
+        btnRejectInvite.setAlpha(loading ? 0.65f : 1f);
     }
 
     @NonNull
