@@ -4,34 +4,61 @@
     android:height="46dp"
     android:viewportWidth="46"
     android:viewportHeight="46">
+
+    <!-- nền pastel hồng nhẹ -->
     <path
         android:pathData="M6,6h34a6,6 0 0 1 6,6v22a6,6 0 0 1 -6,6H6a6,6 0 0 1 -6,-6V12A6,6 0 0 1 6,6z"
-        android:fillColor="#FFFDECF2" />
+        android:fillColor="#FFFCEFF5" />
+
+    <!-- thân chính cute hơn -->
     <path
-        android:pathData="M15,17.5C15,13.9 17.8,11 21.3,11C22.5,11 23.6,11.36 24.5,11.98C25.46,10.74 26.95,10 28.6,10C31.92,10 34.6,12.69 34.6,16C34.6,17.36 34.14,18.63 33.37,19.64C34.4,20.59 35.05,21.95 35.05,23.47C35.05,26.35 32.72,28.68 29.85,28.68H19.7C17.11,28.68 15,26.58 15,23.98V17.5Z"
+        android:pathData="M15,17.5C15,13.7 17.9,10.8 21.5,10.8C22.8,10.8 24,11.2 25,11.9C26.1,10.5 27.7,9.7 29.5,9.7C33,9.7 35.8,12.5 35.8,16C35.8,17.5 35.3,18.8 34.4,19.9C35.5,20.9 36.2,22.3 36.2,23.9C36.2,27 33.7,29.5 30.6,29.5H20C17.2,29.5 15,27.3 15,24.5V17.5Z"
         android:fillColor="#FFFFFFFF" />
+
+    <!-- má hồng trái -->
     <path
-        android:pathData="M16.2,28.8H32V31.8C32,35.11 29.31,37.8 26,37.8H22.2C18.89,37.8 16.2,35.11 16.2,31.8V28.8Z"
-        android:fillColor="#FFF8C9D7" />
+        android:pathData="M18.2,26.5A1.8,1.2 0 1 1 18.2,26.51"
+        android:fillColor="#FFFFC4D6" />
+
+    <!-- má hồng phải -->
     <path
-        android:pathData="M20.7,29.4C20.7,30.39 21.51,31.2 22.5,31.2C23.49,31.2 24.3,30.39 24.3,29.4"
+        android:pathData="M30,26.5A1.8,1.2 0 1 1 30,26.51"
+        android:fillColor="#FFFFC4D6" />
+
+    <!-- phần dưới -->
+    <path
+        android:pathData="M16.5,29.5H32.5V32.5C32.5,35.8 29.8,38.5 26.5,38.5H22.5C19.2,38.5 16.5,35.8 16.5,32.5V29.5Z"
+        android:fillColor="#FFF9D5E3" />
+
+    <!-- miệng cười -->
+    <path
+        android:pathData="M21.3,30.2C21.3,31.4 22.3,32.4 23.5,32.4C24.7,32.4 25.7,31.4 25.7,30.2"
         android:fillColor="#00000000"
         android:strokeColor="#FF5A3E36"
-        android:strokeWidth="1.5"
+        android:strokeWidth="1.6"
         android:strokeLineCap="round" />
+
+    <!-- mắt trái -->
     <path
-        android:pathData="M20.2,24.9A1,1 0 1 1 20.2,24.91"
+        android:pathData="M20.5,24.6A1.1,1.1 0 1 1 20.5,24.61"
         android:fillColor="#FF5A3E36" />
+
+    <!-- mắt phải -->
     <path
-        android:pathData="M27.8,24.9A1,1 0 1 1 27.8,24.91"
+        android:pathData="M28.2,24.6A1.1,1.1 0 1 1 28.2,24.61"
         android:fillColor="#FF5A3E36" />
+
+    <!-- tay nhỏ dễ thương -->
     <path
-        android:pathData="M36.2,18.6C38.6,20.3 40,23 40,26V28.8"
+        android:pathData="M36.5,19.2C39,21 40.5,23.6 40.5,26.5V29"
         android:fillColor="#00000000"
-        android:strokeColor="#FFC98A5A"
+        android:strokeColor="#FFD39A6A"
         android:strokeWidth="2"
         android:strokeLineCap="round" />
+
+    <!-- bàn tay -->
     <path
-        android:pathData="M39.8,17.6C41.01,17.6 42,18.59 42,19.8C42,21.01 41.01,22 39.8,22C38.59,22 37.6,21.01 37.6,19.8C37.6,18.59 38.59,17.6 39.8,17.6Z"
-        android:fillColor="#FFC98A5A" />
+        android:pathData="M40.2,18C41.5,18 42.5,19 42.5,20.3C42.5,21.6 41.5,22.6 40.2,22.6C38.9,22.6 37.9,21.6 37.9,20.3C37.9,19 38.9,18 40.2,18Z"
+        android:fillColor="#FFD39A6A" />
+
 </vector>

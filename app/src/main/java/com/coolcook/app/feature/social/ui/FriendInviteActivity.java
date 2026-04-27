@@ -44,11 +44,12 @@ public class FriendInviteActivity extends AppCompatActivity {
     private TextView txtInviteStatus;
     private TextView txtFriendInviteCode;
     private EditText edtFriendInviteCode;
-    private TextView btnCreateInviteCode;
-    private TextView btnShareInviteCode;
-    private TextView btnAcceptInvite;
-    private TextView btnRejectInvite;
-    private TextView btnInviteClose;
+    private View btnCreateInviteCode;
+    private View btnShareInviteCode;
+    private View rowEnterFriendCode;
+    private View btnAcceptInvite;
+    private View btnRejectInvite;
+    private View btnInviteClose;
     private ProgressBar inviteLoading;
 
     private FriendInviteRepository friendInviteRepository;
@@ -119,8 +120,9 @@ public class FriendInviteActivity extends AppCompatActivity {
         txtInviteStatus = findViewById(R.id.txtInviteStatus);
         txtFriendInviteCode = findViewById(R.id.txtFriendInviteCode);
         edtFriendInviteCode = findViewById(R.id.edtFriendInviteCode);
-        btnCreateInviteCode = findViewById(R.id.btnCreateInviteCode);
+        btnCreateInviteCode = findViewById(R.id.icCopyCode); // Use icon as the click target
         btnShareInviteCode = findViewById(R.id.btnShareInviteCode);
+        rowEnterFriendCode = findViewById(R.id.rowEnterFriendCode);
         btnAcceptInvite = findViewById(R.id.btnAcceptInvite);
         btnRejectInvite = findViewById(R.id.btnInviteReject);
         btnInviteClose = findViewById(R.id.btnInviteClose);
@@ -147,7 +149,18 @@ public class FriendInviteActivity extends AppCompatActivity {
     private void setupActions() {
         btnInviteClose.setOnClickListener(v -> finish());
         btnCreateInviteCode.setOnClickListener(v -> copyOwnFriendCode());
+        txtFriendInviteCode.setOnClickListener(v -> copyOwnFriendCode());
         btnShareInviteCode.setOnClickListener(v -> shareOwnFriendCode());
+        
+        rowEnterFriendCode.setOnClickListener(v -> {
+            if (edtFriendInviteCode.getVisibility() == View.VISIBLE) {
+                edtFriendInviteCode.setVisibility(View.GONE);
+            } else {
+                edtFriendInviteCode.setVisibility(View.VISIBLE);
+                edtFriendInviteCode.requestFocus();
+            }
+        });
+
         btnAcceptInvite.setOnClickListener(v -> acceptInvite());
         btnRejectInvite.setOnClickListener(v -> rejectInvite());
     }
@@ -159,7 +172,7 @@ public class FriendInviteActivity extends AppCompatActivity {
             txtInviteTitle.setText("Đăng nhập để kết bạn");
             txtInviteStatus.setText("Đăng nhập để nhận mã kết bạn hoặc nhập mã của bạn bè.");
             txtFriendInviteCode.setText("--------");
-            btnCreateInviteCode.setText("Đăng nhập để lấy mã");
+            // removed text setting
             btnCreateInviteCode.setEnabled(true);
             btnShareInviteCode.setVisibility(View.GONE);
             Glide.with(this)
@@ -173,7 +186,7 @@ public class FriendInviteActivity extends AppCompatActivity {
         txtInviteTitle.setText("Kết bạn trên CoolCook");
         txtInviteStatus.setText("Đang tải mã kết bạn...");
         txtInviteSubtitle.setText("Mã này là nhận diện cố định của bạn trên CoolCook.");
-        btnCreateInviteCode.setText("Sao chép mã");
+        // removed text setting
         btnShareInviteCode.setVisibility(View.VISIBLE);
         Glide.with(this)
                 .load(user.getPhotoUrl())
@@ -199,7 +212,7 @@ public class FriendInviteActivity extends AppCompatActivity {
                     setLoading(false);
                     txtInviteStatus.setText(message);
                     txtFriendInviteCode.setText("--------");
-                    btnCreateInviteCode.setText("Thử lấy mã lại");
+                    // removed text setting
                     btnCreateInviteCode.setEnabled(true);
                     btnShareInviteCode.setVisibility(View.GONE);
                     Toast.makeText(FriendInviteActivity.this, message, Toast.LENGTH_SHORT).show();
