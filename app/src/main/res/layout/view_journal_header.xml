@@ -9,30 +9,25 @@
     android:paddingEnd="@dimen/journal_outer_padding"
     android:paddingBottom="0dp">
 
-    <com.google.android.material.card.MaterialCardView
+    <FrameLayout
         android:id="@+id/btnJournalProfile"
-        android:layout_width="@dimen/journal_header_button_size"
-        android:layout_height="@dimen/journal_header_button_size"
+        android:layout_width="@dimen/camera_screen_top_back_size"
+        android:layout_height="@dimen/camera_screen_top_back_size"
+        android:background="@drawable/bg_scan_camera_control_dark"
         android:clickable="true"
         android:focusable="true"
         android:foreground="@drawable/fg_ripple_circle"
-        android:stateListAnimator="@null"
-        app:cardBackgroundColor="@color/journal_surface_pill"
-        app:cardCornerRadius="999dp"
-        app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_gravity="center"
-            android:fontFamily="@font/material_symbols_outlined"
-            android:text="account_circle"
-            android:textColor="@color/journal_text_primary"
-            android:textSize="30sp" />
-    </com.google.android.material.card.MaterialCardView>
+            android:src="@drawable/ic_arrow_back_24"
+            app:tint="@android:color/white" />
+    </FrameLayout>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/btnJournalFriends"

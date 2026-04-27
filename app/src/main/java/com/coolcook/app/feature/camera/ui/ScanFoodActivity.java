@@ -471,7 +471,6 @@ public class ScanFoodActivity extends AppCompatActivity {
         topCenterAction = findViewById(R.id.topCenterAction);
         footerContainer = findViewById(R.id.footerContainer);
         tabsContainer = findViewById(R.id.tabsContainer);
-        txtHistoryTitle = findViewById(R.id.txtHistoryTitle);
         txtJournalHistoryActivityPill = findViewById(R.id.txtJournalHistoryActivityPill);
         journalHistoryEmptyFrame = findViewById(R.id.journalHistoryEmptyFrame);
         cameraPreviewCard = findViewById(R.id.cameraPreviewCard);
