@@ -27,6 +27,7 @@ import com.coolcook.app.feature.social.data.MediaUploadRepository;
 import com.coolcook.app.feature.social.model.FriendInvite;
 import com.coolcook.app.feature.social.model.JournalFeedItem;
 import com.coolcook.app.feature.social.model.MediaUploadResult;
+import com.coolcook.app.feature.social.ui.FriendInviteActivity;
 import com.coolcook.app.feature.social.ui.adapter.JournalFeedAdapter;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
@@ -403,26 +404,8 @@ final class ScanFoodJournalManager {
                     return;
                 }
 
-                v.setEnabled(false);
-                v.setAlpha(0.7f);
-                friendInviteRepository.createInvite(currentUser, new FriendInviteRepository.CreateInviteCallback() {
-                    @Override
-                    public void onSuccess(@NonNull FriendInvite invite) {
-                        activity.runOnUiThread(() -> {
-                            dialog.dismiss();
-                            shareInvite(invite);
-                        });
-                    }
-
-                    @Override
-                    public void onError(@NonNull String message) {
-                        activity.runOnUiThread(() -> {
-                            v.setEnabled(true);
-                            v.setAlpha(1f);
-                            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
-                        });
-                    }
-                });
+                dialog.dismiss();
+                activity.startActivity(new Intent(activity, FriendInviteActivity.class));
             });
         }
 

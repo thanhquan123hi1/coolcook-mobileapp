@@ -63,6 +63,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.coolcook.app.R;
+import com.coolcook.app.feature.auth.ui.AuthActivity;
 import com.coolcook.app.feature.camera.data.ScanFoodLocalMatcher;
 import com.coolcook.app.feature.camera.data.ScanHealthFilters;
 import com.coolcook.app.feature.camera.data.ScanSavedDishStore;
@@ -75,6 +76,7 @@ import com.coolcook.app.feature.social.data.FriendInviteRepository;
 import com.coolcook.app.feature.social.data.JournalFeedRepository;
 import com.coolcook.app.feature.social.data.MediaUploadRepository;
 import com.coolcook.app.feature.social.model.JournalFeedItem;
+import com.coolcook.app.feature.social.ui.FriendInviteActivity;
 import com.coolcook.app.feature.social.ui.JournalHistoryGridActivity;
 import com.coolcook.app.feature.social.ui.adapter.JournalLocketPagerAdapter;
 import com.coolcook.app.feature.journal.data.JournalRepository;
@@ -167,6 +169,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private View root;
     private View recognitionSurface;
     private View topBar;
+    private View topCenterAction;
     private View footerContainer;
     private View tabsContainer;
     private View txtHistoryTitle;
@@ -184,6 +187,7 @@ public class ScanFoodActivity extends AppCompatActivity {
     private View btnJournalGrid;
     private View btnJournalMore;
     private View btnJournalHistoryShutter;
+    private View btnJournalFriends;
     private View journalPreviewFooterContainer;
     private View btnBack;
     private View btnFlash;
@@ -195,6 +199,8 @@ public class ScanFoodActivity extends AppCompatActivity {
     private View btnJournalCameraGallery;
     private View btnJournalCameraShutter;
     private View btnJournalCameraFlip;
+    private View btnJournalCameraProfile;
+    private View journalCameraFriendsPill;
     private View journalCameraTopBar;
     private View journalCameraControlRow;
     private View txtJournalCameraHistoryTitle;
@@ -211,6 +217,8 @@ public class ScanFoodActivity extends AppCompatActivity {
     private TextView txtExtraIngredientsHint;
     private TextView txtCaptureUploadProgress;
     private TextView txtCaptureSaveError;
+    private TextView txtTopCenterActionLabel;
+    private TextView txtJournalCameraFriendsLabel;
     private TextView tabNhanDien;
     private TextView tabNhatKy;
     private TextView iconFlash;
@@ -331,6 +339,8 @@ public class ScanFoodActivity extends AppCompatActivity {
         journalRepository = new JournalRepository(firestore);
         journalFeedRepository = new JournalFeedRepository(firestore);
         friendInviteRepository = new FriendInviteRepository(firestore);
+        friendInviteRepository.ensureFriendCodeIfMissing(FirebaseAuth.getInstance().getCurrentUser());
+        refreshTopCenterFriendCode();
         setupRecognitionResultUi();
         setupJournalHistoryFeed();
         setupClickListeners();
@@ -401,6 +411,8 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (hasCameraPermission()) {
             startCameraIfNeeded();
         }
+        refreshTopCenterFriendCode();
+        refreshJournalFriendCode();
     }
 
     @Override
@@ -451,6 +463,7 @@ public class ScanFoodActivity extends AppCompatActivity {
         root = findViewById(R.id.scanRoot);
         recognitionSurface = findViewById(R.id.recognitionSurface);
         topBar = findViewById(R.id.topBar);
+        topCenterAction = findViewById(R.id.topCenterAction);
         footerContainer = findViewById(R.id.footerContainer);
         tabsContainer = findViewById(R.id.tabsContainer);
         txtHistoryTitle = findViewById(R.id.txtHistoryTitle);
@@ -468,6 +481,13 @@ public class ScanFoodActivity extends AppCompatActivity {
         btnJournalGrid = findViewById(R.id.btnJournalGrid);
         btnJournalMore = findViewById(R.id.btnJournalMore);
         btnJournalHistoryShutter = findViewById(R.id.btnJournalHistoryShutter);
+        btnJournalFriends = findViewById(R.id.btnJournalFriends);
+        if (topCenterAction instanceof ViewGroup) {
+            ViewGroup topCenterGroup = (ViewGroup) topCenterAction;
+            if (topCenterGroup.getChildCount() > 1 && topCenterGroup.getChildAt(1) instanceof TextView) {
+                txtTopCenterActionLabel = (TextView) topCenterGroup.getChildAt(1);
+            }
+        }
         journalPreviewFooterContainer = findViewById(R.id.journalPreviewFooterContainer);
         txtScanStatus = findViewById(R.id.txtScanStatus);
         txtDetectedIngredientsEmpty = findViewById(R.id.txtDetectedIngredientsEmpty);
@@ -630,18 +650,30 @@ public class ScanFoodActivity extends AppCompatActivity {
         btnJournalCameraGallery = pageGalleryButton;
         btnJournalCameraShutter = pageShutterButton;
         btnJournalCameraFlip = pageFlipButton;
+        btnJournalCameraProfile = pageTopBar.findViewById(R.id.btnJournalCameraProfile);
+        journalCameraFriendsPill = pageTopBar.findViewById(R.id.journalCameraFriendsPill);
+        txtJournalCameraFriendsLabel = resolveJournalCameraFriendsLabel(pageTopBar);
         journalCameraControlRow = pageControlRow;
         txtJournalCameraHistoryTitle = pageHistoryTitle;
 
+        if (btnJournalCameraProfile != null) {
+            btnJournalCameraProfile.setOnClickListener(v -> switchMode(true));
+        }
+        if (journalCameraFriendsPill != null) {
+            journalCameraFriendsPill.setOnClickListener(v -> openFriendInviteFromHeader());
+        }
         btnJournalCameraFlash.setOnClickListener(v -> toggleFlash());
         btnJournalCameraGallery.setOnClickListener(v -> openGalleryPicker());
         btnJournalCameraShutter.setOnClickListener(v -> performShutterAction());
         btnJournalCameraFlip.setOnClickListener(v -> toggleCameraLens());
         applyPressScale(
+                btnJournalCameraProfile,
+                journalCameraFriendsPill,
                 btnJournalCameraFlash,
                 btnJournalCameraGallery,
                 btnJournalCameraShutter,
                 btnJournalCameraFlip);
+        refreshJournalFriendCode();
         updateFlashUi(false);
         setTorchButtonsEnabled(camera != null && camera.getCameraInfo() != null && camera.getCameraInfo().hasFlashUnit());
         if (!isRecognitionMode) {
@@ -1507,6 +1539,9 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> navigateBackHome());
         }
+        if (topCenterAction != null) {
+            topCenterAction.setOnClickListener(v -> openFriendInviteFromHeader());
+        }
         if (btnFlash != null) {
             btnFlash.setOnClickListener(v -> toggleFlash());
         }
@@ -1539,6 +1574,9 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
         if (btnJournalGrid != null) {
             btnJournalGrid.setOnClickListener(v -> startActivity(JournalHistoryGridActivity.createIntent(this)));
+        }
+        if (btnJournalFriends != null) {
+            btnJournalFriends.setOnClickListener(v -> openFriendInviteFromHeader());
         }
         if (btnJournalHistoryShutter != null) {
             btnJournalHistoryShutter.setOnClickListener(v -> {
@@ -1610,6 +1648,75 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
         currentJournalHistoryItem = journalHistoryItems.isEmpty() ? null : journalHistoryItems.get(0);
         renderJournalPagerState(vpJournalHistory == null ? 0 : vpJournalHistory.getCurrentItem());
+    }
+
+    private void openFriendInviteFromHeader() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            FriendInviteActivity.savePendingInvite(this, FriendInviteActivity.PENDING_OPEN_SELF_TOKEN);
+            startActivity(AuthActivity.createIntent(this, AuthActivity.MODE_LOGIN));
+            return;
+        }
+        startActivity(new Intent(this, FriendInviteActivity.class));
+    }
+
+    private void refreshTopCenterFriendCode() {
+        if (txtTopCenterActionLabel == null || friendInviteRepository == null) {
+            return;
+        }
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            txtTopCenterActionLabel.setText("Đăng nhập");
+            return;
+        }
+        txtTopCenterActionLabel.setText("Đang lấy mã...");
+        friendInviteRepository.ensureFriendCode(user, new FriendInviteRepository.EnsureFriendCodeCallback() {
+            @Override
+            public void onSuccess(@NonNull String friendCode) {
+                runOnUiThread(() -> txtTopCenterActionLabel.setText(friendCode));
+            }
+
+            @Override
+            public void onError(@NonNull String message) {
+                runOnUiThread(() -> txtTopCenterActionLabel.setText("Mã kết bạn"));
+            }
+        });
+    }
+
+    @Nullable
+    private TextView resolveJournalCameraFriendsLabel(@NonNull View root) {
+        View friendsPill = root.findViewById(R.id.journalCameraFriendsPill);
+        if (!(friendsPill instanceof ViewGroup)) {
+            return null;
+        }
+        ViewGroup group = (ViewGroup) friendsPill;
+        if (group.getChildCount() > 1 && group.getChildAt(1) instanceof TextView) {
+            return (TextView) group.getChildAt(1);
+        }
+        return null;
+    }
+
+    private void refreshJournalFriendCode() {
+        if (txtJournalCameraFriendsLabel == null || friendInviteRepository == null) {
+            return;
+        }
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            txtJournalCameraFriendsLabel.setText("Đăng nhập");
+            return;
+        }
+        txtJournalCameraFriendsLabel.setText("Đang lấy mã...");
+        friendInviteRepository.ensureFriendCode(user, new FriendInviteRepository.EnsureFriendCodeCallback() {
+            @Override
+            public void onSuccess(@NonNull String friendCode) {
+                runOnUiThread(() -> txtJournalCameraFriendsLabel.setText(friendCode));
+            }
+
+            @Override
+            public void onError(@NonNull String message) {
+                runOnUiThread(() -> txtJournalCameraFriendsLabel.setText("Mã kết bạn"));
+            }
+        });
     }
 
     private void hideJournalHistoryOverlay() {

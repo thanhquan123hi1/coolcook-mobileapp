@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/manrope"
-                android:text="Lời mời kết bạn"
+                android:text="Kết bạn trên CoolCook"
                 android:textColor="#FFFFFFFF"
                 android:textSize="28sp"
                 android:textStyle="bold" />
@@ -70,7 +70,7 @@
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/be_vietnam_pro"
                 android:gravity="center"
-                android:text="Đang tải thông tin lời mời..."
+                android:text="Mã này là nhận diện cố định của bạn trên CoolCook."
                 android:textColor="#B3FFFFFF"
                 android:textSize="15sp" />
 
@@ -88,13 +88,32 @@
                 android:id="@+id/inviteLoading"
                 android:layout_width="34dp"
                 android:layout_height="34dp"
-                android:layout_marginTop="18dp" />
+                android:layout_marginTop="18dp"
+                android:visibility="gone" />
 
             <TextView
-                android:id="@+id/btnAcceptInvite"
+                android:id="@+id/txtFriendInviteCode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="26dp"
+                android:layout_marginTop="22dp"
+                android:background="@drawable/bg_locket_input"
+                android:fontFamily="@font/manrope"
+                android:gravity="center"
+                android:minHeight="56dp"
+                android:paddingStart="18dp"
+                android:paddingTop="14dp"
+                android:paddingEnd="18dp"
+                android:paddingBottom="14dp"
+                android:text="--------"
+                android:textColor="#FFFFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnCreateInviteCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:background="@drawable/bg_locket_primary_button"
                 android:fontFamily="@font/manrope"
                 android:gravity="center"
@@ -103,8 +122,66 @@
                 android:paddingTop="14dp"
                 android:paddingEnd="20dp"
                 android:paddingBottom="14dp"
-                android:text="Xác nhận kết bạn"
+                android:text="Sao chép mã"
                 android:textColor="#FF111111"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnShareInviteCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_locket_secondary_button"
+                android:fontFamily="@font/manrope"
+                android:gravity="center"
+                android:minHeight="56dp"
+                android:paddingStart="20dp"
+                android:paddingTop="14dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="14dp"
+                android:text="Gửi lời mời kết bạn"
+                android:textColor="#FFFFFFFF"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edtFriendInviteCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_locket_input"
+                android:fontFamily="@font/manrope"
+                android:gravity="center"
+                android:hint="Nhập mã bạn bè"
+                android:imeOptions="actionDone"
+                android:inputType="textCapCharacters"
+                android:maxLength="8"
+                android:maxLines="1"
+                android:minHeight="56dp"
+                android:paddingStart="18dp"
+                android:paddingTop="14dp"
+                android:paddingEnd="18dp"
+                android:paddingBottom="14dp"
+                android:textColor="#FFFFFFFF"
+                android:textColorHint="#80FFFFFF"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/btnAcceptInvite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_locket_secondary_button"
+                android:fontFamily="@font/manrope"
+                android:gravity="center"
+                android:minHeight="56dp"
+                android:paddingStart="20dp"
+                android:paddingTop="14dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="14dp"
+                android:text="Kết bạn"
+                android:textColor="#FFFFFFFF"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 

@@ -14,13 +14,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class FriendInviteRepository {
     private static final String TAG = "FriendInviteRepository";
@@ -43,12 +46,19 @@ public class FriendInviteRepository {
         void onError(@NonNull String message);
     }
 
+    public interface EnsureFriendCodeCallback {
+        void onSuccess(@NonNull String friendCode);
+
+        void onError(@NonNull String message);
+    }
+
     private static final String USERS_COLLECTION = "users";
     private static final String FRIENDS_COLLECTION = "friends";
-    private static final String INVITES_COLLECTION = "friendInvites";
     private static final String FEED_COLLECTION = "feed";
     private static final String JOURNAL_COLLECTION = "journal";
     private static final int RECENT_MOMENT_SYNC_LIMIT = 60;
+    private static final int MAX_CREATE_CODE_ATTEMPTS = 12;
+    private static final char[] PREFIX_ALPHABET = "CCKLO".toCharArray();
 
     private final FirebaseFirestore firestore;
 
@@ -56,153 +66,99 @@ public class FriendInviteRepository {
         this.firestore = firestore;
     }
 
+    public void ensureFriendCodeIfMissing(@Nullable FirebaseUser user) {
+        if (user == null) {
+            return;
+        }
+        ensureFriendCode(user, null);
+    }
+
+    public void ensureFriendCode(
+            @NonNull FirebaseUser user,
+            @Nullable EnsureFriendCodeCallback callback) {
+        userRef(user.getUid())
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    String existingCode = normalizeFriendCode(snapshot.getString("friendCode"));
+                    if (!TextUtils.isEmpty(existingCode)) {
+                        userRef(user.getUid())
+                                .set(buildUserProfileUpdate(user, existingCode), SetOptions.merge())
+                                .addOnSuccessListener(unused -> {
+                                    if (callback != null) {
+                                        callback.onSuccess(existingCode);
+                                    }
+                                })
+                                .addOnFailureListener(error -> {
+                                    if (callback != null) {
+                                        callback.onError("Không thể cập nhật mã kết bạn.");
+                                    }
+                                });
+                        return;
+                    }
+                    createUniqueFriendCode(user, callback, MAX_CREATE_CODE_ATTEMPTS);
+                })
+                .addOnFailureListener(error -> {
+                    if (callback != null) {
+                        callback.onError("Không thể tạo mã kết bạn.");
+                    }
+                });
+    }
+
     public void createInvite(@NonNull FirebaseUser user, @NonNull CreateInviteCallback callback) {
-        DocumentReference inviteRef = firestore.collection(INVITES_COLLECTION).document();
-        Date createdAt = new Date();
-        Date expiresAt = expiresInDays(7);
-        String name = userDisplayName(user);
-        String avatarUrl = userAvatarUrl(user);
-
-        Map<String, Object> invitePayload = new HashMap<>();
-        invitePayload.put("inviteId", inviteRef.getId());
-        invitePayload.put("createdByUid", user.getUid());
-        invitePayload.put("createdByName", name);
-        invitePayload.put("createdByAvatarUrl", avatarUrl);
-        invitePayload.put("status", FriendInvite.STATUS_ACTIVE);
-        invitePayload.put("createdAt", createdAt);
-        invitePayload.put("expiresAt", expiresAt);
-
-        Map<String, Object> userPayload = new HashMap<>();
-        userPayload.put("displayName", name);
-        userPayload.put("avatarUrl", avatarUrl);
-        userPayload.put("updatedAt", new Date());
-        userPayload.put("createdAt", FieldValue.serverTimestamp());
-
-        WriteBatch batch = firestore.batch();
-        batch.set(inviteRef, invitePayload);
-        batch.set(firestore.collection(USERS_COLLECTION).document(user.getUid()), userPayload, SetOptions.merge());
-        batch.commit()
-                .addOnSuccessListener(unused -> callback.onSuccess(new FriendInvite(
-                        inviteRef.getId(),
+        ensureFriendCode(user, new EnsureFriendCodeCallback() {
+            @Override
+            public void onSuccess(@NonNull String friendCode) {
+                Date createdAt = new Date();
+                callback.onSuccess(new FriendInvite(
+                        friendCode,
                         user.getUid(),
-                        name,
-                        avatarUrl,
+                        userDisplayName(user),
+                        userAvatarUrl(user),
                         FriendInvite.STATUS_ACTIVE,
                         createdAt,
-                        expiresAt)))
-                .addOnFailureListener(error -> callback.onError("Không tạo được link mời bạn."));
+                        expiresInDays(3650)));
+            }
+
+            @Override
+            public void onError(@NonNull String message) {
+                callback.onError(message);
+            }
+        });
     }
 
     public void loadInvite(@NonNull String inviteId, @NonNull LoadInviteCallback callback) {
-        if (TextUtils.isEmpty(inviteId)) {
-            callback.onError("Link mời không hợp lệ.");
+        String normalizedCode = normalizeFriendCode(inviteId);
+        if (TextUtils.isEmpty(normalizedCode)) {
+            callback.onError("Mã kết bạn không hợp lệ.");
             return;
         }
 
-        firestore.collection(INVITES_COLLECTION)
-                .document(inviteId)
-                .get()
+        resolveUserByFriendCode(normalizedCode)
                 .addOnSuccessListener(snapshot -> {
-                    if (!snapshot.exists()) {
-                        callback.onError("Link mời không tồn tại.");
+                    if (snapshot == null || !snapshot.exists()) {
+                        callback.onError("Không tìm thấy người dùng với mã này.");
                         return;
                     }
-                    FriendInvite invite = FriendInvite.fromSnapshot(snapshot);
-                    if (!invite.isActive()) {
-                        callback.onError(invite.isExpired()
-                                ? "Link mời đã hết hạn."
-                                : "Link mời đã được sử dụng.");
-                        return;
-                    }
-                    callback.onSuccess(invite);
+                    callback.onSuccess(toInvite(snapshot, normalizedCode));
                 })
-                .addOnFailureListener(error -> callback.onError("Không tải được link mời."));
+                .addOnFailureListener(error -> callback.onError("Không tải được thông tin kết bạn."));
     }
 
     public void acceptInvite(
             @NonNull String inviteId,
             @NonNull FirebaseUser currentUser,
             @NonNull AcceptInviteCallback callback) {
-        if (TextUtils.isEmpty(inviteId)) {
-            callback.onError("Link mời không hợp lệ.");
-            return;
-        }
+        ensureFriendCode(currentUser, new EnsureFriendCodeCallback() {
+            @Override
+            public void onSuccess(@NonNull String ownFriendCode) {
+                acceptInviteInternal(inviteId, currentUser, ownFriendCode, callback);
+            }
 
-        DocumentReference inviteRef = firestore.collection(INVITES_COLLECTION).document(inviteId);
-        firestore.runTransaction(transaction -> {
-                    DocumentSnapshot inviteSnapshot = transaction.get(inviteRef);
-                    if (!inviteSnapshot.exists()) {
-                        throw new InviteFlowException("Link mời không tồn tại.");
-                    }
-
-                    FriendInvite invite = FriendInvite.fromSnapshot(inviteSnapshot);
-                    if (!invite.isActive()) {
-                        throw new InviteFlowException(invite.isExpired()
-                                ? "Link mời đã hết hạn."
-                                : "Link mời đã được sử dụng.");
-                    }
-                    if (invite.getCreatedByUid().equals(currentUser.getUid())) {
-                        throw new InviteFlowException("Bạn không thể tự kết bạn với chính mình.");
-                    }
-
-                    DocumentReference inviterUserRef = firestore.collection(USERS_COLLECTION)
-                            .document(invite.getCreatedByUid());
-                    DocumentReference inviteeUserRef = firestore.collection(USERS_COLLECTION)
-                            .document(currentUser.getUid());
-                    DocumentReference inviterFriendRef = inviterUserRef
-                            .collection(FRIENDS_COLLECTION)
-                            .document(currentUser.getUid());
-                    DocumentReference inviteeFriendRef = inviteeUserRef
-                            .collection(FRIENDS_COLLECTION)
-                            .document(invite.getCreatedByUid());
-
-                    DocumentSnapshot existingFriend = transaction.get(inviteeFriendRef);
-                    if (existingFriend.exists()
-                            && "accepted".equals(existingFriend.getString("status"))) {
-                        throw new InviteFlowException("Hai bạn đã là bạn bè.");
-                    }
-
-                    String currentName = userDisplayName(currentUser);
-                    String currentAvatar = userAvatarUrl(currentUser);
-                    Date now = new Date();
-
-                    transaction.set(inviterFriendRef, friendPayload(
-                            currentUser.getUid(),
-                            currentName,
-                            currentAvatar,
-                            now), SetOptions.merge());
-                    transaction.set(inviteeFriendRef, friendPayload(
-                            invite.getCreatedByUid(),
-                            invite.getCreatedByName(),
-                            invite.getCreatedByAvatarUrl(),
-                            now), SetOptions.merge());
-
-                    Map<String, Object> inviterCount = new HashMap<>();
-                    inviterCount.put("friendCount", FieldValue.increment(1));
-                    inviterCount.put("updatedAt", now);
-                    transaction.set(inviterUserRef, inviterCount, SetOptions.merge());
-
-                    Map<String, Object> inviteeProfile = new HashMap<>();
-                    inviteeProfile.put("displayName", currentName);
-                    inviteeProfile.put("avatarUrl", currentAvatar);
-                    inviteeProfile.put("friendCount", FieldValue.increment(1));
-                    inviteeProfile.put("updatedAt", now);
-                    transaction.set(inviteeUserRef, inviteeProfile, SetOptions.merge());
-
-                    Map<String, Object> inviteUpdate = new HashMap<>();
-                    inviteUpdate.put("status", FriendInvite.STATUS_USED);
-                    inviteUpdate.put("usedByUid", currentUser.getUid());
-                    inviteUpdate.put("usedAt", now);
-                    transaction.set(inviteRef, inviteUpdate, SetOptions.merge());
-                    return invite.getCreatedByUid();
-                })
-                .addOnSuccessListener(inviterUid -> {
-                    callback.onSuccess("Đã kết bạn thành công.");
-                    if (!TextUtils.isEmpty(inviterUid)) {
-                        syncRecentMomentsBetweenFriends(inviterUid, currentUser.getUid());
-                    }
-                })
-                .addOnFailureListener(error -> callback.onError(readableError(error)));
+            @Override
+            public void onError(@NonNull String message) {
+                callback.onError(message);
+            }
+        });
     }
 
     @NonNull
@@ -220,16 +176,209 @@ public class FriendInviteRepository {
         return lastPath == null ? "" : lastPath;
     }
 
+    private void acceptInviteInternal(
+            @NonNull String inviteId,
+            @NonNull FirebaseUser currentUser,
+            @NonNull String ownFriendCode,
+            @NonNull AcceptInviteCallback callback) {
+        String normalizedCode = normalizeFriendCode(inviteId);
+        if (TextUtils.isEmpty(normalizedCode)) {
+            callback.onError("Mã kết bạn không hợp lệ.");
+            return;
+        }
+        if (normalizedCode.equals(ownFriendCode)) {
+            callback.onError("Bạn không thể kết bạn với chính mình.");
+            return;
+        }
+
+        resolveUserByFriendCode(normalizedCode)
+                .addOnSuccessListener(friendUserSnapshot -> {
+                    if (friendUserSnapshot == null || !friendUserSnapshot.exists()) {
+                        callback.onError("Không tìm thấy người dùng với mã này.");
+                        return;
+                    }
+
+                    String friendUid = normalizeUid(friendUserSnapshot.getId());
+                    if (TextUtils.isEmpty(friendUid)) {
+                        callback.onError("Không tìm thấy người dùng với mã này.");
+                        return;
+                    }
+                    if (friendUid.equals(currentUser.getUid())) {
+                        callback.onError("Bạn không thể kết bạn với chính mình.");
+                        return;
+                    }
+
+                    DocumentReference currentUserRef = userRef(currentUser.getUid());
+                    DocumentReference friendUserRef = userRef(friendUid);
+                    DocumentReference currentFriendRef = currentUserRef.collection(FRIENDS_COLLECTION).document(friendUid);
+                    DocumentReference reverseFriendRef = friendUserRef.collection(FRIENDS_COLLECTION).document(currentUser.getUid());
+
+                    currentFriendRef.get()
+                            .addOnSuccessListener(existingFriend -> {
+                                if (existingFriend.exists()
+                                        && "accepted".equals(existingFriend.getString("status"))) {
+                                    callback.onError("Hai bạn đã là bạn bè.");
+                                    return;
+                                }
+
+                                currentUserRef.get()
+                                        .addOnSuccessListener(currentUserSnapshot -> {
+                                            Date now = new Date();
+                                            String currentName = firstNonEmpty(
+                                                    currentUserSnapshot.getString("displayName"),
+                                                    userDisplayName(currentUser));
+                                            String currentAvatar = firstNonEmpty(
+                                                    currentUserSnapshot.getString("avatarUrl"),
+                                                    userAvatarUrl(currentUser));
+                                            String friendName = firstNonEmpty(
+                                                    friendUserSnapshot.getString("displayName"),
+                                                    "Bạn mới");
+                                            String friendAvatar = firstNonEmpty(
+                                                    friendUserSnapshot.getString("avatarUrl"),
+                                                    "");
+                                            String friendCode = normalizeFriendCode(friendUserSnapshot.getString("friendCode"));
+
+                                            WriteBatch batch = firestore.batch();
+                                            batch.set(currentFriendRef, buildFriendPayload(
+                                                    friendUid,
+                                                    friendName,
+                                                    friendAvatar,
+                                                    friendCode,
+                                                    now), SetOptions.merge());
+                                            batch.set(reverseFriendRef, buildFriendPayload(
+                                                    currentUser.getUid(),
+                                                    currentName,
+                                                    currentAvatar,
+                                                    ownFriendCode,
+                                                    now), SetOptions.merge());
+                                            batch.set(currentUserRef, buildUserProfileUpdate(
+                                                    currentName,
+                                                    currentAvatar,
+                                                    ownFriendCode,
+                                                    true), SetOptions.merge());
+                                            batch.set(friendUserRef, buildUserProfileUpdate(
+                                                    friendName,
+                                                    friendAvatar,
+                                                    friendCode,
+                                                    true), SetOptions.merge());
+                                            batch.commit()
+                                                    .addOnSuccessListener(unused -> {
+                                                        callback.onSuccess("Đã kết bạn thành công.");
+                                                        syncRecentMomentsBetweenFriends(friendUid, currentUser.getUid());
+                                                    })
+                                                    .addOnFailureListener(error -> callback.onError(readableError(error)));
+                                        })
+                                        .addOnFailureListener(error -> callback.onError("Không thể tải hồ sơ hiện tại."));
+                            })
+                            .addOnFailureListener(error -> callback.onError(readableError(error)));
+                })
+                .addOnFailureListener(error -> callback.onError(readableError(error)));
+    }
+
     @NonNull
-    private Map<String, Object> friendPayload(
+    private DocumentReference userRef(@NonNull String uid) {
+        return firestore.collection(USERS_COLLECTION).document(uid);
+    }
+
+    private com.google.android.gms.tasks.Task<DocumentSnapshot> resolveUserByFriendCode(@NonNull String friendCode) {
+        return firestore.collection(USERS_COLLECTION)
+                .whereEqualTo("friendCode", friendCode)
+                .limit(1)
+                .get()
+                .continueWith(task -> {
+                    if (!task.isSuccessful()) {
+                        throw task.getException() == null
+                                ? new IllegalStateException("friendCode lookup failed")
+                                : task.getException();
+                    }
+                    QuerySnapshot snapshot = task.getResult();
+                    if (snapshot == null || snapshot.isEmpty()) {
+                        return null;
+                    }
+                    return snapshot.getDocuments().get(0);
+                });
+    }
+
+    private void createUniqueFriendCode(
+            @NonNull FirebaseUser user,
+            @Nullable EnsureFriendCodeCallback callback,
+            int attemptsRemaining) {
+        if (attemptsRemaining <= 0) {
+            if (callback != null) {
+                callback.onError("Không thể tạo mã kết bạn.");
+            }
+            return;
+        }
+
+        String candidateCode = randomFriendCode();
+        firestore.collection(USERS_COLLECTION)
+                .whereEqualTo("friendCode", candidateCode)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (snapshot != null && !snapshot.isEmpty()) {
+                        createUniqueFriendCode(user, callback, attemptsRemaining - 1);
+                        return;
+                    }
+
+                    userRef(user.getUid())
+                            .set(buildUserProfileUpdate(user, candidateCode), SetOptions.merge())
+                            .addOnSuccessListener(unused -> {
+                                if (callback != null) {
+                                    callback.onSuccess(candidateCode);
+                                }
+                            })
+                            .addOnFailureListener(error -> createUniqueFriendCode(user, callback, attemptsRemaining - 1));
+                })
+                .addOnFailureListener(error -> {
+                    if (callback != null) {
+                        callback.onError("Không thể tạo mã kết bạn.");
+                    }
+                });
+    }
+
+    @NonNull
+    private Map<String, Object> buildUserProfileUpdate(
+            @NonNull FirebaseUser user,
+            @NonNull String friendCode) {
+        return buildUserProfileUpdate(
+                userDisplayName(user),
+                userAvatarUrl(user),
+                friendCode,
+                false);
+    }
+
+    @NonNull
+    private Map<String, Object> buildUserProfileUpdate(
+            @NonNull String displayName,
+            @NonNull String avatarUrl,
+            @NonNull String friendCode,
+            boolean includeFriendCountIncrement) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("displayName", displayName);
+        payload.put("avatarUrl", avatarUrl);
+        payload.put("friendCode", friendCode);
+        payload.put("updatedAt", new Date());
+        payload.put("createdAt", FieldValue.serverTimestamp());
+        if (includeFriendCountIncrement) {
+            payload.put("friendCount", FieldValue.increment(1));
+        }
+        return payload;
+    }
+
+    @NonNull
+    private Map<String, Object> buildFriendPayload(
             @NonNull String uid,
             @NonNull String displayName,
             @NonNull String avatarUrl,
+            @NonNull String friendCode,
             @NonNull Date now) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("uid", uid);
         payload.put("displayName", displayName);
         payload.put("avatarUrl", avatarUrl);
+        payload.put("photoUrl", avatarUrl);
+        payload.put("friendCode", friendCode);
         payload.put("status", "accepted");
         payload.put("createdAt", now);
         payload.put("updatedAt", now);
@@ -321,6 +470,26 @@ public class FriendInviteRepository {
     }
 
     @NonNull
+    private FriendInvite toInvite(@NonNull DocumentSnapshot snapshot, @NonNull String friendCode) {
+        return new FriendInvite(
+                friendCode,
+                firstNonEmpty(snapshot.getString("uid"), snapshot.getId()),
+                firstNonEmpty(snapshot.getString("displayName"), "Bạn mới"),
+                firstNonEmpty(snapshot.getString("avatarUrl"), snapshot.getString("photoUrl"), ""),
+                FriendInvite.STATUS_ACTIVE,
+                rawDate(snapshot.get("createdAt")),
+                expiresInDays(3650));
+    }
+
+    @Nullable
+    private Date rawDate(@Nullable Object value) {
+        if (value instanceof Date) {
+            return (Date) value;
+        }
+        return null;
+    }
+
+    @NonNull
     private Date expiresInDays(int days) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, days);
@@ -352,15 +521,53 @@ public class FriendInviteRepository {
     }
 
     @NonNull
+    private static String normalizeUid(@Nullable String raw) {
+        return raw == null ? "" : raw.trim();
+    }
+
+    @NonNull
+    private static String normalizeFriendCode(@Nullable String raw) {
+        if (raw == null) {
+            return "";
+        }
+        return raw.trim().replace(" ", "").toUpperCase(Locale.ROOT);
+    }
+
+    @NonNull
+    private static String firstNonEmpty(@Nullable String... values) {
+        for (String value : values) {
+            if (!TextUtils.isEmpty(value)) {
+                return value.trim();
+            }
+        }
+        return "";
+    }
+
+    @NonNull
+    private static String randomFriendCode() {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        char prefixA = PREFIX_ALPHABET[random.nextInt(PREFIX_ALPHABET.length)];
+        char prefixB = PREFIX_ALPHABET[random.nextInt(PREFIX_ALPHABET.length)];
+        int digits = random.nextInt(100000, 1000000);
+        return new StringBuilder(8)
+                .append(prefixA)
+                .append(prefixB)
+                .append(digits)
+                .toString();
+    }
+
+    @NonNull
     private String readableError(@Nullable Exception error) {
         Throwable cursor = error;
         while (cursor != null) {
             if (cursor instanceof InviteFlowException) {
-                return cursor.getMessage() == null ? "Không xác nhận được lời mời." : cursor.getMessage();
+                return cursor.getMessage() == null
+                        ? "Không thể xác nhận kết bạn."
+                        : cursor.getMessage();
             }
             cursor = cursor.getCause();
         }
-        return "Không xác nhận được lời mời. Vui lòng thử lại.";
+        return "Không thể xác nhận kết bạn. Vui lòng thử lại.";
     }
 
     private static class InviteFlowException extends RuntimeException {
