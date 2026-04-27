@@ -47,6 +47,7 @@ public class FriendInviteActivity extends AppCompatActivity {
     private TextView btnCreateInviteCode;
     private TextView btnShareInviteCode;
     private TextView btnAcceptInvite;
+    private TextView btnRejectInvite;
     private TextView btnInviteClose;
     private ProgressBar inviteLoading;
 
@@ -121,6 +122,7 @@ public class FriendInviteActivity extends AppCompatActivity {
         btnCreateInviteCode = findViewById(R.id.btnCreateInviteCode);
         btnShareInviteCode = findViewById(R.id.btnShareInviteCode);
         btnAcceptInvite = findViewById(R.id.btnAcceptInvite);
+        btnRejectInvite = findViewById(R.id.btnRejectInvite);
         btnInviteClose = findViewById(R.id.btnInviteClose);
         inviteLoading = findViewById(R.id.inviteLoading);
     }
@@ -147,6 +149,7 @@ public class FriendInviteActivity extends AppCompatActivity {
         btnCreateInviteCode.setOnClickListener(v -> copyOwnFriendCode());
         btnShareInviteCode.setOnClickListener(v -> shareOwnFriendCode());
         btnAcceptInvite.setOnClickListener(v -> acceptInvite());
+        btnRejectInvite.setOnClickListener(v -> rejectInvite());
     }
 
     private void refreshCurrentUserCode() {
@@ -244,6 +247,15 @@ public class FriendInviteActivity extends AppCompatActivity {
         startActivity(Intent.createChooser(shareIntent, "Gửi lời mời kết bạn"));
     }
 
+    private void redirectToLoginIfNeeded() {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            return;
+        }
+        savePendingInvite(this, inviteId);
+        Toast.makeText(this, "Vui lòng đăng nhập để xác nhận lời mời.", Toast.LENGTH_SHORT).show();
+        startActivity(AuthActivity.createIntent(this, AuthActivity.MODE_LOGIN));
+    }
+
     private void acceptInvite() {
         if (isLoading) {
             return;
@@ -285,6 +297,40 @@ public class FriendInviteActivity extends AppCompatActivity {
                     txtInviteStatus.setText(message);
                     Toast.makeText(FriendInviteActivity.this, message, Toast.LENGTH_SHORT).show();
                 });
+            }
+        });
+    }
+
+    private void rejectInvite() {
+        if (isLoading) {
+            return;
+        }
+        if (currentInvite == null) {
+            renderError("Link mời không còn dùng được.");
+            return;
+        }
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            redirectToLoginIfNeeded();
+            return;
+        }
+
+        setLoading(true);
+        txtInviteStatus.setText("Đang từ chối...");
+        friendInviteRepository.rejectInvite(inviteId, user, new FriendInviteRepository.RejectInviteCallback() {
+            @Override
+            public void onSuccess(@NonNull String message) {
+                setLoading(false);
+                Toast.makeText(FriendInviteActivity.this, message, Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onError(@NonNull String message) {
+                setLoading(false);
+                txtInviteStatus.setText(message);
+                Toast.makeText(FriendInviteActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
     }

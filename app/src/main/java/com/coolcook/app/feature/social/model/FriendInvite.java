@@ -12,9 +12,12 @@ import java.util.Date;
 
 public class FriendInvite {
 
+    public static final String STATUS_PENDING = "pending";
+    public static final String STATUS_ACCEPTED = "accepted";
+    public static final String STATUS_REJECTED = "rejected";
+    public static final String STATUS_EXPIRED = "expired";
     public static final String STATUS_ACTIVE = "active";
     public static final String STATUS_USED = "used";
-    public static final String STATUS_EXPIRED = "expired";
 
     private final String inviteId;
     private final String createdByUid;
@@ -77,7 +80,7 @@ public class FriendInvite {
     }
 
     public boolean isActive() {
-        return STATUS_ACTIVE.equals(status) && !isExpired();
+        return isPendingStatus(status) && !isExpired();
     }
 
     public boolean isExpired() {
@@ -101,14 +104,37 @@ public class FriendInvite {
 
     @NonNull
     public static FriendInvite fromSnapshot(@NonNull DocumentSnapshot snapshot) {
+        String legacyUserId = value(snapshot.getString("createdByUid"), "");
+        String legacyUserName = value(snapshot.getString("createdByName"), "Bạn mới");
+        String legacyAvatarUrl = value(snapshot.getString("createdByAvatarUrl"), "");
+        String fromUserId = value(snapshot.getString("fromUserId"), legacyUserId);
+        String fromUserName = value(snapshot.getString("fromUserName"), legacyUserName);
+        String fromAvatarUrl = value(snapshot.getString("fromAvatarUrl"), legacyAvatarUrl);
         return new FriendInvite(
                 value(snapshot.getString("inviteId"), snapshot.getId()),
-                value(snapshot.getString("createdByUid"), ""),
-                value(snapshot.getString("createdByName"), "Bạn mới"),
-                value(snapshot.getString("createdByAvatarUrl"), ""),
-                value(snapshot.getString("status"), STATUS_EXPIRED),
+                value(fromUserId, ""),
+                value(fromUserName, "Bạn mới"),
+                value(fromAvatarUrl, ""),
+                normalizeStatus(value(snapshot.getString("status"), STATUS_EXPIRED)),
                 toDate(snapshot.get("createdAt")),
                 toDate(snapshot.get("expiresAt")));
+    }
+
+    @NonNull
+    public static String normalizeStatus(@Nullable String rawStatus) {
+        String status = value(rawStatus, STATUS_EXPIRED);
+        if (STATUS_ACTIVE.equals(status)) {
+            return STATUS_PENDING;
+        }
+        if (STATUS_USED.equals(status)) {
+            return STATUS_ACCEPTED;
+        }
+        return status;
+    }
+
+    public static boolean isPendingStatus(@Nullable String rawStatus) {
+        String status = normalizeStatus(rawStatus);
+        return STATUS_PENDING.equals(status);
     }
 
     @NonNull

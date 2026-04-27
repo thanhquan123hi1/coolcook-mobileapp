@@ -8,8 +8,11 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import android.widget.TextView;
+import androidx.core.content.ContextCompat;
+import androidx.credentials.ClearCredentialStateRequest;
+import androidx.credentials.CredentialManager;
+import androidx.credentials.CredentialManagerCallback;
+import androidx.credentials.exceptions.ClearCredentialException;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -19,22 +22,19 @@ import com.coolcook.app.core.util.AvatarImageUtils;
 import com.coolcook.app.feature.camera.data.ScanSavedDishStore;
 import com.coolcook.app.feature.camera.ui.SavedScanDishesActivity;
 import com.coolcook.app.feature.journal.data.JournalRepository;
-import com.coolcook.app.feature.journal.model.JournalEntry;
 import com.coolcook.app.feature.journal.ui.JournalCalendarActivity;
-
 import com.coolcook.app.feature.main.ui.MainActivity;
 import com.coolcook.app.feature.profile.ui.EditProfileDialogFragment;
 import com.coolcook.app.feature.profile.ui.HealthTrackingActivity;
 import com.coolcook.app.feature.search.ui.FoodCatalogActivity;
 import com.facebook.login.LoginManager;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
+
+import android.widget.TextView;
 
 final class HomeProfileController {
 
@@ -341,9 +341,24 @@ final class HomeProfileController {
     }
 
     private void signOutGoogleAsync() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(activity.getApplicationContext(), gso);
-        googleSignInClient.signOut().addOnCompleteListener(activity, task -> finishLogoutIfNeeded());
+        CredentialManager credentialManager = CredentialManager.create(activity.getApplicationContext());
+        ClearCredentialStateRequest request = new ClearCredentialStateRequest();
+        credentialManager.clearCredentialStateAsync(
+                request,
+                null,
+                ContextCompat.getMainExecutor(activity),
+                new CredentialManagerCallback<Void, ClearCredentialException>() {
+                    @Override
+                    public void onResult(Void unused) {
+                        finishLogoutIfNeeded();
+                    }
+
+                    @Override
+                    public void onError(@NonNull ClearCredentialException e) {
+                        Log.w(TAG, "Khong the xoa trang thai Google credential", e);
+                        finishLogoutIfNeeded();
+                    }
+                });
     }
 
     private void signOutFacebookAsync() {
@@ -373,17 +388,40 @@ final class HomeProfileController {
     void loadStats(@NonNull FirebaseFirestore firestore) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+        TextView txtFriends = activity.findViewById(R.id.txtStatFriends);
         TextView txtSavedDishes = activity.findViewById(R.id.txtStatSavedDishes);
         TextView txtPhotos = activity.findViewById(R.id.txtStatPhotos);
+
+        if (txtFriends != null) {
+            txtFriends.setText("0");
+        }
 
         if (txtSavedDishes != null) {
             int savedCount = new ScanSavedDishStore(activity).getSavedDishes().size();
             txtSavedDishes.setText(String.valueOf(savedCount));
         }
 
+        if (txtFriends != null && user != null) {
+            firestore.collection(PROFILE_COLLECTION)
+                    .document(user.getUid())
+                    .get()
+                    .addOnSuccessListener(activity, snapshot -> {
+                        if (!isActivityAliveForUi()) {
+                            return;
+                        }
+                        Long rawFriendCount = snapshot.getLong("friendCount");
+                        long friendCount = rawFriendCount == null ? 0L : rawFriendCount;
+                        activity.runOnUiThread(() -> txtFriends.setText(String.valueOf(friendCount)));
+                    })
+                    .addOnFailureListener(activity,
+                            error -> Log.w(TAG, "Khong the tai so ban be tu Firestore", error));
+        }
+
         if (txtPhotos != null && user != null) {
             new JournalRepository(firestore).countPhotoEntries(user.getUid(), (count, error) -> {
-                if (!isActivityAliveForUi()) return;
+                if (!isActivityAliveForUi()) {
+                    return;
+                }
                 activity.runOnUiThread(() -> txtPhotos.setText(String.valueOf(count)));
             });
         }

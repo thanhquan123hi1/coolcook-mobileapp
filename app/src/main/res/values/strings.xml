@@ -186,4 +186,5 @@
     <string name="profile_footer_dark_mode">Chế độ tối</string>
     <string name="profile_footer_dark_mode_desc">Trạng thái chế độ tối</string>
     <string name="profile_footer_logout">Đăng xuất</string>
+    <string name="default_web_client_id">482407940471-47hp88t7lglhhdi5gjmjgeclks5i7n4n.apps.googleusercontent.com</string>
 </resources>

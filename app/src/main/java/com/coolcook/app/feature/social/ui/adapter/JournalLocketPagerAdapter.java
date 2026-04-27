@@ -199,7 +199,6 @@ public class JournalLocketPagerAdapter extends RecyclerView.Adapter<RecyclerView
         final TextView ownerName;
         final TextView separator;
         final TextView time;
-
         HistoryViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.journalHistoryImage);

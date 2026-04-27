@@ -12,8 +12,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,9 +19,17 @@ import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.Guideline;
 import androidx.core.graphics.Insets;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.NestedScrollView;
+import androidx.credentials.Credential;
+import androidx.credentials.CredentialManager;
+import androidx.credentials.CredentialManagerCallback;
+import androidx.credentials.CustomCredential;
+import androidx.credentials.GetCredentialRequest;
+import androidx.credentials.GetCredentialResponse;
+import androidx.credentials.exceptions.GetCredentialException;
 
 import com.coolcook.app.R;
 import com.coolcook.app.feature.home.ui.HomeActivity;
@@ -33,11 +39,8 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.FirebaseNetworkException;
@@ -59,9 +62,8 @@ public class AuthActivity extends AppCompatActivity {
     public static final String MODE_REGISTER = "register";
 
     private FirebaseAuth firebaseAuth;
-    private GoogleSignInClient googleSignInClient;
+    private CredentialManager credentialManager;
     private CallbackManager facebookCallbackManager;
-    private ActivityResultLauncher<Intent> googleSignInLauncher;
 
     private NestedScrollView authScroll;
     private View loginPanel;
@@ -198,43 +200,12 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void setupGoogleSignIn() {
-        googleSignInLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    Intent data = result.getData();
-                    if (data == null) {
-                        setLoading(false);
-                        Toast.makeText(this, R.string.auth_error_google_cancelled, Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+        credentialManager = CredentialManager.create(getApplicationContext());
 
-                    try {
-                        GoogleSignInAccount account = GoogleSignIn.getSignedInAccountFromIntent(data)
-                                .getResult(ApiException.class);
-                        if (account == null || account.getIdToken() == null) {
-                            setLoading(false);
-                            Toast.makeText(this, R.string.auth_error_google_failed, Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        firebaseAuthWithGoogle(account.getIdToken());
-                    } catch (ApiException ex) {
-                        setLoading(false);
-                        Toast.makeText(this, R.string.auth_error_google_failed, Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        int webClientResId = getResources().getIdentifier(
-                "default_web_client_id",
-                "string",
-                getPackageName());
-
-        if (webClientResId != 0) {
-            googleWebClientId = getString(webClientResId);
-            GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(googleWebClientId)
-                    .requestEmail()
-                    .build();
-            googleSignInClient = GoogleSignIn.getClient(this, options);
+        try {
+            googleWebClientId = getString(R.string.default_web_client_id);
+        } catch (android.content.res.Resources.NotFoundException ex) {
+            googleWebClientId = "";
         }
     }
 
@@ -326,16 +297,8 @@ public class AuthActivity extends AppCompatActivity {
         btnFacebookRegister.setOnClickListener(v -> signInWithFacebook());
     }
 
-    private boolean validateLoginForm() {
-        return formValidator.validateLoginForm();
-    }
-
-    private boolean validateRegisterForm() {
-        return formValidator.validateRegisterForm();
-    }
-
     private void registerUser() {
-        if (isLoading || !validateRegisterForm()) {
+        if (isLoading || !formValidator.validateRegisterForm()) {
             return;
         }
 
@@ -365,7 +328,7 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void loginUser() {
-        if (isLoading || !validateLoginForm()) {
+        if (isLoading || !formValidator.validateLoginForm()) {
             return;
         }
 
@@ -388,13 +351,71 @@ public class AuthActivity extends AppCompatActivity {
         if (isLoading) {
             return;
         }
-        if (googleSignInClient == null || TextUtils.isEmpty(googleWebClientId)) {
+        if (TextUtils.isEmpty(googleWebClientId)) {
             Toast.makeText(this, R.string.auth_error_google_config_missing, Toast.LENGTH_LONG).show();
             return;
         }
 
         setLoading(true);
-        googleSignInLauncher.launch(googleSignInClient.getSignInIntent());
+        GetSignInWithGoogleOption googleOption = new GetSignInWithGoogleOption.Builder(googleWebClientId)
+                .build();
+        GetCredentialRequest request = new GetCredentialRequest.Builder()
+                .addCredentialOption(googleOption)
+                .build();
+
+        credentialManager.getCredentialAsync(
+                this,
+                request,
+                null,
+                ContextCompat.getMainExecutor(this),
+                new CredentialManagerCallback<GetCredentialResponse, GetCredentialException>() {
+                    @Override
+                    public void onResult(GetCredentialResponse response) {
+                        handleGoogleCredentialResponse(response);
+                    }
+
+                    @Override
+                    public void onError(@NonNull GetCredentialException e) {
+                        setLoading(false);
+                        Toast.makeText(AuthActivity.this,
+                                R.string.auth_error_google_cancelled,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void handleGoogleCredentialResponse(@NonNull GetCredentialResponse response) {
+        Credential credential = response.getCredential();
+        if (!(credential instanceof CustomCredential)) {
+            setLoading(false);
+            Toast.makeText(this, R.string.auth_error_google_failed, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        CustomCredential customCredential = (CustomCredential) credential;
+        if (!GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL.equals(customCredential.getType())) {
+            setLoading(false);
+            Toast.makeText(this, R.string.auth_error_google_failed, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String idToken;
+        try {
+            GoogleIdTokenCredential googleCredential =
+                    GoogleIdTokenCredential.createFrom(customCredential.getData());
+            idToken = googleCredential.getIdToken();
+        } catch (RuntimeException ex) {
+            setLoading(false);
+            Toast.makeText(this, R.string.auth_error_google_failed, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (TextUtils.isEmpty(idToken)) {
+            setLoading(false);
+            Toast.makeText(this, R.string.auth_error_google_failed, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        firebaseAuthWithGoogle(idToken);
     }
 
     private void firebaseAuthWithGoogle(String idToken) {

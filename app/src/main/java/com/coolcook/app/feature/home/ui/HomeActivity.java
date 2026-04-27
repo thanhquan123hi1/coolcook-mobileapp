@@ -200,6 +200,14 @@ public class HomeActivity extends AppCompatActivity {
         openPendingInviteIfNeeded();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        profileController.displayUserInfo();
+        profileController.loadProfileFromFirestore(firestore);
+        profileController.loadStats(firestore);
+    }
+
     private void showInitialTab(Intent intent) {
         if (intent != null && EXTRA_TAB_PROFILE.equals(intent.getStringExtra(EXTRA_OPEN_TAB))) {
             showTab(TAB_PROFILE);
