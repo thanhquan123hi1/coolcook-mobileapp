@@ -122,7 +122,7 @@ public class FriendInviteActivity extends AppCompatActivity {
         btnCreateInviteCode = findViewById(R.id.btnCreateInviteCode);
         btnShareInviteCode = findViewById(R.id.btnShareInviteCode);
         btnAcceptInvite = findViewById(R.id.btnAcceptInvite);
-        btnRejectInvite = findViewById(R.id.btnRejectInvite);
+        btnRejectInvite = findViewById(R.id.btnInviteReject);
         btnInviteClose = findViewById(R.id.btnInviteClose);
         inviteLoading = findViewById(R.id.inviteLoading);
     }

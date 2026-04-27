@@ -1,26 +1,127 @@
-<?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <shape android:shape="rectangle">
-            <solid android:color="#FFF2E3" />
-            <corners android:radius="16dp" />
-            <stroke
-                android:width="1dp"
-                android:color="#33C18A55" />
-        </shape>
-    </item>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp"
+    android:height="512dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
 
-    <item
-        android:gravity="center"
-        android:width="20dp"
-        android:height="20dp"
-        android:drawable="@drawable/ic_journal_diary_soft" />
+    <!-- Nền vàng nhạt -->
+    <path
+        android:fillColor="#FFF4C9"
+        android:pathData="M0,0h512v512h-512z" />
 
-    <item
-        android:gravity="bottom|end"
-        android:end="2dp"
-        android:bottom="2dp"
-        android:width="14dp"
-        android:height="14dp"
-        android:drawable="@drawable/ic_journal_plus_brown" />
-</layer-list>
+    <!-- Viền mũ đầu bếp -->
+    <path
+        android:fillColor="#8A4300"
+        android:pathData="M183,246
+        C150,246 131,224 131,197
+        C131,164 157,145 181,145
+        C181,102 221,85 254,109
+        C274,124 286,151 307,165
+        C327,153 355,157 370,178
+        C389,204 375,240 343,247
+        L340,282
+        C340,287 336,291 331,290
+        C282,286 230,286 181,290
+        C176,291 172,287 172,282
+        L169,248
+        C174,247 178,246 183,246Z" />
+
+    <!-- Mũ đầu bếp -->
+    <path
+        android:fillColor="#FFE680"
+        android:pathData="M188,235
+        C163,238 145,220 145,197
+        C145,172 165,158 188,157
+        C183,141 190,118 207,107
+        C225,95 249,101 264,119
+        C282,140 292,167 319,182
+        C333,171 354,175 363,190
+        C375,210 363,236 340,239
+        C305,230 280,224 255,226
+        C229,227 209,232 188,235Z" />
+
+    <!-- Bóng đậm trong mũ -->
+    <path
+        android:fillColor="#B46A00"
+        android:pathData="M188,236
+        C217,220 276,215 340,240
+        L337,274
+        C282,270 231,270 175,274
+        L172,244
+        C178,242 183,239 188,236Z" />
+
+    <!-- Phần vành mũ -->
+    <path
+        android:fillColor="#FFE680"
+        android:pathData="M181,239
+        C230,228 282,228 331,239
+        L328,272
+        C280,268 232,268 184,272
+        Z" />
+
+    <!-- Highlight trắng bên trái -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.85"
+        android:pathData="M154,199
+        C154,179 168,165 188,162
+        C169,170 160,183 160,205
+        C160,215 162,225 167,233
+        C158,226 154,214 154,199Z" />
+
+    <!-- Highlight trắng trên mũ -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.85"
+        android:pathData="M211,119
+        C232,110 250,116 264,133
+        C251,123 233,119 211,119Z" />
+
+    <!-- Mắt trái -->
+    <path
+        android:fillColor="#8A4300"
+        android:pathData="M186,306
+        C201,300 216,301 230,308
+        C214,305 200,305 186,310Z" />
+
+    <!-- Mắt phải -->
+    <path
+        android:fillColor="#8A4300"
+        android:pathData="M282,308
+        C297,301 313,300 328,306
+        C313,305 298,305 282,311Z" />
+
+    <!-- Miệng -->
+    <path
+        android:fillColor="#8A4300"
+        android:pathData="M209,326
+        C220,345 239,342 252,331
+        C266,342 286,345 298,326
+        C306,346 302,380 277,390
+        C253,400 218,392 210,365
+        C206,351 207,337 209,326Z" />
+
+    <!-- Lưỡi -->
+    <path
+        android:fillColor="#FF6368"
+        android:pathData="M210,371
+        C234,357 277,357 298,373
+        C290,390 267,397 242,393
+        C227,391 216,383 210,371Z" />
+
+    <!-- Bóng lưỡi -->
+    <path
+        android:fillColor="#FF8088"
+        android:pathData="M218,378
+        C241,368 272,368 292,380
+        C278,389 244,392 218,378Z" />
+
+    <!-- Đầu lưỡi nhỏ -->
+    <path
+        android:fillColor="#FF6368"
+        android:pathData="M268,389
+        C278,387 287,393 287,402
+        C287,411 278,416 270,411
+        C264,407 263,397 268,389Z" />
+
+</vector>
