@@ -904,10 +904,10 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/journalHistoryTopBar"
             android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="29dp"
-            android:layout_marginEnd="20dp"
+            android:layout_height="@dimen/journal_locket_top_bar_height"
+            android:layout_marginStart="@dimen/journal_locket_top_bar_horizontal_margin"
+            android:layout_marginTop="@dimen/journal_locket_top_bar_top_margin"
+            android:layout_marginEnd="@dimen/journal_locket_top_bar_horizontal_margin"
             android:elevation="24dp"
             android:translationZ="24dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -918,7 +918,7 @@
                 android:id="@+id/btnJournalHistoryProfile"
                 android:layout_width="@dimen/journal_locket_top_icon_size"
                 android:layout_height="@dimen/journal_locket_top_icon_size"
-                android:background="@drawable/bg_journal_history_locket_top_icon"
+                android:background="@drawable/bg_journal_camera_locket_top_icon"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="@drawable/fg_ripple_circle"
@@ -926,39 +926,28 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="center"
-                    android:fontFamily="@font/material_symbols_outlined"
-                    android:text="arrow_back_ios_new"
-                    android:textColor="@android:color/white"
-                    android:textSize="24sp" />
+                    android:src="@drawable/ic_arrow_back_24"
+                    app:tint="@android:color/white" />
             </FrameLayout>
 
             <LinearLayout
                 android:id="@+id/btnJournalHistoryFriends"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/journal_locket_top_pill_height"
-                android:layout_marginStart="56dp"
-                android:layout_marginEnd="56dp"
-                android:background="@drawable/bg_journal_history_locket_pill"
+                android:background="@drawable/bg_journal_camera_locket_pill"
                 android:gravity="center"
-                android:minWidth="@dimen/journal_history_locket_pill_min_width"
+                android:minWidth="@dimen/journal_camera_locket_pill_min_width"
                 android:orientation="horizontal"
-                android:paddingStart="28dp"
-                android:paddingEnd="28dp"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:src="@drawable/ic_camera_groups"
-                    android:visibility="gone"
-                    app:tint="@android:color/white" />
 
                 <TextView
                     android:id="@+id/txtJournalHistoryFriendsCount"
@@ -968,22 +957,13 @@
                     android:text="Tất cả bạn bè"
                     android:textColor="@android:color/white"
                     android:textSize="18sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:fontFamily="@font/material_symbols_outlined"
-                    android:text="keyboard_arrow_down"
-                    android:textColor="@android:color/white"
-                    android:textSize="28sp" />
             </LinearLayout>
 
             <FrameLayout
                 android:id="@+id/btnJournalHistoryChat"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_journal_history_locket_top_icon"
+                android:layout_width="@dimen/journal_locket_top_icon_size"
+                android:layout_height="@dimen/journal_locket_top_icon_size"
+                android:background="@drawable/bg_journal_camera_locket_top_icon"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="@drawable/fg_ripple_circle"

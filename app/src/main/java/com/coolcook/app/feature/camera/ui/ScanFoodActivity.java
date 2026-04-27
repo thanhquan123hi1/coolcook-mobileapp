@@ -1637,6 +1637,9 @@ public class ScanFoodActivity extends AppCompatActivity {
                 }
             });
         }
+        if (btnJournalHistoryProfile != null) {
+            btnJournalHistoryProfile.setOnClickListener(v -> hideJournalHistoryOverlay());
+        }
         if (btnJournalHistoryInviteEmpty != null) {
             btnJournalHistoryInviteEmpty.setOnClickListener(v -> {
                 if (journalManager != null) {
@@ -1705,6 +1708,7 @@ public class ScanFoodActivity extends AppCompatActivity {
             return;
         }
         startActivity(new Intent(this, FriendInviteActivity.class));
+        overridePendingTransition(R.anim.dialog_bounce_in, 0);
     }
 
     private void refreshTopCenterFriendCode() {

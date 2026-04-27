@@ -381,82 +381,14 @@ final class ScanFoodJournalManager {
     }
 
     void openFriendInviteSheet() {
-        BottomSheetDialog dialog = new BottomSheetDialog(activity);
-        View sheet = LayoutInflater.from(activity).inflate(R.layout.bottom_sheet_friend_invite, null, false);
-        dialog.setContentView(sheet);
-
-        TextView txtTitle = sheet.findViewById(R.id.txtFriendSheetTitle);
-        TextView txtSubtitle = sheet.findViewById(R.id.txtFriendSheetSubtitle);
-        TextView txtInviteLink = sheet.findViewById(R.id.txtInviteLink);
-        EditText edtInviteInput = sheet.findViewById(R.id.edtFriendInviteInput);
-        View btnCreateInviteLink = sheet.findViewById(R.id.btnCreateInviteLink);
-        View btnOpenInviteInput = sheet.findViewById(R.id.btnOpenInviteInput);
-        View btnCopyInviteLink = sheet.findViewById(R.id.btnCopyInviteLink);
-        View btnShareInviteLink = sheet.findViewById(R.id.btnShareInviteLink);
-        View btnClose = sheet.findViewById(R.id.btnFriendSheetClose);
-        final FriendInvite[] createdInvite = new FriendInvite[1];
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (txtTitle != null) {
-            txtTitle.setText(txtJournalFriendCount == null ? "Bạn bè" : txtJournalFriendCount.getText());
+        if (user == null) {
+            FriendInviteActivity.savePendingInvite(activity, FriendInviteActivity.PENDING_OPEN_SELF_TOKEN);
+            activity.startActivity(AuthActivity.createIntent(activity, AuthActivity.MODE_LOGIN));
+            return;
         }
-        if (txtSubtitle != null && user == null) {
-            txtSubtitle.setText("Đăng nhập để tạo link mời bạn vào journal feed.");
-        }
-
-        if (btnOpenInviteInput != null) {
-            btnOpenInviteInput.setOnClickListener(v -> {
-                String inviteId = FriendInviteRepository.parseInviteInput(
-                        edtInviteInput == null ? "" : edtInviteInput.getText().toString());
-                if (TextUtils.isEmpty(inviteId)) {
-                    Toast.makeText(activity, "Dan link hoac ma moi cua ban vao o tren.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                Intent intent = new Intent(activity, FriendInviteActivity.class);
-                intent.putExtra("inviteId", inviteId);
-                activity.startActivity(intent);
-                dialog.dismiss();
-            });
-        }
-
-        if (btnCreateInviteLink != null) {
-            btnCreateInviteLink.setOnClickListener(v -> {
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                if (currentUser == null) {
-                    dialog.dismiss();
-                    activity.startActivity(AuthActivity.createIntent(activity, AuthActivity.MODE_LOGIN));
-                    return;
-                }
-
-                dialog.dismiss();
-                activity.startActivity(new Intent(activity, FriendInviteActivity.class));
-            });
-        }
-
-        if (btnCopyInviteLink != null) {
-            btnCopyInviteLink.setOnClickListener(v -> {
-                if (createdInvite[0] == null) {
-                    return;
-                }
-                copyInvite(createdInvite[0]);
-            });
-        }
-
-        if (btnShareInviteLink != null) {
-            btnShareInviteLink.setOnClickListener(v -> {
-                if (createdInvite[0] == null) {
-                    return;
-                }
-                shareInvite(createdInvite[0]);
-            });
-        }
-
-        if (btnClose != null) {
-            btnClose.setOnClickListener(v -> dialog.dismiss());
-        }
-
-        dialog.show();
+        activity.startActivity(new Intent(activity, FriendInviteActivity.class));
+        activity.overridePendingTransition(R.anim.dialog_bounce_in, 0);
     }
 
     boolean isJournalSaveInProgress() {

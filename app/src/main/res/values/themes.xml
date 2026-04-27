@@ -104,9 +104,11 @@
     <style name="JournalHistoryActionText" parent="TextAppearance.Material3.BodyLarge">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingVertical">12dp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingVertical">16dp</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="fontFamily">@font/be_vietnam_pro_bold</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:drawablePadding">16dp</item>
     </style>
 

@@ -129,6 +129,12 @@ public class FriendInviteActivity extends AppCompatActivity {
         inviteLoading = findViewById(R.id.inviteLoading);
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(0, R.anim.dialog_bounce_out);
+    }
+
     private void applyInsets() {
         final int baseCardTop = inviteCard.getPaddingTop();
         final int baseCardBottom = inviteCard.getPaddingBottom();
