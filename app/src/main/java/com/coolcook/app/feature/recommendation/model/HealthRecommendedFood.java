@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class HealthRecommendedFood {
+public class    HealthRecommendedFood {
 
     @Nullable
     private final FoodItem localFood;

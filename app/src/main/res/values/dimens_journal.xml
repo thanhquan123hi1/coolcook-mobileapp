@@ -30,10 +30,13 @@
     <dimen name="journal_day_cell_side_padding">1dp</dimen>
     <dimen name="journal_day_cell_bottom_margin">0dp</dimen>
     <dimen name="journal_day_stack_height_default">64dp</dimen>
+    <dimen name="journal_day_photo_primary_size">34dp</dimen>
+    <dimen name="journal_day_photo_secondary_size">30dp</dimen>
     <dimen name="journal_day_photo_width">34dp</dimen>
     <dimen name="journal_day_photo_height">42dp</dimen>
     <dimen name="journal_day_photo_corner">12dp</dimen>
     <dimen name="journal_day_photo_stroke">2dp</dimen>
+    <dimen name="journal_day_photo_elevation">3dp</dimen>
     <dimen name="journal_day_photo_overlap">12dp</dimen>
     <dimen name="journal_day_photo_left_offset">2dp</dimen>
     <dimen name="journal_day_number_margin_top">0dp</dimen>

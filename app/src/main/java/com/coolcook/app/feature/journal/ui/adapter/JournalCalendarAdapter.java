@@ -130,6 +130,8 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
         final List<ImageView> images;
         final int photoWidthPx;
         final int photoHeightPx;
+        final int photoPrimarySizePx;
+        final int photoSecondarySizePx;
         final int badgeHeightPx;
 
         DayViewHolder(@NonNull View itemView) {
@@ -148,6 +150,8 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
             images = List.of(imgBack, imgFront);
             photoWidthPx = itemView.getResources().getDimensionPixelSize(R.dimen.journal_day_photo_width);
             photoHeightPx = itemView.getResources().getDimensionPixelSize(R.dimen.journal_day_photo_height);
+            photoPrimarySizePx = itemView.getResources().getDimensionPixelSize(R.dimen.journal_day_photo_primary_size);
+            photoSecondarySizePx = itemView.getResources().getDimensionPixelSize(R.dimen.journal_day_photo_secondary_size);
             badgeHeightPx = itemView.getResources().getDimensionPixelSize(R.dimen.journal_day_badge_height);
         }
 
@@ -172,7 +176,7 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
             boolean isToday = day.getDate() != null && day.getDate().equals(LocalDate.now());
             txtDayNumber.setBackgroundResource(isToday ? R.drawable.bg_journal_day_today : 0);
             txtDayNumber.setTextColor(ContextCompat.getColor(itemView.getContext(),
-                    isToday ? R.color.white : R.color.home_text_primary));
+                    isToday ? R.color.white : R.color.on_surface_variant));
             entryDot.setVisibility(day.getTotalEntryCount() > 0 && (renderModel == null || renderModel.entries.isEmpty())
                     ? View.VISIBLE : View.GONE);
 
@@ -195,10 +199,11 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
         private void showPhotos(@NonNull RenderModel renderModel) {
             int sourceCount = Math.min(renderModel.entries.size(), MAX_VISIBLE_PHOTOS);
             boolean showBadge = renderModel.badgeCount > MAX_VISIBLE_PHOTOS;
-            int overlapPx = dpToPx(14);
+            int stackOffsetPx = dpToPx(6);
+            int badgeSpacingPx = dpToPx(4);
             FrameLayout.LayoutParams clusterParams = (FrameLayout.LayoutParams) photoCluster.getLayoutParams();
-            clusterParams.width = photoWidthPx + overlapPx;
-            clusterParams.height = photoHeightPx + (showBadge ? badgeHeightPx + dpToPx(6) : 0);
+            clusterParams.width = photoWidthPx + (stackOffsetPx * 2);
+            clusterParams.height = photoHeightPx + (showBadge ? badgeHeightPx + badgeSpacingPx : 0);
             clusterParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
             photoCluster.setLayoutParams(clusterParams);
 
@@ -209,8 +214,8 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
                 card.setScaleY(1f);
                 card.setTranslationX(0f);
                 card.setTranslationY(0f);
-                card.setCardElevation(0f);
-                card.setElevation(0f);
+                card.setCardElevation(dpToPx(3));
+                card.setElevation(dpToPx(3));
             }
 
             for (CardTransform transform : buildTransforms(sourceCount)) {
@@ -218,10 +223,11 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
                 ImageView image = images.get(transform.cardIndex);
 
                 FrameLayout.LayoutParams cardParams = (FrameLayout.LayoutParams) card.getLayoutParams();
-                cardParams.width = photoWidthPx;
-                cardParams.height = photoHeightPx;
+                int sizePx = transform.cardIndex == 1 ? photoPrimarySizePx : photoSecondarySizePx;
+                cardParams.width = sizePx;
+                cardParams.height = Math.round((sizePx / (float) photoWidthPx) * photoHeightPx);
                 cardParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-                cardParams.topMargin = dpToPx(1);
+                cardParams.topMargin = 0;
                 card.setLayoutParams(cardParams);
 
                 card.setRotation(transform.rotation);
@@ -250,9 +256,10 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
 
             if (showBadge) {
                 FrameLayout.LayoutParams badgeParams = (FrameLayout.LayoutParams) txtBadge.getLayoutParams();
-                badgeParams.gravity = Gravity.TOP | Gravity.END;
-                badgeParams.topMargin = photoHeightPx - dpToPx(2);
-                badgeParams.rightMargin = -dpToPx(10);
+                badgeParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+                badgeParams.topMargin = photoHeightPx + badgeSpacingPx;
+                badgeParams.rightMargin = 0;
+                badgeParams.leftMargin = 0;
                 txtBadge.setLayoutParams(badgeParams);
                 txtBadge.setVisibility(View.VISIBLE);
                 txtBadge.setText("+" + (renderModel.badgeCount - MAX_VISIBLE_PHOTOS));
@@ -269,8 +276,8 @@ public class JournalCalendarAdapter extends RecyclerView.Adapter<JournalCalendar
                 return List.of(new CardTransform(1, 0, 0f, 1f, 0f, 0f));
             }
             return List.of(
-                    new CardTransform(0, 1, 7f, 0.95f, dpToPx(10), dpToPx(2)),
-                    new CardTransform(1, 0, -7f, 1f, -dpToPx(10), 0f));
+                    new CardTransform(0, 1, 6f, 1f, dpToPx(6), dpToPx(4)),
+                    new CardTransform(1, 0, -6f, 1f, -dpToPx(6), 0f));
         }
 
         private int dpToPx(int value) {
