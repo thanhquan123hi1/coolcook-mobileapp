@@ -499,7 +499,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/be_vietnam_pro"
                 android:gravity="center"
-                android:text="@string/journal_history_hint"
+                android:text=""
                 android:textColor="#D4C5AB"
                 android:textSize="13sp"
                 android:visibility="gone" />

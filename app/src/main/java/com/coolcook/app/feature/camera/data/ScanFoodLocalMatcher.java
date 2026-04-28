@@ -83,16 +83,25 @@ public class ScanFoodLocalMatcher {
     }
 
     public boolean hasCompleteLocalCoverage(@NonNull List<DetectedIngredient> detectedIngredients) {
-        if (detectedIngredients.isEmpty()) {
-            return false;
-        }
+        return !detectedIngredients.isEmpty() && findUncoveredIngredients(detectedIngredients).isEmpty();
+    }
 
+    @NonNull
+    public List<String> findUncoveredIngredients(@NonNull List<DetectedIngredient> detectedIngredients) {
+        List<String> uncovered = new ArrayList<>();
+        Set<String> seenNormalized = new LinkedHashSet<>();
         for (DetectedIngredient ingredient : detectedIngredients) {
-            if (!isCoveredByLocalData(ingredient.getName())) {
-                return false;
+            String rawName = ingredient.getName().trim();
+            String normalizedName = normalize(rawName);
+            if (normalizedName.isEmpty() || seenNormalized.contains(normalizedName)) {
+                continue;
+            }
+            seenNormalized.add(normalizedName);
+            if (!isCoveredByLocalDataStrict(rawName)) {
+                uncovered.add(rawName);
             }
         }
-        return true;
+        return uncovered;
     }
 
     @NonNull
@@ -380,14 +389,14 @@ public class ScanFoodLocalMatcher {
         return normalizedValues;
     }
 
-    private boolean isCoveredByLocalData(@NonNull String rawName) {
+    private boolean isCoveredByLocalDataStrict(@NonNull String rawName) {
         String normalizedName = normalize(rawName);
         if (normalizedName.isEmpty()) {
             return false;
         }
 
         FoodItem localDish = findDishByName(rawName);
-        if (localDish != null && scoreMatch(normalizedName, normalize(localDish.getName())) >= 88) {
+        if (localDish != null && scoreMatch(normalizedName, normalize(localDish.getName())) >= 90) {
             return true;
         }
 
@@ -395,9 +404,12 @@ public class ScanFoodLocalMatcher {
             return true;
         }
 
-        String normalizedIngredient = normalize(normalizeIngredientName(rawName));
-        return !normalizedIngredient.isEmpty()
-                && normalizedIngredientVocabulary.contains(normalizedIngredient);
+        for (String candidate : ingredientVocabulary) {
+            if (scoreMatch(normalizedName, normalize(candidate)) >= 88) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @NonNull
