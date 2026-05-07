@@ -1,30 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="chatbot_header_horizontal_padding">28dp</dimen>
     <dimen name="chatbot_header_top_padding">26dp</dimen>
     <dimen name="chatbot_header_button_size">50dp</dimen>
-    <dimen name="chatbot_header_button_elevation">1.8dp</dimen>
     <dimen name="chatbot_header_icon_size">24sp</dimen>
 
     <dimen name="chatbot_content_horizontal_padding">36dp</dimen>
     <dimen name="chatbot_content_top_padding">10dp</dimen>
-    <dimen name="chatbot_scroll_bottom_padding">240dp</dimen>
 
     <dimen name="chatbot_hero_size">212dp</dimen>
     <dimen name="chatbot_hero_corner_radius">42dp</dimen>
     <dimen name="chatbot_hero_border_width">8dp</dimen>
-    <dimen name="chatbot_hero_elevation">20dp</dimen>
 
     <dimen name="chatbot_title_margin_top">18dp</dimen>
     <dimen name="chatbot_title_text_size">25sp</dimen>
     <dimen name="chatbot_subtitle_margin_top">14dp</dimen>
     <dimen name="chatbot_subtitle_text_size">16sp</dimen>
-    <dimen name="chatbot_bubble_margin_top">22dp</dimen>
 
     <dimen name="chatbot_input_margin_horizontal">0dp</dimen>
     <dimen name="chatbot_input_margin_bottom">0dp</dimen>
     <dimen name="chatbot_input_corner_radius">46dp</dimen>
-    <dimen name="chatbot_input_elevation">10dp</dimen>
     <dimen name="chatbot_input_padding_horizontal">18dp</dimen>
     <dimen name="chatbot_input_padding_top">20dp</dimen>
     <dimen name="chatbot_input_padding_bottom">20dp</dimen>

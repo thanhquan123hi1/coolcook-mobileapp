@@ -1,15 +1,11 @@
 package com.coolcook.app.feature.camera.ui;
 
 import android.content.Intent;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,15 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.coolcook.app.R;
 import com.coolcook.app.feature.auth.ui.AuthActivity;
-import com.coolcook.app.feature.social.data.FriendInviteRepository;
 import com.coolcook.app.feature.social.data.JournalFeedRepository;
 import com.coolcook.app.feature.social.data.MediaUploadRepository;
-import com.coolcook.app.feature.social.model.FriendInvite;
 import com.coolcook.app.feature.social.model.JournalFeedItem;
 import com.coolcook.app.feature.social.model.MediaUploadResult;
 import com.coolcook.app.feature.social.ui.FriendInviteActivity;
 import com.coolcook.app.feature.social.ui.adapter.JournalFeedAdapter;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -82,7 +75,6 @@ final class ScanFoodJournalManager {
     private final TextView iconJournalPostSuccess;
     private final MediaUploadRepository mediaUploadRepository;
     private final JournalFeedRepository journalFeedRepository;
-    private final FriendInviteRepository friendInviteRepository;
 
     private ListenerRegistration journalFeedListener;
     private ListenerRegistration journalProfileListener;
@@ -111,8 +103,7 @@ final class ScanFoodJournalManager {
             @Nullable View btnJournalPostPublish,
             @Nullable ProgressBar journalPostLoading,
             @NonNull MediaUploadRepository mediaUploadRepository,
-            @NonNull JournalFeedRepository journalFeedRepository,
-            @NonNull FriendInviteRepository friendInviteRepository) {
+            @NonNull JournalFeedRepository journalFeedRepository) {
         this.activity = activity;
         this.host = host;
         this.rvJournalMoments = rvJournalMoments;
@@ -131,7 +122,6 @@ final class ScanFoodJournalManager {
         this.iconJournalPostSuccess = resolveTextView(btnJournalPostPublish, R.id.iconPreviewSuccess, R.id.iconPreviewSuccessOld);
         this.mediaUploadRepository = mediaUploadRepository;
         this.journalFeedRepository = journalFeedRepository;
-        this.friendInviteRepository = friendInviteRepository;
     }
 
     @Nullable
@@ -244,7 +234,7 @@ final class ScanFoodJournalManager {
             edtJournalCaption.setText("");
         }
         resetJournalPostActionState();
-        setJournalPostLoading(false, "");
+        setJournalPostLoading(false);
         showJournalPostError("");
         setJournalPostSentBadgeVisible(false);
         if (clearPendingState) {
@@ -320,7 +310,7 @@ final class ScanFoodJournalManager {
 
         isJournalSaveInProgress = true;
         host.setProcessingUiEnabled(false);
-        setJournalPostLoading(true, "Đang tối ưu ảnh...");
+        setJournalPostLoading(true);
         showJournalPostError("");
         host.updateJournalStatus("Đang đăng moment...");
 
@@ -328,21 +318,17 @@ final class ScanFoodJournalManager {
                 new MediaUploadRepository.UploadCallbackListener() {
                     @Override
                     public void onPreparing() {
-                        activity.runOnUiThread(() -> setJournalPostLoading(true, "Đang tối ưu ảnh..."));
+                        activity.runOnUiThread(() -> setJournalPostLoading(true));
                     }
 
                     @Override
                     public void onProgress(int progress) {
-                        activity.runOnUiThread(() -> setJournalPostLoading(
-                                true,
-                                progress <= 0
-                                        ? "Đang tải ảnh lên dịch vụ ảnh..."
-                                        : "Đang tải ảnh lên dịch vụ ảnh... " + progress + "%"));
+                        activity.runOnUiThread(() -> setJournalPostLoading(true));
                     }
 
                     @Override
                     public void onSuccess(@NonNull MediaUploadResult result) {
-                        activity.runOnUiThread(() -> setJournalPostLoading(true, "Đang cập nhật Firestore..."));
+                        activity.runOnUiThread(() -> setJournalPostLoading(true));
                         journalFeedRepository.publishMoment(
                                 user,
                                 result,
@@ -367,15 +353,14 @@ final class ScanFoodJournalManager {
 
                                     @Override
                                     public void onError(@NonNull Exception error) {
-                                        activity.runOnUiThread(() -> finishJournalSaveWithError(
-                                                "Lưu Firestore thất bại. Vui lòng thử lại."));
+                                        activity.runOnUiThread(ScanFoodJournalManager.this::finishJournalSaveWithError);
                                     }
                                 });
                     }
 
                     @Override
                     public void onError(@NonNull String message) {
-                        activity.runOnUiThread(() -> finishJournalSaveWithError(message));
+                        activity.runOnUiThread(ScanFoodJournalManager.this::finishJournalSaveWithError);
                     }
                 });
     }
@@ -415,7 +400,7 @@ final class ScanFoodJournalManager {
             edtJournalCaption.setText("");
         }
         resetJournalPostActionState();
-        setJournalPostLoading(false, "");
+        setJournalPostLoading(false);
         showJournalPostError("");
         setJournalPostSentBadgeVisible(false);
         journalCaptureOverlay.setVisibility(View.VISIBLE);
@@ -439,7 +424,7 @@ final class ScanFoodJournalManager {
         }
     }
 
-    private void setJournalPostLoading(boolean loading, @NonNull String statusText) {
+    private void setJournalPostLoading(boolean loading) {
         if (journalPostLoading != null) {
             journalPostLoading.setVisibility(loading ? View.VISIBLE : View.GONE);
         }
@@ -485,10 +470,10 @@ final class ScanFoodJournalManager {
         txtJournalPostError.setText(message);
     }
 
-    private void finishJournalSaveWithError(@NonNull String errorMessage) {
+    private void finishJournalSaveWithError() {
         isJournalSaveInProgress = false;
         host.setProcessingUiEnabled(true);
-        setJournalPostLoading(false, "");
+        setJournalPostLoading(false);
         showJournalPostError("Thử lại");
         host.updateJournalStatus("");
         Toast.makeText(activity, "Thử lại", Toast.LENGTH_SHORT).show();
@@ -599,29 +584,5 @@ final class ScanFoodJournalManager {
                 .start();
     }
 
-    private void shareInvite(@NonNull FriendInvite invite) {
-        String shareText = "Ket ban voi minh tren CoolCook nhe.\n"
-                + "Ma moi: " + invite.getInviteId()
-                + "\nVao app > Ban be > dan link/ma moi de ket ban."
-                + "\nLink app: " + invite.buildDeepLink()
-                + "\nLink web: " + invite.buildWebLink();
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, shareText);
-        activity.startActivity(Intent.createChooser(intent, "Chia se loi moi"));
-    }
-
-    private void copyInvite(@NonNull FriendInvite invite) {
-        ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-        if (clipboard == null) {
-            Toast.makeText(activity, "Khong copy duoc link. Vui long thu chia se.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String inviteText = "Ma moi: " + invite.getInviteId()
-                + "\nLink app: " + invite.buildDeepLink()
-                + "\nLink web: " + invite.buildWebLink();
-        clipboard.setPrimaryClip(ClipData.newPlainText("CoolCook invite", inviteText));
-        Toast.makeText(activity, "Da copy ma moi va link.", Toast.LENGTH_SHORT).show();
-    }
 }
 

@@ -11,66 +11,29 @@
 
     <dimen name="home_feature_margin_top">20dp</dimen>
     <dimen name="home_feature_min_height">124dp</dimen>
-    <dimen name="home_feature_padding">14dp</dimen>
-    <dimen name="home_feature_text_margin_end">8dp</dimen>
-    <dimen name="home_feature_button_width">96dp</dimen>
-    <dimen name="home_feature_button_height">30dp</dimen>
-    <dimen name="home_feature_button_margin_top">10dp</dimen>
-    <dimen name="home_feature_image_size">136dp</dimen>
     <dimen name="home_card_elevation">3dp</dimen>
     <dimen name="home_surface_elevation">3dp</dimen>
-    <dimen name="home_feature_image_elevation">1dp</dimen>
 
     <dimen name="home_quick_row_margin_top_first">16dp</dimen>
     <dimen name="home_quick_row_margin_top_second">10dp</dimen>
     <dimen name="home_quick_column_gap">10dp</dimen>
-    <dimen name="home_quick_card_min_height">68dp</dimen>
-    <dimen name="home_quick_card_padding_horizontal">10dp</dimen>
-    <dimen name="home_quick_card_padding_vertical">12dp</dimen>
-    <dimen name="home_quick_card_icon_size">44dp</dimen>
-    <dimen name="home_quick_card_label_margin_top">8dp</dimen>
 
     <dimen name="home_today_section_margin_top">24dp</dimen>
     <dimen name="home_today_list_margin_top">10dp</dimen>
-    <dimen name="home_recipe_card_width">200dp</dimen>
-    <dimen name="home_recipe_card_gap">10dp</dimen>
-    <dimen name="home_recipe_card_padding">0dp</dimen>
-    <dimen name="home_recipe_content_padding">10dp</dimen>
-    <dimen name="home_recipe_image_height">132dp</dimen>
-    <dimen name="home_recipe_fav_size">24dp</dimen>
-    <dimen name="home_recipe_fav_margin">8dp</dimen>
-    <dimen name="home_recipe_title_margin_top">0dp</dimen>
-    <dimen name="home_recipe_meta_margin_top">6dp</dimen>
 
     <dimen name="home_fit_title_margin_top">22dp</dimen>
     <dimen name="home_fit_list_margin_top">10dp</dimen>
-    <dimen name="home_goal_card_min_height">60dp</dimen>
-    <dimen name="home_goal_card_padding_horizontal">12dp</dimen>
-    <dimen name="home_goal_card_padding_vertical">10dp</dimen>
-    <dimen name="home_goal_icon_size">38dp</dimen>
-    <dimen name="home_goal_text_margin_start">10dp</dimen>
-    <dimen name="home_goal_subtitle_margin_top">2dp</dimen>
-    <dimen name="home_goal_card_spacing">8dp</dimen>
 
     <dimen name="home_bottom_nav_margin_horizontal">20dp</dimen>
     <dimen name="home_bottom_nav_margin_bottom">20dp</dimen>
-    <dimen name="home_bottom_nav_padding_horizontal">10dp</dimen>
-    <dimen name="home_bottom_nav_padding_vertical">10dp</dimen>
     <dimen name="home_bottom_nav_height">64dp</dimen>
-    <dimen name="home_bottom_nav_item_min_height">44dp</dimen>
-    <dimen name="home_bottom_nav_item_vertical_padding">0dp</dimen>
     <dimen name="home_bottom_nav_icon_size">24dp</dimen>
     <dimen name="home_bottom_nav_label_text_size">11sp</dimen>
-    <dimen name="home_bottom_nav_label_margin_top">4dp</dimen>
     <dimen name="home_bottom_nav_center_button_size">72dp</dimen>
     <dimen name="home_bottom_nav_center_icon_size">28dp</dimen>
-    <dimen name="home_bottom_nav_center_button_offset">0dp</dimen>
     <dimen name="home_bottom_nav_icon_lift">2dp</dimen>
     <dimen name="home_bottom_nav_elevation">18dp</dimen>
     <dimen name="home_bottom_nav_center_elevation">10dp</dimen>
-    <dimen name="home_bottom_nav_active_indicator_width">16dp</dimen>
-    <dimen name="home_bottom_nav_active_indicator_height">3dp</dimen>
-    <dimen name="home_bottom_nav_active_indicator_margin_top">3dp</dimen>
     <dimen name="home_bottom_nav_ripple_size">48dp</dimen>
     <dimen name="home_bottom_nav_bounce_lift_extra">1.5dp</dimen>
     <dimen name="home_bottom_nav_tap_press_offset">1dp</dimen>

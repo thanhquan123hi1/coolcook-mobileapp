@@ -18,6 +18,7 @@ import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -93,6 +94,7 @@ public class ChatBotActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chatbot);
 
         bindViews();
+        setupBackHandling();
         setupRecyclerView();
         setupImagePicker();
         setupQuickPrompts();
@@ -125,6 +127,22 @@ public class ChatBotActivity extends AppCompatActivity {
         dot3 = findViewById(R.id.dot3);
         txtNoSessions = findViewById(R.id.txtNoSessions);
         rvSessions = findViewById(R.id.rvChatSessions);
+    }
+
+    private void setupBackHandling() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (drawer != null && drawer.isDrawerOpen(GravityCompat.END)) {
+                    drawer.closeDrawer(GravityCompat.END);
+                    return;
+                }
+
+                setEnabled(false);
+                getOnBackPressedDispatcher().onBackPressed();
+                setEnabled(true);
+            }
+        });
     }
 
     private void setupRecyclerView() {
@@ -461,12 +479,4 @@ public class ChatBotActivity extends AppCompatActivity {
         updateScreenState(false, false);
     }
 
-    @Override
-    public void onBackPressed() {
-        if (drawer != null && drawer.isDrawerOpen(GravityCompat.END)) {
-            drawer.closeDrawer(GravityCompat.END);
-            return;
-        }
-        super.onBackPressed();
-    }
 }

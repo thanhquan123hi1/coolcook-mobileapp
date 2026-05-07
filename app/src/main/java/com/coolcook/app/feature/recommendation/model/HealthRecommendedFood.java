@@ -12,11 +12,16 @@ import com.coolcook.app.feature.search.util.FoodImageResolver;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
-public class    HealthRecommendedFood {
+public class HealthRecommendedFood {
 
     @Nullable
     private final FoodItem localFood;
+    @NonNull
+    private final String generatedId;
+    @NonNull
+    private final String generatedImageName;
     @NonNull
     private final String name;
     @NonNull
@@ -35,7 +40,21 @@ public class    HealthRecommendedFood {
             @NonNull List<String> suitableFor,
             @NonNull String shouldLimit,
             @NonNull String simpleRecipe) {
+        this(localFood, "generated", "ic_launcher", name, reason, suitableFor, shouldLimit, simpleRecipe);
+    }
+
+    public HealthRecommendedFood(
+            @Nullable FoodItem localFood,
+            @NonNull String generatedId,
+            @NonNull String generatedImageName,
+            @NonNull String name,
+            @NonNull String reason,
+            @NonNull List<String> suitableFor,
+            @NonNull String shouldLimit,
+            @NonNull String simpleRecipe) {
         this.localFood = localFood;
+        this.generatedId = generatedId;
+        this.generatedImageName = generatedImageName;
         this.name = name;
         this.reason = reason;
         this.suitableFor = new ArrayList<>(suitableFor);
@@ -54,12 +73,12 @@ public class    HealthRecommendedFood {
 
     @NonNull
     public String getFoodId() {
-        return localFood == null ? "" : localFood.getId();
+        return localFood == null ? generatedId : localFood.getId();
     }
 
     @NonNull
     public String getImageName() {
-        return localFood == null ? "" : localFood.getImage();
+        return localFood == null ? generatedImageName : localFood.getImage();
     }
 
     @NonNull
@@ -103,7 +122,7 @@ public class    HealthRecommendedFood {
     @NonNull
     public ScanDishItem toScanDishItem() {
         return new ScanDishItem(
-                isLocal() ? "local:" + getFoodId() : "health:" + name.toLowerCase(),
+                isLocal() ? "local:" + getFoodId() : "health:" + getFoodId() + ":" + name.toLowerCase(Locale.ROOT),
                 name,
                 localFood,
                 new ArrayList<>(),

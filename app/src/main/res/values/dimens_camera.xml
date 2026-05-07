@@ -22,5 +22,4 @@
     <dimen name="camera_screen_side_action_size">48dp</dimen>
     <dimen name="camera_screen_shutter_outer_size">96dp</dimen>
     <dimen name="camera_screen_shutter_inner_size">74dp</dimen>
-    <dimen name="camera_screen_history_top_margin">10dp</dimen>
 </resources>

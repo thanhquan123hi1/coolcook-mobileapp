@@ -1,23 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="textPrimary">#1F1B16</color>
-    <color name="textSecondary">#6F5B4B</color>
-    <color name="cardBackground">#FFFDF9</color>
-    <color name="accent">#FDBF47</color>
-    <color name="divider">#1FDAC2B1</color>
-    <color name="inputBackground">#FFFBF2E9</color>
     <color name="background">#FFF8F3</color>
-    <color name="bg_background">#FFF8F3</color>
     <color name="primary">#8F4E00</color>
     <color name="primary_container">#FF9F43</color>
-    <color name="secondary">#7D5700</color>
-    <color name="secondary_container">#FDBF47</color>
-    <color name="surface">#FFF8F3</color>
-    <color name="surface_container">#F5ECE4</color>
-    <color name="surface_container_low">#FBF2E9</color>
-    <color name="surface_container_highest">#EAE1D9</color>
     <color name="surface_container_lowest">#FFFFFF</color>
     <color name="outline">#877365</color>
     <color name="outline_variant">#DAC2B1</color>
@@ -25,22 +12,15 @@
     <color name="on_surface_variant">#443428</color>
     <color name="on_primary">#FFFFFF</color>
     <color name="error">#BA1A1A</color>
-    <color name="error_container">#FFDAD6</color>
 
     <color name="home_accent">#EA580C</color>
     <color name="home_search_placeholder">#805A3E36</color>
-    <color name="home_feature_start">#F8DFC3</color>
-    <color name="home_feature_end">#F7BB7A</color>
-    <color name="home_quick_icon_bg">#FFF2E5</color>
     <color name="home_nav_active">#F8AFC4</color>
     <color name="home_nav_inactive">#C7B0A4</color>
-    <color name="home_nav_ripple">#1F8F4E00</color>
     <color name="home_nav_center_ripple">#33FFFFFF</color>
     <color name="home_ripple_soft">#168F4E00</color>
     <color name="home_shadow_ambient">#10000000</color>
     <color name="home_shadow_spot">#12443428</color>
-    <color name="home_meta">#EA580C</color>
-    <color name="home_avatar_border">#4DFFB77A</color>
     <color name="home_primary_soft_bg">#33FFB77A</color>
 
     <color name="chatbot_background">#F2F4F7</color>
@@ -55,12 +35,8 @@
     <color name="chatbot_input_card_bg">#F9FAFC</color>
     <color name="chatbot_input_border">#E2E8F0</color>
     <color name="chatbot_bubble_text">#1F2937</color>
-    <color name="chatbot_shadow_ambient">#05000000</color>
-    <color name="chatbot_shadow_spot">#0F000000</color>
     <color name="chatbot_shadow_ambient_soft">#08000000</color>
     <color name="chatbot_shadow_spot_soft">#12000000</color>
-    <color name="chatbot_soft_shadow_start">#14000000</color>
-    <color name="chatbot_soft_shadow_mid">#08000000</color>
     <color name="chatbot_hero_shadow_start">#24000000</color>
     <color name="chatbot_hero_shadow_mid">#10000000</color>
     <color name="chatbot_button_stroke">#E3E8F0</color>
@@ -80,13 +56,6 @@
     <color name="chatbot_send_button_bg">#09090B</color>
     <color name="chatbot_history_panel_bg">#EEF2F7</color>
     <color name="chatbot_history_panel_border">#D8E0EA</color>
-    <color name="home_secondary_soft_bg">#33FDBF47</color>
-    <color name="home_error_soft_bg">#66FFDAD6</color>
-    <color name="home_info_soft_bg">#80E0F2FE</color>
-    <color name="home_info_icon">#0369A1</color>
-    <color name="home_warm_soft_bg">#99FEF3C7</color>
-    <color name="home_warm_icon">#B45309</color>
-    <color name="home_recipe_chip_bg">#FBF2E9</color>
     <color name="home_card_border_soft">#33DAC2B1</color>
     <color name="home_bg_top">#FFF7F0</color>
     <color name="home_bg_bottom">#FFF7F2</color>
@@ -100,17 +69,11 @@
     <color name="home_pink_start">#FBC8D6</color>
     <color name="home_pink_end">#F8AFC4</color>
     <color name="home_soft_pink_bg">#FDE5EC</color>
-    <color name="home_soft_pink_icon">#F08DAF</color>
     <color name="home_soft_peach_bg">#FEE9D1</color>
-    <color name="home_soft_peach_icon">#F2B15D</color>
     <color name="home_soft_green_bg">#E6F0D8</color>
-    <color name="home_soft_green_icon">#7CAA55</color>
     <color name="home_soft_lilac_bg">#E6DEFF</color>
-    <color name="home_soft_lilac_icon">#8A6FE8</color>
     <color name="home_soft_blue_bg">#DFF0FF</color>
-    <color name="home_soft_blue_icon">#6BA8E6</color>
     <color name="home_avatar_stroke">#FFFFFFFF</color>
-    <color name="home_bottom_nav_stroke">#00FFFFFF</color>
     <color name="home_bottom_nav_fill">#FFFFFFFF</color>
     <color name="food_detail_bg">#FFF8F1</color>
     <color name="food_detail_bg_bottom">#FFF7EF</color>
@@ -122,7 +85,6 @@
     <color name="food_detail_beige">#FFF1E6</color>
     <color name="food_detail_brown">#9B5F24</color>
     <color name="food_detail_card_stroke">#26E6D3C6</color>
-    <color name="food_detail_shadow">#148A6B57</color>
     <color name="food_detail_tip_fill">#FFF9EAF0</color>
     <color name="food_detail_tip_stroke">#33F2B8C8</color>
     <color name="auth_input_hint">#8A6F5B4B</color>
@@ -151,6 +113,5 @@
     <color name="profile_icon_purple_bg">#FFF1EBFF</color>
     <color name="profile_icon_purple_fg">#B296EE</color>
     <color name="profile_icon_beige_bg">#FFF8EFE7</color>
-    <color name="profile_icon_beige_fg">#C39B7A</color>
 
 </resources>

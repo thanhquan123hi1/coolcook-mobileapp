@@ -4,9 +4,6 @@
     <dimen name="journal_screen_padding_top">16dp</dimen>
     <dimen name="journal_top_icon_card_size">50dp</dimen>
     <dimen name="journal_top_icon_size">22sp</dimen>
-    <dimen name="journal_top_dot_size">10dp</dimen>
-    <dimen name="journal_top_dot_margin">6dp</dimen>
-
     <dimen name="journal_title_margin_top">18dp</dimen>
     <dimen name="journal_title_text_size">25sp</dimen>
 
@@ -36,19 +33,11 @@
     <dimen name="journal_day_photo_height">38dp</dimen>
     <dimen name="journal_day_photo_corner">12dp</dimen>
     <dimen name="journal_day_photo_stroke">2dp</dimen>
-    <dimen name="journal_day_photo_overlap">10dp</dimen>
-    <dimen name="journal_day_photo_left_offset">2dp</dimen>
-    <dimen name="journal_day_number_margin_top">0dp</dimen>
     <dimen name="journal_day_number_margin_bottom">1dp</dimen>
     <dimen name="journal_day_number_text_size">15sp</dimen>
     <dimen name="journal_day_badge_width">34dp</dimen>
     <dimen name="journal_day_badge_height">19dp</dimen>
-    <dimen name="journal_day_badge_size">20dp</dimen>
     <dimen name="journal_day_badge_text_size">10sp</dimen>
-
-    <dimen name="journal_day_extra_text_size">10sp</dimen>
-    <dimen name="journal_day_extra_padding_horizontal">0dp</dimen>
-    <dimen name="journal_day_extra_padding_vertical">0dp</dimen>
 
     <dimen name="journal_fab_margin">20dp</dimen>
     <dimen name="journal_fab_size">66dp</dimen>

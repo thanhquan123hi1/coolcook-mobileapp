@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -24,7 +25,6 @@ import androidx.core.widget.NestedScrollView;
 import com.coolcook.app.R;
 import com.coolcook.app.core.theme.ThemeManager;
 import com.coolcook.app.feature.camera.data.ScanSavedDishStore;
-import com.coolcook.app.feature.camera.ui.ScanDishRecipeBottomSheet;
 import com.coolcook.app.feature.journal.data.JournalRepository;
 import com.coolcook.app.feature.journal.model.JournalEntry;
 import com.coolcook.app.feature.profile.data.HealthAnalyzer;
@@ -366,6 +366,9 @@ public class HealthTrackingActivity extends AppCompatActivity {
         if (btnRecipe != null) {
             btnRecipe.setOnClickListener(v -> openRecommendationRecipe(recommendation));
         }
+        itemView.setOnClickListener(v -> openRecommendationRecipe(recommendation));
+        itemView.setClickable(true);
+        itemView.setFocusable(true);
         if (btnSave != null) {
             btnSave.setOnClickListener(v -> saveRecommendationDish(recommendation));
         }
@@ -397,6 +400,7 @@ public class HealthTrackingActivity extends AppCompatActivity {
             chip.setChipStrokeWidth(dpToPx(1));
             chip.setChipStrokeColor(ColorStateList.valueOf(getHealthTagStroke(tag)));
             chip.setTextColor(getColor(R.color.food_detail_title));
+            chip.setTypeface(ResourcesCompat.getFont(this, R.font.be_vietnam_pro_bold));
             chipGroup.addView(chip);
         }
     }
@@ -408,7 +412,15 @@ public class HealthTrackingActivity extends AppCompatActivity {
             overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
             return;
         }
-        ScanDishRecipeBottomSheet.show(this, recommendation.toScanDishItem());
+        Intent intent = FoodDetailActivity.createGeneratedIntent(
+                this,
+                recommendation.getFoodId(),
+                recommendation.getName(),
+                recommendation.getImageName(),
+                new ArrayList<>(recommendation.getSuitableFor()),
+                recommendation.getSimpleRecipe());
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right_scale, R.anim.slide_out_left_scale);
     }
 
     private void saveRecommendationDish(@NonNull HealthRecommendedFood recommendation) {

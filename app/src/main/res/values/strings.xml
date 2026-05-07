@@ -29,8 +29,6 @@
     <string name="auth_register_now">Đăng ký ngay</string>
     <string name="auth_has_account">Đã có tài khoản?</string>
     <string name="auth_login_now">Đăng nhập ngay</string>
-    <string name="icon_visibility_off">visibility_off</string>
-    <string name="icon_visibility_on">visibility</string>
     <string name="auth_loading">Đang xử lý...</string>
     <string name="auth_success_register">Đăng ký thành công.</string>
     <string name="auth_error_name_required">Vui lòng nhập họ và tên.</string>
@@ -48,7 +46,6 @@
     <string name="auth_error_facebook_config_missing">Facebook Login chưa được cấu hình App ID/Client Token.</string>
     <string name="auth_error_facebook_cancelled">Bạn đã hủy đăng nhập Facebook.</string>
     <string name="auth_error_facebook_failed">Đăng nhập Facebook thất bại.</string>
-    <string name="auth_error_unknown">Có lỗi xảy ra. Vui lòng thử lại.</string>
     <string name="auth_error_user_exists">Email này đã được đăng ký.</string>
     <string name="auth_error_invalid_credentials">Email hoặc mật khẩu không đúng.</string>
     <string name="auth_error_network">Lỗi kết nối mạng. Vui lòng thử lại.</string>
@@ -67,8 +64,6 @@
     <string name="home_see_all">Xem tất cả</string>
     <string name="home_recipe_1">Phở Bò Truyền Thống</string>
     <string name="home_recipe_2">Gỏi Cuốn Tôm Thịt</string>
-    <string name="home_recipe_tag_1">30 PHÚT</string>
-    <string name="home_recipe_tag_2">15 PHÚT</string>
     <string name="home_recipe_difficulty">DỄ</string>
     <string name="home_fit_title">Phù hợp cho bạn</string>
     <string name="home_goal_weight">Món ít dầu mỡ</string>
@@ -85,13 +80,11 @@
     <string name="home_nav_search">Tìm kiếm</string>
     <string name="home_nav_camera">Quét bằng camera</string>
     <string name="home_nav_history">Nhật ký</string>
-    <string name="home_nav_saved">Đã lưu</string>
     <string name="home_nav_profile">Hồ sơ</string>
     <string name="home_notification_desc">Thông báo</string>
     <string name="home_avatar_desc">Ảnh đại diện</string>
 
     <string name="journal_back">Quay lại</string>
-    <string name="journal_open_tools">Mở công cụ bếp</string>
     <string name="journal_calendar_title">Nhật ký món ăn của bạn nè</string>
     <string name="journal_calendar_subtitle">Lưu lại từng bữa ngon trong tháng</string>
     <string name="journal_weekday_t2">T2</string>
@@ -105,19 +98,10 @@
     <string name="journal_next_month">Tháng sau</string>
     <string name="journal_empty_month">Tháng này chưa có món nào, bấm + để thêm nè.</string>
     <string name="journal_empty_day">Ngày này chưa có ảnh món ăn.</string>
-    <string name="journal_add_photo">Thêm ảnh</string>
     <string name="journal_add_photo_desc">Thêm ảnh nhật ký món ăn</string>
     <string name="journal_photo_desc">Ảnh món ăn trong nhật ký</string>
-    <string name="journal_placeholder_desc">Ảnh placeholder nhật ký món ăn</string>
-    <string name="journal_fullscreen_coming_soon">Xem toàn màn hình sẽ có sớm nha.</string>
-    <string name="journal_history_all_friends">Tất cả bạn bè</string>
-    <string name="journal_history_friends">Bạn bè</string>
-    <string name="journal_history_you">Bạn</string>
-    <string name="journal_history_just_now">Vừa xong</string>
     <string name="journal_history_empty_image">Chưa có ảnh</string>
     <string name="journal_history_title_all">Tất cả nhật ký</string>
-    <string name="journal_history_hint">Hướng camera vào món ăn rồi bấm nút chụp</string>
-    <string name="journal_history_meta_format">%1$s  %2$s</string>
 
     <string name="chatbot_back_desc">Quay lại màn hình trước</string>
     <string name="chatbot_grid_desc">Mở danh sách chatbot</string>
@@ -128,15 +112,12 @@
     <string name="chatbot_upload_desc">Tải ảnh món ăn</string>
     <string name="chatbot_send_desc">Gửi tin nhắn</string>
     <string name="chatbot_empty_prompt">Nhập tin nhắn hoặc chọn ảnh để mình gợi ý nha.</string>
-    <string name="chatbot_sent_toast">Đã gửi mô tả đến trợ lý AI.</string>
     <string name="chatbot_upload_selected">Đã chọn ảnh, bạn có thể gửi ngay.</string>
-    <string name="chatbot_grid_coming_soon">Danh sách mẫu AI sẽ sớm xuất hiện.</string>
     <string name="chatbot_typing">CoolCook AI đang nghĩ món ngon cho bạn</string>
     <string name="chatbot_image_attached">Đã đính kèm ảnh</string>
     <string name="chatbot_image_too_large">Ảnh hơi to nè, chọn ảnh dưới 4MB giúp mình nhé.</string>
     <string name="chatbot_ai_error">Ối hehe, mình hơi lag một chút, thử lại nhé!</string>
     <string name="chatbot_need_login">Bạn cần đăng nhập để dùng lịch sử ChatBot.</string>
-    <string name="chatbot_load_session_failed">Mình chưa tải lại được cuộc chat này, thử lại nhé.</string>
     <string name="chatbot_session_title">Lịch sử trò chuyện</string>
     <string name="chatbot_new_chat">New Chat</string>
     <string name="chatbot_no_sessions">Chưa có cuộc chat nào, tạo mới nhé hehe.</string>

@@ -10,6 +10,7 @@ import com.coolcook.app.feature.search.util.FoodImageResolver;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class FoodItem {
 
@@ -81,7 +82,7 @@ public class FoodItem {
             return "Gợi ý hôm nay";
         }
 
-        String normalized = tag.toLowerCase();
+        String normalized = tag.toLowerCase(Locale.ROOT);
         if (normalized.contains("tang co")) {
             return "Tăng cơ";
         }

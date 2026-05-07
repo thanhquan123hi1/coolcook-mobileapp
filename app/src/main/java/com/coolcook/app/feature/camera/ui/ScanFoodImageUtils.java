@@ -153,9 +153,7 @@ final class ScanFoodImageUtils {
     static byte[] normalizeCapturedJpeg(
             @NonNull byte[] jpegBytes,
             int rotationDegrees,
-            boolean mirrorForFrontCamera,
-            @NonNull String lensFacingLabel,
-            int displayRotation) {
+            boolean mirrorForFrontCamera) {
         int exifOrientation = ExifInterface.ORIENTATION_UNDEFINED;
         try (ByteArrayInputStream exifInput = new ByteArrayInputStream(jpegBytes)) {
             ExifInterface exifInterface = new ExifInterface(exifInput);
@@ -169,15 +167,6 @@ final class ScanFoodImageUtils {
         int exifRotation = exifToDegrees(exifOrientation);
         int appliedRotation = exifRotation != 0 ? exifRotation : normalizeDegrees(rotationDegrees);
         boolean shouldMirror = mirrorForFrontCamera;
-
-        Log.d(TAG, "normalizeCapturedJpeg:"
-                + " lensFacing=" + lensFacingLabel
-                + ", displayRotation=" + displayRotation
-                + ", exifOrientation=" + exifOrientation
-                + ", exifRotation=" + exifRotation
-                + ", imageInfoRotation=" + rotationDegrees
-                + ", appliedRotation=" + appliedRotation
-                + ", mirror=" + shouldMirror);
 
         if (appliedRotation == 0 && !shouldMirror) {
             return jpegBytes;
@@ -221,9 +210,7 @@ final class ScanFoodImageUtils {
             normalizedBitmap.recycle();
         }
         bitmap.recycle();
-        byte[] normalized = outputStream.toByteArray();
-        Log.d(TAG, "normalizeCapturedJpeg: output=in-memory-jpeg, bytes=" + normalized.length);
-        return normalized;
+        return outputStream.toByteArray();
     }
 
     @Nullable

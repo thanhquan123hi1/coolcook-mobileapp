@@ -1,7 +1,6 @@
 package com.coolcook.app.feature.search.util;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.annotation.DrawableRes;
@@ -11,8 +10,6 @@ import androidx.annotation.Nullable;
 import com.coolcook.app.R;
 
 public final class FoodImageResolver {
-
-    private static final String TAG = "FoodImage";
 
     private FoodImageResolver() {
     }
@@ -29,13 +26,18 @@ public final class FoodImageResolver {
                     safeImageName,
                     "drawable",
                     context.getPackageName());
+            if (imageResId == 0) {
+                imageResId = context.getResources().getIdentifier(
+                        safeImageName,
+                        "mipmap",
+                        context.getPackageName());
+            }
         }
 
         if (imageResId != 0) {
             return imageResId;
         }
 
-        Log.d(TAG, "Missing image for: " + (foodName == null || foodName.trim().isEmpty() ? safeImageName : foodName));
         return R.drawable.img_scan_food_salad;
     }
 

@@ -334,7 +334,6 @@ class EditProfileDialogFragment : DialogFragment() {
             uploadRequest
                 .callback(object : UploadCallback {
                     override fun onStart(requestId: String?) {
-                        Log.d(TAG, "Avatar upload start: $requestId")
                         runOnUiThreadSafely {
                             showAvatarUploadState(getString(R.string.profile_edit_uploading_image))
                         }

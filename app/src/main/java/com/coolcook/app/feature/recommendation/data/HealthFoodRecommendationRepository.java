@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 public class HealthFoodRecommendationRepository {
@@ -57,14 +56,7 @@ public class HealthFoodRecommendationRepository {
                 return;
             }
 
-            HealthAnalysisResult analysis = HealthAnalyzer.analyze(profile);
-            List<HealthRecommendedFood> localRecommendations = buildLocalRecommendations(analysis);
-            if (localRecommendations.size() >= 3) {
-                callback.onComplete(profile, analysis, top(localRecommendations, 5), null);
-                return;
-            }
-
-            requestAiFallback(profile, analysis, localRecommendations, callback);
+            requestAiRecommendations(profile, callback);
         });
     }
 
@@ -145,15 +137,15 @@ public class HealthFoodRecommendationRepository {
         return score;
     }
 
-    private void requestAiFallback(
+    private void requestAiRecommendations(
             @NonNull HealthProfile profile,
-            @NonNull HealthAnalysisResult analysis,
-            @NonNull List<HealthRecommendedFood> localRecommendations,
             @NonNull Callback callback) {
-        String prompt = buildPrompt(profile, analysis, localRecommendations);
+        HealthAnalysisResult fallbackAnalysis = HealthAnalyzer.analyze(profile);
+        List<HealthRecommendedFood> localRecommendations = buildLocalRecommendations(fallbackAnalysis);
+        String prompt = buildPrompt(profile, fallbackAnalysis, localRecommendations);
         geminiRepository.requestStructuredResponse(
-                "Bạn là AI gợi ý món ăn cho ứng dụng CoolCook. "
-                        + "Chỉ trả về JSON hợp lệ, không markdown, không giải thích ngoài JSON.",
+                "Bạn là chuyên gia dinh dưỡng và ẩm thực của ứng dụng CoolCook. "
+                        + "Chỉ trả về JSON thuần túy hợp lệ, không markdown, không chào hỏi, không giải thích ngoài JSON.",
                 prompt,
                 null,
                 null,
@@ -168,14 +160,21 @@ public class HealthFoodRecommendationRepository {
 
                     @Override
                     public void onCompleted(@NonNull String finalText) {
-                        List<HealthRecommendedFood> merged = new ArrayList<>(localRecommendations);
-                        merged.addAll(parseAiRecommendations(finalText));
-                        callback.onComplete(profile, analysis, top(deduplicate(merged), 5), null);
+                        AiRecommendationResult aiResult = parseAiResult(finalText);
+                        if (!aiResult.recommendations.isEmpty()) {
+                            callback.onComplete(
+                                    profile,
+                                    aiResult.analysis == null ? fallbackAnalysis : aiResult.analysis,
+                                    top(deduplicate(aiResult.recommendations), 5),
+                                    null);
+                            return;
+                        }
+                        callback.onComplete(profile, fallbackAnalysis, top(localRecommendations, 5), null);
                     }
 
                     @Override
                     public void onError(@NonNull String friendlyError) {
-                        callback.onComplete(profile, analysis, top(localRecommendations, 5), null);
+                        callback.onComplete(profile, fallbackAnalysis, top(localRecommendations, 5), null);
                     }
                 });
     }
@@ -186,50 +185,77 @@ public class HealthFoodRecommendationRepository {
             @NonNull HealthAnalysisResult analysis,
             @NonNull List<HealthRecommendedFood> localRecommendations) {
         return "{\n"
-                + "  \"task\": \"goi_y_mon_an_suc_khoe\",\n"
-                + "  \"healthProfile\": {\n"
+                + "  \"role\": \"Bạn là chuyên gia dinh dưỡng và ẩm thực của ứng dụng CoolCook.\",\n"
+                + "  \"task\": \"Phân tích chỉ số sức khỏe người dùng, sau đó chọn hoặc tự sáng tạo 3-5 món ăn phù hợp nhất.\",\n"
+                + "  \"userProfile\": {\n"
                 + "    \"weightKg\": " + profile.getWeightKg() + ",\n"
+                + "    \"bloodPressure\": \"" + profile.getSystolicBp() + "/" + profile.getDiastolicBp() + "\",\n"
                 + "    \"systolicBp\": " + profile.getSystolicBp() + ",\n"
                 + "    \"diastolicBp\": " + profile.getDiastolicBp() + ",\n"
                 + "    \"heartRateBpm\": " + profile.getHeartRateBpm() + ",\n"
                 + "    \"goal\": \"" + escape(profile.getGoal()) + "\"\n"
                 + "  },\n"
-                + "  \"analysis\": {\n"
+                + "  \"localMenu\": " + buildLocalMenuJson() + ",\n"
+                + "  \"alreadySelectedLocalDishes\": " + new JSONArray(extractNames(localRecommendations)) + ",\n"
+                + "  \"healthHintsFromApp\": {\n"
                 + "    \"summary\": \"" + escape(analysis.getSummary()) + "\",\n"
                 + "    \"tags\": " + new JSONArray(analysis.getTags()) + ",\n"
                 + "    \"shouldEat\": " + new JSONArray(analysis.getShouldEat()) + ",\n"
                 + "    \"shouldLimit\": " + new JSONArray(analysis.getShouldLimit()) + "\n"
                 + "  },\n"
-                + "  \"existingLocalRecommendations\": " + new JSONArray(extractNames(localRecommendations)) + ",\n"
-                + "  \"rules\": [\n"
-                + "    \"de xuat them toi da 3 mon moi, khong trung mon local\",\n"
-                + "    \"chi dung ngon ngu an toan: co the phu hop, nen uu tien, nen han che, goi y tham khao\",\n"
-                + "    \"khong duoc chan doan, dieu tri hay khang dinh benh\",\n"
-                + "    \"mon phai de lam, thanh dam va phu hop boi canh Viet Nam\",\n"
-                + "    \"neu khong chac phu hop thi tra ve danh sach rong\"\n"
+                + "  \"mandatoryRules\": [\n"
+                + "    \"Đánh giá sức khỏe dựa trên cân nặng, huyết áp, nhịp tim và mục tiêu; nêu nên ăn gì và nên hạn chế gì.\",\n"
+                + "    \"Nếu huyết áp từ 140/90 trở lên, ưu tiên ăn nhạt, hấp, luộc, nhiều rau; hạn chế nhiều muối, dầu mỡ, quá cay.\",\n"
+                + "    \"Nếu nhịp tim trên 100 bpm, ưu tiên món nhẹ bụng, dễ tiêu, ít cay, ít dầu.\",\n"
+                + "    \"Nếu cân nặng cao, ưu tiên món nhiều rau, đạm nạc, ít dầu để hỗ trợ kiểm soát cân nặng.\",\n"
+                + "    \"Trích xuất món phù hợp nhất từ localMenu trước. Với món local, giữ nguyên id, name, image và recipe; chỉ tự viết reason.\",\n"
+                + "    \"Nếu localMenu không có hoặc không đủ món phù hợp, tự tạo món mới ngay. Món tự tạo phải có id là generated, image là ic_launcher, và recipe chi tiết gồm Nguyên liệu và Các bước.\",\n"
+                + "    \"Không chẩn đoán là bệnh; chỉ dùng từ an toàn như có thể phù hợp, nên hạn chế, gợi ý tham khảo.\",\n"
+                + "    \"Trả về tổng cộng 3-5 recommendations, ưu tiên bổ sung các món chưa có trong alreadySelectedLocalDishes.\"\n"
                 + "  ],\n"
                 + "  \"outputSchema\": {\n"
+                + "    \"analysis\": {\n"
+                + "      \"summary\": \"Đánh giá ngắn gọn 1 câu về tình trạng và gợi ý ăn uống chung.\",\n"
+                + "      \"shouldEat\": [\"luộc\", \"hấp\", \"nhiều rau\"],\n"
+                + "      \"shouldLimit\": [\"chiên xào\", \"nhiều muối\"]\n"
+                + "    },\n"
                 + "    \"recommendations\": [\n"
                 + "      {\n"
-                + "        \"name\": \"\",\n"
-                + "        \"reason\": \"\",\n"
-                + "        \"suitableFor\": [],\n"
-                + "        \"shouldLimit\": \"\",\n"
-                + "        \"simpleRecipe\": \"\"\n"
+                + "        \"id\": \"id local hoặc generated\",\n"
+                + "        \"name\": \"Tên món ăn\",\n"
+                + "        \"image\": \"tên ảnh local hoặc ic_launcher\",\n"
+                + "        \"reason\": \"Lý do món này có thể phù hợp với người dùng.\",\n"
+                + "        \"suitableFor\": [\"nhãn 1\", \"nhãn 2\"],\n"
+                + "        \"shouldLimit\": \"Lưu ý nhỏ khi ăn món này\",\n"
+                + "        \"recipe\": \"Công thức nấu chi tiết\"\n"
                 + "      }\n"
                 + "    ]\n"
-                + "  }\n"
+                + "  },\n"
+                + "  \"responseFormat\": \"Chỉ trả về JSON thuần túy theo outputSchema, tuyệt đối không markdown.\"\n"
                 + "}";
     }
 
     @NonNull
-    private List<HealthRecommendedFood> parseAiRecommendations(@NonNull String rawText) {
+    private AiRecommendationResult parseAiResult(@NonNull String rawText) {
         List<HealthRecommendedFood> recommendations = new ArrayList<>();
+        HealthAnalysisResult analysis = null;
         try {
             JSONObject root = new JSONObject(extractJsonPayload(rawText));
+            JSONObject analysisObject = root.optJSONObject("analysis");
+            if (analysisObject != null) {
+                String summary = analysisObject.optString("summary", "").trim();
+                if (!summary.isEmpty()) {
+                    analysis = new HealthAnalysisResult(
+                            summary,
+                            new ArrayList<>(),
+                            toStringList(analysisObject.optJSONArray("shouldEat")),
+                            toStringList(analysisObject.optJSONArray("shouldLimit")),
+                            "");
+                }
+            }
             JSONArray array = root.optJSONArray("recommendations");
             if (array == null) {
-                return recommendations;
+                return new AiRecommendationResult(analysis, recommendations);
             }
             for (int index = 0; index < array.length(); index++) {
                 JSONObject item = array.optJSONObject(index);
@@ -240,18 +266,152 @@ public class HealthFoodRecommendationRepository {
                 if (name.isEmpty()) {
                     continue;
                 }
+                String id = item.optString("id", "generated").trim();
+                FoodItem localFood = findLocalFood(id, name);
+                if (localFood != null) {
+                    recommendations.add(new HealthRecommendedFood(
+                            localFood,
+                            localFood.getName(),
+                            item.optString("reason", "").trim(),
+                            localFood.getSuitableFor(),
+                            item.optString("shouldLimit", "").trim(),
+                            localFood.getRecipe()));
+                    continue;
+                }
+
+                String imageName = item.optString("image", "ic_launcher").trim();
+                String recipe = normalizeRecipePayload(name, item.opt("recipe"));
+                if (recipe.isEmpty()) {
+                    recipe = item.optString("simpleRecipe", "").trim();
+                }
                 recommendations.add(new HealthRecommendedFood(
                         null,
+                        id.isEmpty() ? "generated" : id,
+                        imageName.isEmpty() ? "ic_launcher" : imageName,
                         name,
                         item.optString("reason", "").trim(),
                         toStringList(item.optJSONArray("suitableFor")),
                         item.optString("shouldLimit", "").trim(),
-                        item.optString("simpleRecipe", "").trim()));
+                        recipe));
             }
         } catch (Exception ignored) {
-            return new ArrayList<>();
+            return new AiRecommendationResult(null, new ArrayList<>());
         }
-        return recommendations;
+        return new AiRecommendationResult(analysis, recommendations);
+    }
+
+    @NonNull
+    private static String normalizeRecipePayload(@NonNull String name, @Nullable Object rawRecipe) {
+        if (rawRecipe == null || rawRecipe == JSONObject.NULL) {
+            return "";
+        }
+        if (rawRecipe instanceof JSONObject) {
+            return recipeObjectToMarkdown(name, (JSONObject) rawRecipe);
+        }
+        String recipe = String.valueOf(rawRecipe).trim();
+        if (recipe.startsWith("{") && recipe.endsWith("}")) {
+            try {
+                return recipeObjectToMarkdown(name, new JSONObject(recipe));
+            } catch (Exception ignored) {
+                return recipe;
+            }
+        }
+        return recipe;
+    }
+
+    @NonNull
+    private static String recipeObjectToMarkdown(@NonNull String name, @NonNull JSONObject recipeObject) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("### ").append(name).append('\n');
+        builder.append("**Khẩu phần:** 2-3 người\n");
+
+        JSONObject ingredients = recipeObject.optJSONObject("Nguyên liệu");
+        if (ingredients == null) {
+            ingredients = recipeObject.optJSONObject("nguyên liệu");
+        }
+        if (ingredients != null) {
+            builder.append("**Nguyên liệu:**\n");
+            JSONArray ingredientNames = ingredients.names();
+            if (ingredientNames != null) {
+                for (int index = 0; index < ingredientNames.length(); index++) {
+                    String ingredientName = ingredientNames.optString(index, "").trim();
+                    String amount = ingredients.optString(ingredientName, "").trim();
+                    if (!ingredientName.isEmpty()) {
+                        builder.append("- ").append(ingredientName);
+                        if (!amount.isEmpty()) {
+                            builder.append(' ').append(amount);
+                        }
+                        builder.append('\n');
+                    }
+                }
+            }
+        }
+
+        JSONArray steps = recipeObject.optJSONArray("Các bước");
+        if (steps == null) {
+            steps = recipeObject.optJSONArray("Các bước thực hiện");
+        }
+        if (steps == null) {
+            steps = recipeObject.optJSONArray("các bước");
+        }
+        if (steps != null) {
+            builder.append("\n**Các bước thực hiện:**\n");
+            for (int index = 0; index < steps.length(); index++) {
+                String step = steps.optString(index, "").trim();
+                if (!step.isEmpty()) {
+                    builder.append(index + 1).append(". ").append(step).append('\n');
+                }
+            }
+        }
+
+        JSONArray tips = recipeObject.optJSONArray("Mẹo tối ưu");
+        if (tips != null) {
+            builder.append("\n**Mẹo tối ưu:**\n");
+            for (int index = 0; index < tips.length(); index++) {
+                String tip = tips.optString(index, "").trim();
+                if (!tip.isEmpty()) {
+                    builder.append("- ").append(tip).append('\n');
+                }
+            }
+        }
+        return builder.toString().trim();
+    }
+
+    @NonNull
+    private JSONArray buildLocalMenuJson() {
+        JSONArray array = new JSONArray();
+        for (FoodItem food : foodJsonRepository.getFoods()) {
+            try {
+                JSONObject item = new JSONObject();
+                item.put("id", food.getId());
+                item.put("name", food.getName());
+                item.put("image", food.getImage());
+                item.put("suitableFor", new JSONArray(food.getSuitableFor()));
+                item.put("recipe", food.getRecipe());
+                array.put(item);
+            } catch (Exception ignored) {
+                // Skip malformed items so one bad dish cannot break AI fallback generation.
+            }
+        }
+        return array;
+    }
+
+    @Nullable
+    private FoodItem findLocalFood(@NonNull String id, @NonNull String name) {
+        if (!id.isEmpty() && !"generated".equalsIgnoreCase(id)) {
+            FoodItem byId = foodJsonRepository.findById(id);
+            if (byId != null) {
+                return byId;
+            }
+        }
+
+        String normalizedName = canonicalizeText(name);
+        for (FoodItem food : foodJsonRepository.getFoods()) {
+            if (canonicalizeText(food.getName()).equals(normalizedName)) {
+                return food;
+            }
+        }
+        return null;
     }
 
     @NonNull
@@ -486,6 +646,20 @@ public class HealthFoodRecommendationRepository {
 
         int getScore() {
             return score;
+        }
+    }
+
+    private static final class AiRecommendationResult {
+        @Nullable
+        final HealthAnalysisResult analysis;
+        @NonNull
+        final List<HealthRecommendedFood> recommendations;
+
+        AiRecommendationResult(
+                @Nullable HealthAnalysisResult analysis,
+                @NonNull List<HealthRecommendedFood> recommendations) {
+            this.analysis = analysis;
+            this.recommendations = recommendations;
         }
     }
 }

@@ -21,7 +21,6 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,7 +97,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -189,7 +187,6 @@ public class ScanFoodActivity extends AppCompatActivity {
     private View btnJournalGrid;
     private View btnJournalMore;
     private View btnJournalHistoryShutter;
-    private View btnJournalFriends;
     private View btnJournalHistoryInviteEmpty;
     private View journalPreviewFooterContainer;
     private View btnBack;
@@ -384,11 +381,10 @@ public class ScanFoodActivity extends AppCompatActivity {
                 imgCapturePreview,
                 journalPreviewFooterContainer,
                 btnCaptureSaveCancel,
-                 btnCaptureSaveConfirm,
+                btnCaptureSaveConfirm,
                 captureSaveLoading,
                 mediaUploadRepository,
-                journalFeedRepository,
-                friendInviteRepository);
+                journalFeedRepository);
 
         applyInitialModeFromIntent();
         updateUiForMode(false);
@@ -486,7 +482,6 @@ public class ScanFoodActivity extends AppCompatActivity {
         btnJournalGrid = findViewById(R.id.btnJournalGrid);
         btnJournalMore = findViewById(R.id.btnJournalMore);
         btnJournalHistoryShutter = findViewById(R.id.btnJournalHistoryShutter);
-        btnJournalFriends = findViewById(R.id.btnJournalFriends);
         if (topCenterAction instanceof ViewGroup) {
             ViewGroup topCenterGroup = (ViewGroup) topCenterAction;
             if (topCenterGroup.getChildCount() > 1 && topCenterGroup.getChildAt(1) instanceof TextView) {
@@ -1619,9 +1614,6 @@ public class ScanFoodActivity extends AppCompatActivity {
         if (btnJournalGrid != null) {
             btnJournalGrid.setOnClickListener(v -> startActivity(JournalHistoryGridActivity.createIntent(this)));
         }
-        if (btnJournalFriends != null) {
-            btnJournalFriends.setOnClickListener(v -> openFriendInviteFromHeader());
-        }
         if (btnJournalHistoryShutter != null) {
             btnJournalHistoryShutter.setOnClickListener(v -> {
                 if (isRecognitionMode) {
@@ -1667,18 +1659,6 @@ public class ScanFoodActivity extends AppCompatActivity {
         }
         if (btnCaptureSaveConfirm != null) {
             btnCaptureSaveConfirm.setOnClickListener(v -> savePendingEntry());
-        }
-        if (btnPreviewDownload != null) {
-            btnPreviewDownload.setOnClickListener(v -> Toast.makeText(
-                    this,
-                    "TODO: lưu ảnh vào thiết bị",
-                    Toast.LENGTH_SHORT).show());
-        }
-        if (btnPreviewEffects != null) {
-            btnPreviewEffects.setOnClickListener(v -> Toast.makeText(
-                    this,
-                    "TODO: hiệu ứng đang được phát triển",
-                    Toast.LENGTH_SHORT).show());
         }
         if (btnSaveSelectedDish != null) {
             btnSaveSelectedDish.setOnClickListener(v -> saveSelectedDish());
@@ -1951,8 +1931,6 @@ public class ScanFoodActivity extends AppCompatActivity {
                         int imageRotationDegrees = image.getImageInfo() == null
                                 ? 0
                                 : image.getImageInfo().getRotationDegrees();
-                        int displayRotation = getDisplay() == null ? -1 : getDisplay().getRotation();
-                        String lensFacingLabel = isUsingFrontCamera ? "front" : "back";
                         try {
                             bytes = ScanFoodImageUtils.imageProxyToJpeg(image);
                         } finally {
@@ -1975,15 +1953,8 @@ public class ScanFoodActivity extends AppCompatActivity {
                         bytes = ScanFoodImageUtils.normalizeCapturedJpeg(
                                 bytes,
                                 imageRotationDegrees,
-                                isUsingFrontCamera,
-                                lensFacingLabel,
-                                displayRotation);
+                                isUsingFrontCamera);
                         final byte[] normalizedBytes = bytes;
-                        Log.d(TAG, "captureSuccess:"
-                                + " lensFacing=" + lensFacingLabel
-                                + ", displayRotation=" + displayRotation
-                                + ", imageRotationDegrees=" + imageRotationDegrees
-                                + ", normalizedBytes=" + normalizedBytes.length);
 
                         if (routeRecognition) {
                             runOnUiThread(() -> {

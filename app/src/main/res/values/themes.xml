@@ -37,14 +37,6 @@
         <item name="cornerSize">50%</item>
     </style>
 
-    <style name="Theme.Coolcook.Splash" parent="Base.Theme.Coolcook">
-        <!-- Match splash layout background so launch feels like a single screen. -->
-        <item name="android:windowBackground">#fff8f3</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
-        <item name="android:windowDisablePreview">true</item>
-    </style>
-
     <style name="Animation.Coolcook.EditProfileDialog" parent="@android:style/Animation.Dialog">
         <item name="android:windowEnterAnimation">@anim/dialog_bounce_in</item>
         <item name="android:windowExitAnimation">@anim/dialog_bounce_out</item>
@@ -113,13 +105,16 @@
     </style>
 
     <style name="Widget.Coolcook.Health.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
-        <item name="boxBackgroundColor">#F7F7F7</item>
-        <item name="boxStrokeWidth">0dp</item>
-        <item name="boxStrokeWidthFocused">0dp</item>
+        <item name="boxBackgroundColor">#FFFFFEFC</item>
+        <item name="boxStrokeColor">#CFE2C7B5</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
         <item name="boxCornerRadiusTopStart">12dp</item>
         <item name="boxCornerRadiusTopEnd">12dp</item>
         <item name="boxCornerRadiusBottomStart">12dp</item>
         <item name="boxCornerRadiusBottomEnd">12dp</item>
-        <item name="android:textColorHint">#A0A0A0</item>
+        <item name="hintTextColor">#806B5D</item>
+        <item name="android:textColorHint">#806B5D</item>
+        <item name="startIconTint">#4D4653</item>
     </style>
 </resources>

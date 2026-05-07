@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="14dp"
     android:background="@drawable/bg_health_form_card"
-    android:elevation="4dp"
+    android:elevation="9dp"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -51,9 +51,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:fontFamily="@font/be_vietnam_pro"
+                android:fontFamily="@font/be_vietnam_pro_medium"
                 android:lineSpacingExtra="2dp"
-                android:textColor="@color/food_detail_secondary"
+                android:textColor="@color/home_text_primary"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
@@ -86,14 +86,14 @@
             android:singleLine="true"
             android:text="Xem công thức"
             android:textAllCaps="false"
-            android:textColor="@android:color/white"
+            android:textColor="@color/food_detail_title"
             android:textSize="12sp"
-            app:backgroundTint="@android:color/transparent"
+            app:backgroundTint="@null"
             app:cornerRadius="22dp"
             app:icon="@drawable/ic_journal_book_cute"
             app:iconGravity="textStart"
             app:iconPadding="6dp"
-            app:iconTint="@android:color/white" />
+            app:iconTint="@color/food_detail_title" />
 
         <Space
             android:layout_width="10dp"
@@ -113,14 +113,14 @@
             android:singleLine="true"
             android:text="Lưu món"
             android:textAllCaps="false"
-            android:textColor="#6D4CFF"
+            android:textColor="#4B32D8"
             android:textSize="12sp"
-            app:backgroundTint="@android:color/transparent"
+            app:backgroundTint="@null"
             app:cornerRadius="22dp"
             app:icon="@drawable/ic_bookmark_cute"
             app:iconGravity="textStart"
             app:iconPadding="6dp"
-            app:iconTint="#6D4CFF" />
+            app:iconTint="#4B32D8" />
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
@@ -137,12 +137,12 @@
         android:singleLine="true"
         android:text="Thêm vào nhật ký món ăn"
         android:textAllCaps="false"
-        android:textColor="#E56BA0"
+        android:textColor="#C83F78"
         android:textSize="12sp"
-        app:backgroundTint="@android:color/transparent"
+        app:backgroundTint="@null"
         app:cornerRadius="22dp"
         app:icon="@drawable/ic_journal_cute"
         app:iconGravity="textStart"
         app:iconPadding="6dp"
-        app:iconTint="#E56BA0" />
+        app:iconTint="#C83F78" />
 </LinearLayout>

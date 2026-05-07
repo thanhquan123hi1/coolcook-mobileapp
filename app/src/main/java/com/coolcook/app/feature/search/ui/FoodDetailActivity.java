@@ -28,6 +28,7 @@ import com.coolcook.app.R;
 import com.coolcook.app.core.util.MarkdownRenderer;
 import com.coolcook.app.feature.search.data.FavoriteFoodStore;
 import com.coolcook.app.feature.search.data.FoodJsonRepository;
+import com.coolcook.app.feature.search.model.FoodCategory;
 import com.coolcook.app.feature.search.model.FoodItem;
 import com.coolcook.app.feature.search.model.ParsedRecipe;
 import com.coolcook.app.feature.search.parser.RecipeParser;
@@ -35,14 +36,23 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.card.MaterialCardView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class FoodDetailActivity extends AppCompatActivity {
 
     private static final String EXTRA_FOOD_ID = "extra_food_id";
+    private static final String EXTRA_GENERATED_NAME = "extra_generated_name";
+    private static final String EXTRA_GENERATED_IMAGE = "extra_generated_image";
+    private static final String EXTRA_GENERATED_RECIPE = "extra_generated_recipe";
+    private static final String EXTRA_GENERATED_SUITABLE_FOR = "extra_generated_suitable_for";
 
     private FavoriteFoodStore favoriteFoodStore;
     private FoodItem foodItem;
+    private boolean generatedFood;
     private AppCompatImageView imgFoodHero;
     private AppCompatImageView btnFavorite;
     private MaterialCardView cardFoodHero;
@@ -51,6 +61,23 @@ public class FoodDetailActivity extends AppCompatActivity {
     public static Intent createIntent(@NonNull Context context, @NonNull String foodId) {
         Intent intent = new Intent(context, FoodDetailActivity.class);
         intent.putExtra(EXTRA_FOOD_ID, foodId);
+        return intent;
+    }
+
+    @NonNull
+    public static Intent createGeneratedIntent(
+            @NonNull Context context,
+            @NonNull String foodId,
+            @NonNull String name,
+            @NonNull String image,
+            @NonNull ArrayList<String> suitableFor,
+            @NonNull String recipe) {
+        Intent intent = new Intent(context, FoodDetailActivity.class);
+        intent.putExtra(EXTRA_FOOD_ID, foodId);
+        intent.putExtra(EXTRA_GENERATED_NAME, name);
+        intent.putExtra(EXTRA_GENERATED_IMAGE, image);
+        intent.putExtra(EXTRA_GENERATED_RECIPE, recipe);
+        intent.putStringArrayListExtra(EXTRA_GENERATED_SUITABLE_FOR, suitableFor);
         return intent;
     }
 
@@ -63,6 +90,10 @@ public class FoodDetailActivity extends AppCompatActivity {
         favoriteFoodStore = new FavoriteFoodStore(this);
         String foodId = getIntent().getStringExtra(EXTRA_FOOD_ID);
         foodItem = new FoodJsonRepository(this).findById(foodId == null ? "" : foodId);
+        if (foodItem == null) {
+            foodItem = buildGeneratedFoodItem(foodId);
+            generatedFood = foodItem != null;
+        }
         if (foodItem == null) {
             finish();
             return;
@@ -85,7 +116,11 @@ public class FoodDetailActivity extends AppCompatActivity {
         cardFoodHero = findViewById(R.id.cardFoodHero);
 
         findViewById(R.id.btnFoodBack).setOnClickListener(v -> finish());
-        btnFavorite.setOnClickListener(v -> toggleFavorite());
+        if (generatedFood) {
+            btnFavorite.setVisibility(View.GONE);
+        } else {
+            btnFavorite.setOnClickListener(v -> toggleFavorite());
+        }
         ensureSquareHeroCard();
     }
 
@@ -110,6 +145,99 @@ public class FoodDetailActivity extends AppCompatActivity {
         bindIngredients(parsedRecipe);
         bindSteps(parsedRecipe);
         bindTips(parsedRecipe);
+    }
+
+    @Nullable
+    private FoodItem buildGeneratedFoodItem(@Nullable String foodId) {
+        Intent intent = getIntent();
+        String name = intent.getStringExtra(EXTRA_GENERATED_NAME);
+        String recipe = normalizeGeneratedRecipe(name, intent.getStringExtra(EXTRA_GENERATED_RECIPE));
+        if (name == null || name.trim().isEmpty() || recipe == null || recipe.trim().isEmpty()) {
+            return null;
+        }
+
+        String image = intent.getStringExtra(EXTRA_GENERATED_IMAGE);
+        ArrayList<String> suitableFor = intent.getStringArrayListExtra(EXTRA_GENERATED_SUITABLE_FOR);
+        return new FoodItem(
+                foodId == null || foodId.trim().isEmpty() ? "generated" : foodId,
+                name.trim(),
+                FoodCategory.DRY,
+                image == null || image.trim().isEmpty() ? "ic_launcher" : image.trim(),
+                suitableFor == null ? new ArrayList<>() : suitableFor,
+                recipe.trim(),
+                RecipeParser.inferCookTimeMinutes(recipe));
+    }
+
+    @Nullable
+    private String normalizeGeneratedRecipe(@Nullable String name, @Nullable String recipe) {
+        if (recipe == null) {
+            return null;
+        }
+        String trimmedRecipe = recipe.trim();
+        if (!trimmedRecipe.startsWith("{") || !trimmedRecipe.endsWith("}")) {
+            return trimmedRecipe;
+        }
+
+        try {
+            JSONObject recipeObject = new JSONObject(trimmedRecipe);
+            String safeName = name == null || name.trim().isEmpty() ? "Món ăn gợi ý" : name.trim();
+            StringBuilder builder = new StringBuilder();
+            builder.append("### ").append(safeName).append('\n');
+            builder.append("**Khẩu phần:** 2-3 người\n");
+
+            JSONObject ingredients = recipeObject.optJSONObject("Nguyên liệu");
+            if (ingredients == null) {
+                ingredients = recipeObject.optJSONObject("nguyên liệu");
+            }
+            if (ingredients != null) {
+                builder.append("**Nguyên liệu:**\n");
+                JSONArray ingredientNames = ingredients.names();
+                if (ingredientNames != null) {
+                    for (int index = 0; index < ingredientNames.length(); index++) {
+                        String ingredientName = ingredientNames.optString(index, "").trim();
+                        String amount = ingredients.optString(ingredientName, "").trim();
+                        if (!ingredientName.isEmpty()) {
+                            builder.append("- ").append(ingredientName);
+                            if (!amount.isEmpty()) {
+                                builder.append(' ').append(amount);
+                            }
+                            builder.append('\n');
+                        }
+                    }
+                }
+            }
+
+            JSONArray steps = recipeObject.optJSONArray("Các bước");
+            if (steps == null) {
+                steps = recipeObject.optJSONArray("Các bước thực hiện");
+            }
+            if (steps == null) {
+                steps = recipeObject.optJSONArray("các bước");
+            }
+            if (steps != null) {
+                builder.append("\n**Các bước thực hiện:**\n");
+                for (int index = 0; index < steps.length(); index++) {
+                    String step = steps.optString(index, "").trim();
+                    if (!step.isEmpty()) {
+                        builder.append(index + 1).append(". ").append(step).append('\n');
+                    }
+                }
+            }
+
+            JSONArray tips = recipeObject.optJSONArray("Mẹo tối ưu");
+            if (tips != null) {
+                builder.append("\n**Mẹo tối ưu:**\n");
+                for (int index = 0; index < tips.length(); index++) {
+                    String tip = tips.optString(index, "").trim();
+                    if (!tip.isEmpty()) {
+                        builder.append("- ").append(tip).append('\n');
+                    }
+                }
+            }
+            return builder.toString().trim();
+        } catch (Exception ignored) {
+            return trimmedRecipe;
+        }
     }
 
     @NonNull
@@ -274,11 +402,17 @@ public class FoodDetailActivity extends AppCompatActivity {
     }
 
     private void toggleFavorite() {
+        if (generatedFood) {
+            return;
+        }
         favoriteFoodStore.toggle(foodItem.getId());
         bindFavoriteState();
     }
 
     private void bindFavoriteState() {
+        if (generatedFood) {
+            return;
+        }
         boolean favorite = favoriteFoodStore.isFavorite(foodItem.getId());
         btnFavorite.setImageResource(favorite ? R.drawable.ic_heart_cute_filled : R.drawable.ic_heart_cute);
         btnFavorite.clearColorFilter();

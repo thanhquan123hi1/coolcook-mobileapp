@@ -48,8 +48,8 @@ public class GeminiRepository {
     private static final int MAX_HISTORY_MESSAGES = 8;
     private static final int MAX_HISTORY_TOTAL_CHARS = 1800;
     private static final int MAX_SINGLE_MESSAGE_CHARS = 360;
-    private static final int MAX_USER_PROMPT_CHARS = 480;
-    private static final int MAX_OUTPUT_TOKENS = 800;
+    private static final int MAX_USER_PROMPT_CHARS = 50000;
+    private static final int MAX_OUTPUT_TOKENS = 3000;
     private static final String SYSTEM_PROMPT = "Bạn là AI Agent ẩm thực trong ứng dụng Android CoolCook. "
             + "Phản hồi phải là văn bản thuần tiếng Việt, không JSON, không ký tự lạ. "
             + "Nhiệm vụ bắt buộc: "

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_health_form_card"
-        android:elevation="6dp"
+        android:elevation="10dp"
         android:orientation="vertical"
         android:padding="18dp">
 
@@ -24,7 +24,7 @@
             <FrameLayout
                 android:layout_width="54dp"
                 android:layout_height="54dp"
-                android:background="@drawable/bg_profile_pastel_icon_circle">
+                android:background="@drawable/bg_health_icon_circle">
 
                 <ImageView
                     android:layout_width="26dp"
@@ -54,10 +54,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:fontFamily="@font/be_vietnam_pro"
+                    android:fontFamily="@font/be_vietnam_pro_medium"
                     android:lineSpacingExtra="2dp"
                     android:text="CoolCook chỉ gợi ý ăn uống tham khảo, không thay thế tư vấn y tế."
-                    android:textColor="@color/food_detail_secondary"
+                    android:textColor="@color/home_text_primary"
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
@@ -76,9 +76,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="numberDecimal"
+                android:fontFamily="@font/be_vietnam_pro_medium"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
-                android:textColor="@color/textPrimary" />
+                android:textColor="@color/textPrimary"
+                android:textSize="15sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
@@ -101,9 +103,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
+                    android:fontFamily="@font/be_vietnam_pro_medium"
                     android:paddingTop="4dp"
                     android:paddingBottom="4dp"
-                    android:textColor="@color/textPrimary" />
+                    android:textColor="@color/textPrimary"
+                    android:textSize="15sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Space
@@ -124,9 +128,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
+                    android:fontFamily="@font/be_vietnam_pro_medium"
                     android:paddingTop="4dp"
                     android:paddingBottom="4dp"
-                    android:textColor="@color/textPrimary" />
+                    android:textColor="@color/textPrimary"
+                    android:textSize="15sp" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
@@ -144,9 +150,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
+                android:fontFamily="@font/be_vietnam_pro_medium"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
-                android:textColor="@color/textPrimary" />
+                android:textColor="@color/textPrimary"
+                android:textSize="15sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -163,9 +171,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="2"
+                android:fontFamily="@font/be_vietnam_pro_medium"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
-                android:textColor="@color/textPrimary" />
+                android:textColor="@color/textPrimary"
+                android:textSize="15sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -196,7 +206,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:fontFamily="@font/be_vietnam_pro_medium"
-            android:textColor="@color/food_detail_secondary"
+            android:textColor="@color/home_text_primary"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -206,7 +216,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_health_advice_card"
-        android:elevation="6dp"
+        android:elevation="10dp"
         android:orientation="vertical"
         android:padding="18dp">
 
@@ -219,7 +229,7 @@
             <FrameLayout
                 android:layout_width="54dp"
                 android:layout_height="54dp"
-                android:background="@drawable/bg_profile_pastel_icon_circle">
+                android:background="@drawable/bg_health_icon_circle">
 
                 <ImageView
                     android:layout_width="24dp"
@@ -263,10 +273,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:fontFamily="@font/be_vietnam_pro"
+                    android:fontFamily="@font/be_vietnam_pro_medium"
                     android:lineSpacingExtra="2dp"
                     android:text="Bạn chưa có hồ sơ sức khỏe. Hãy nhập chỉ số để nhận gợi ý tham khảo."
-                    android:textColor="@color/food_detail_secondary"
+                    android:textColor="@color/home_text_primary"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -297,6 +307,7 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/bg_food_detail_tip_card"
             android:padding="12dp"
+            android:fontFamily="@font/be_vietnam_pro_medium"
             android:textColor="@color/food_detail_title"
             android:textSize="12sp"
             android:visibility="gone" />
@@ -315,6 +326,7 @@
             android:paddingTop="8dp"
             android:paddingEnd="14dp"
             android:paddingBottom="8dp"
+            android:fontFamily="@font/be_vietnam_pro_medium"
             android:textColor="@color/food_detail_title"
             android:textSize="12sp" />
 
@@ -332,6 +344,7 @@
             android:paddingTop="8dp"
             android:paddingEnd="14dp"
             android:paddingBottom="8dp"
+            android:fontFamily="@font/be_vietnam_pro_medium"
             android:textColor="@color/food_detail_title"
             android:textSize="12sp" />
 
@@ -347,9 +360,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:fontFamily="@font/be_vietnam_pro"
+            android:fontFamily="@font/be_vietnam_pro_medium"
             android:text="Gợi ý sẽ xuất hiện sau khi bạn lưu hồ sơ sức khỏe."
-            android:textColor="@color/food_detail_secondary"
+            android:textColor="@color/home_text_primary"
             android:textSize="13sp" />
     </LinearLayout>
 </LinearLayout>

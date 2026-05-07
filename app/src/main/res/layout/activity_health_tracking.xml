@@ -56,7 +56,7 @@
                     android:fontFamily="@font/be_vietnam_pro_bold"
                     android:text="Theo dõi sức khỏe"
                     android:textColor="@color/food_detail_title"
-                    android:textSize="22sp" />
+                    android:textSize="23sp" />
 
                 <ImageView
                     android:layout_width="12dp"
@@ -77,9 +77,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:fontFamily="@font/be_vietnam_pro"
+                android:fontFamily="@font/be_vietnam_pro_medium"
                 android:text="Quản lý chỉ số và xem gợi ý món ăn phù hợp."
-                android:textColor="@color/food_detail_secondary"
+                android:textColor="@color/home_text_primary"
                 android:textSize="13sp" />
         </LinearLayout>
 

@@ -7,6 +7,7 @@ import com.coolcook.app.feature.search.util.SearchTextUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public enum FoodCatalogFilter {
     ALL(null),
@@ -76,7 +77,7 @@ public enum FoodCatalogFilter {
             return ALL;
         }
         try {
-            return FoodCatalogFilter.valueOf(value.trim().toUpperCase());
+            return FoodCatalogFilter.valueOf(value.trim().toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException ignored) {
             return ALL;
         }

@@ -1,32 +1,20 @@
 package com.coolcook.app.feature.home.ui;
 
-import android.animation.ArgbEvaluator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
-import android.animation.ValueAnimator;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.Glide;
 import com.coolcook.app.R;
 import com.coolcook.app.core.navigation.HomeBottomNavigation;
 import com.coolcook.app.feature.chatbot.ui.ChatBotActivity;
@@ -38,7 +26,6 @@ import com.coolcook.app.feature.search.data.FoodJsonRepository;
 import com.coolcook.app.feature.search.model.FoodCatalogFilter;
 import com.coolcook.app.feature.search.model.FoodItem;
 import com.coolcook.app.feature.search.ui.FoodDetailActivity;
-import com.coolcook.app.feature.search.ui.FoodCatalogActivity;
 import com.coolcook.app.feature.search.ui.FoodCatalogFragment;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -58,37 +45,15 @@ public class HomeActivity extends AppCompatActivity {
     private static final String JOURNAL_FRAGMENT_TAG = "HomeActivity.JournalFragment";
     public static final String EXTRA_OPEN_TAB = "com.coolcook.app.EXTRA_OPEN_TAB";
     public static final String EXTRA_TAB_PROFILE = "profile";
-    private static final long NAV_TINT_ANIMATION_DURATION = 200L;
-    private static final long NAV_ICON_ANIMATION_DURATION = 260L;
-    private static final long NAV_TAP_ANIMATION_DURATION = 190L;
-    private static final long NAV_TAP_ANIMATION_PRESS_DURATION = 70L;
-    private static final float NAV_ICON_ACTIVE_SCALE = 1.14f;
-    private static final float NAV_ICON_INACTIVE_SCALE = 1f;
-    private static final float NAV_ICON_BOUNCE_COMPRESS_SCALE = 0.91f;
-    private static final float NAV_ICON_BOUNCE_REBOUND_SCALE = 1.05f;
-    private static final float NAV_TAP_COMPRESS_FACTOR = 0.9f;
-    private static final float NAV_TAP_REBOUND_FACTOR = 1.04f;
-    private static final long NAV_CAMERA_OPEN_DELAY_MS = 120L;
     private static final long QUICK_ACTION_PRESS_DURATION = 80L;
     private static final long QUICK_ACTION_RELEASE_DURATION = 100L;
     private static final float QUICK_ACTION_PRESS_SCALE = 0.95f;
-    private static final long LOGOUT_NAVIGATION_FALLBACK_DELAY_MS = 1200L;
 
     private View homeScroll;
     private View homeSearchBar;
     private View searchContainer;
     private View journalContainer;
     private View profileScroll;
-    private AppCompatImageView navIconHome;
-    private AppCompatImageView navIconSearch;
-    private AppCompatImageView navIconHistory;
-    private AppCompatImageView navIconProfile;
-    private AppCompatImageView navIconCamera;
-    private TextView navLabelHome;
-    private TextView navLabelSearch;
-    private TextView navLabelHistory;
-    private TextView navLabelProfile;
-    private View navCameraButton;
     private View homeSearchCameraButton;
     private View homeFeatureActionButton;
     private View homeQuickScanCard;
@@ -130,16 +95,6 @@ public class HomeActivity extends AppCompatActivity {
         searchContainer = findViewById(R.id.searchContainer);
         journalContainer = findViewById(R.id.journalContainer);
         profileScroll = findViewById(R.id.profileScroll);
-        navIconHome = findViewById(R.id.homeNavIconHome);
-        navIconSearch = findViewById(R.id.homeNavIconSearch);
-        navIconHistory = findViewById(R.id.homeNavIconHistory);
-        navIconProfile = findViewById(R.id.homeNavIconProfile);
-        navIconCamera = findViewById(R.id.homeNavIconCamera);
-        navLabelHome = findViewById(R.id.homeNavLabelHome);
-        navLabelSearch = findViewById(R.id.homeNavLabelSearch);
-        navLabelHistory = findViewById(R.id.homeNavLabelHistory);
-        navLabelProfile = findViewById(R.id.homeNavLabelProfile);
-        navCameraButton = findViewById(R.id.homeNavCameraButton);
         homeSearchCameraButton = findViewById(R.id.homeSearchCameraButton);
         homeFeatureActionButton = findViewById(R.id.homeFeatureActionButton);
         homeQuickScanCard = findViewById(R.id.homeQuickScanCard);
@@ -216,16 +171,6 @@ public class HomeActivity extends AppCompatActivity {
         showTab(TAB_HOME);
     }
 
-    private void setupBottomNavigation() {
-        HomeBottomNavigation.bind(
-                this,
-                resolveCurrentBottomNavTab(),
-                () -> showTab(TAB_HOME),
-                () -> showTab(TAB_SEARCH),
-                () -> showTab(TAB_JOURNAL),
-                () -> showTab(TAB_PROFILE));
-    }
-
     private void openPendingInviteIfNeeded() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -291,33 +236,6 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
         entryView.setOnClickListener(v -> animateQuickActionPress(v, this::launchScanFoodScreen));
-    }
-
-    private void openScanFromNavigation(View tapTarget) {
-        if (tapTarget == null) {
-            launchScanFoodScreen();
-            return;
-        }
-        playTapFeedback(tapTarget);
-        tapTarget.postDelayed(this::launchScanFoodScreen, NAV_CAMERA_OPEN_DELAY_MS);
-    }
-
-    private void openJournalFromNavigation(View tapTarget) {
-        if (tapTarget != null) {
-            playTapFeedback(tapTarget);
-            tapTarget.postDelayed(this::launchJournalScreen, NAV_CAMERA_OPEN_DELAY_MS);
-            return;
-        }
-        launchJournalScreen();
-    }
-
-    private void openFoodCatalogFromNavigation(View tapTarget) {
-        if (tapTarget != null) {
-            playTapFeedback(tapTarget);
-            tapTarget.postDelayed(this::launchFoodCatalogScreen, NAV_CAMERA_OPEN_DELAY_MS);
-            return;
-        }
-        launchFoodCatalogScreen();
     }
 
     private void launchScanFoodScreen() {
@@ -483,192 +401,6 @@ public class HomeActivity extends AppCompatActivity {
             return HomeBottomNavigation.Tab.PROFILE;
         }
         return HomeBottomNavigation.Tab.HOME;
-    }
-
-    private void updateBottomNavigationState(int activeTab) {
-        int activeColor = ContextCompat.getColor(this, R.color.home_nav_active);
-        int inactiveColor = ContextCompat.getColor(this, R.color.home_nav_inactive);
-
-        applyNavItemState(navIconHome, navLabelHome, activeTab == TAB_HOME, activeColor, inactiveColor);
-        applyNavItemState(navIconSearch, navLabelSearch, false, activeColor, inactiveColor);
-        applyCameraIconState();
-        applyNavItemState(navIconHistory, navLabelHistory, false, activeColor, inactiveColor);
-        applyNavItemState(navIconProfile, navLabelProfile, activeTab == TAB_PROFILE, activeColor, inactiveColor);
-    }
-
-    private void applyNavItemState(
-            AppCompatImageView icon,
-            TextView label,
-            boolean active,
-            int activeColor,
-            int inactiveColor) {
-        if (icon == null) {
-            return;
-        }
-
-        icon.setSelected(active);
-        int targetColor = active ? activeColor : inactiveColor;
-        icon.setImageResource(resolveBottomNavIcon(icon.getId(), active));
-        icon.setImageTintList(null);
-        icon.animate().cancel();
-        icon.setScaleX(1f);
-        icon.setScaleY(1f);
-        icon.setTranslationY(0f);
-        animateLabelColor(label, targetColor);
-    }
-
-    private void animateLabelColor(TextView label, int targetColor) {
-        if (label == null) {
-            return;
-        }
-
-        int startColor = label.getCurrentTextColor();
-        if (startColor == targetColor) {
-            label.setTextColor(targetColor);
-            return;
-        }
-
-        ValueAnimator tintAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), startColor, targetColor);
-        tintAnimator.setDuration(NAV_TINT_ANIMATION_DURATION);
-        tintAnimator.setInterpolator(new DecelerateInterpolator());
-        tintAnimator.addUpdateListener(animation -> {
-            int color = (int) animation.getAnimatedValue();
-            label.setTextColor(color);
-        });
-        tintAnimator.start();
-    }
-
-    private void applyCameraIconState() {
-        if (navIconCamera != null) {
-            navIconCamera.setImageResource(R.drawable.ic_home_nav_camera_figma);
-            navIconCamera.setImageTintList(null);
-            navIconCamera.animate().cancel();
-            navIconCamera.animate()
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .translationY(0f)
-                    .setDuration(NAV_ICON_ANIMATION_DURATION)
-                    .setInterpolator(new DecelerateInterpolator())
-                    .start();
-        }
-    }
-
-    private int resolveBottomNavIcon(int iconId, boolean active) {
-        if (iconId == R.id.homeNavIconHome) {
-            return active ? R.drawable.ic_home_nav_home_active_figma
-                    : R.drawable.ic_home_nav_home_inactive_figma;
-        }
-        if (iconId == R.id.homeNavIconSearch) {
-            return active ? R.drawable.ic_home_nav_search_active_figma
-                    : R.drawable.ic_home_nav_search_inactive_figma;
-        }
-        if (iconId == R.id.homeNavIconHistory) {
-            return active ? R.drawable.ic_home_nav_history_active_figma
-                    : R.drawable.ic_home_nav_history_inactive_figma;
-        }
-        if (iconId == R.id.homeNavIconProfile) {
-            return active ? R.drawable.ic_home_nav_profile_active_figma
-                    : R.drawable.ic_home_nav_profile_inactive_figma;
-        }
-        return R.drawable.ic_home_nav_camera_figma;
-    }
-
-    private void animateIconTint(AppCompatImageView icon, int targetColor) {
-        ColorStateList tintList = icon.getImageTintList();
-        int startColor = tintList != null ? tintList.getDefaultColor() : targetColor;
-        if (startColor == targetColor) {
-            icon.setImageTintList(ColorStateList.valueOf(targetColor));
-            return;
-        }
-
-        ValueAnimator tintAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), startColor, targetColor);
-        tintAnimator.setDuration(NAV_TINT_ANIMATION_DURATION);
-        tintAnimator.setInterpolator(new DecelerateInterpolator());
-        tintAnimator.addUpdateListener(animation -> {
-            int color = (int) animation.getAnimatedValue();
-            icon.setImageTintList(ColorStateList.valueOf(color));
-        });
-        tintAnimator.start();
-    }
-
-    private void animateIconTransform(AppCompatImageView icon, boolean active) {
-        float targetScale = active ? NAV_ICON_ACTIVE_SCALE : NAV_ICON_INACTIVE_SCALE;
-        float targetLift = active ? -getResources().getDimension(R.dimen.home_bottom_nav_icon_lift) : 0f;
-        float startScaleX = icon.getScaleX();
-        float startScaleY = icon.getScaleY();
-        float startLift = icon.getTranslationY();
-
-        float compressScale = active
-                ? NAV_ICON_BOUNCE_COMPRESS_SCALE
-                : Math.min(startScaleX, startScaleY) * 1.01f;
-        float reboundScale = active
-                ? NAV_ICON_BOUNCE_REBOUND_SCALE
-                : 1.01f;
-        float compressLift = active ? targetLift * 0.4f : startLift * 0.25f;
-        float reboundLift = active
-                ? targetLift - getResources().getDimension(R.dimen.home_bottom_nav_bounce_lift_extra)
-                : 0f;
-
-        icon.animate().cancel();
-
-        ObjectAnimator pressAnimator = ObjectAnimator.ofPropertyValuesHolder(icon,
-                PropertyValuesHolder.ofFloat(View.SCALE_X, startScaleX, compressScale),
-                PropertyValuesHolder.ofFloat(View.SCALE_Y, startScaleY, compressScale),
-                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, startLift, compressLift));
-        pressAnimator.setDuration(NAV_TAP_ANIMATION_PRESS_DURATION);
-        pressAnimator.setInterpolator(new AccelerateInterpolator());
-
-        ObjectAnimator settleAnimator = ObjectAnimator.ofPropertyValuesHolder(icon,
-                PropertyValuesHolder.ofFloat(View.SCALE_X, compressScale, reboundScale, targetScale),
-                PropertyValuesHolder.ofFloat(View.SCALE_Y, compressScale, reboundScale, targetScale),
-                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, compressLift, reboundLift, targetLift));
-        settleAnimator.setDuration(NAV_ICON_ANIMATION_DURATION - NAV_TAP_ANIMATION_PRESS_DURATION);
-        settleAnimator.setInterpolator(active
-                ? new OvershootInterpolator(0.8f)
-                : new DecelerateInterpolator());
-
-        AnimatorSet iconAnimator = new AnimatorSet();
-        iconAnimator.playSequentially(pressAnimator, settleAnimator);
-        iconAnimator.start();
-    }
-
-    private void playTapFeedback(View target) {
-        if (target == null) {
-            return;
-        }
-
-        float startScaleX = target.getScaleX();
-        float startScaleY = target.getScaleY();
-        float startTranslationY = target.getTranslationY();
-        float compressedScaleX = startScaleX * NAV_TAP_COMPRESS_FACTOR;
-        float compressedScaleY = startScaleY * NAV_TAP_COMPRESS_FACTOR;
-        float reboundScaleX = startScaleX * NAV_TAP_REBOUND_FACTOR;
-        float reboundScaleY = startScaleY * NAV_TAP_REBOUND_FACTOR;
-        float pressedTranslationY = startTranslationY
-                + getResources().getDimension(R.dimen.home_bottom_nav_tap_press_offset);
-        float reboundTranslationY = startTranslationY
-                - getResources().getDimension(R.dimen.home_bottom_nav_tap_rebound_offset);
-
-        target.animate().cancel();
-
-        ObjectAnimator pressAnimator = ObjectAnimator.ofPropertyValuesHolder(target,
-                PropertyValuesHolder.ofFloat(View.SCALE_X, startScaleX, compressedScaleX),
-                PropertyValuesHolder.ofFloat(View.SCALE_Y, startScaleY, compressedScaleY),
-                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, startTranslationY, pressedTranslationY));
-        pressAnimator.setDuration(NAV_TAP_ANIMATION_PRESS_DURATION);
-        pressAnimator.setInterpolator(new AccelerateInterpolator());
-
-        ObjectAnimator reboundAnimator = ObjectAnimator.ofPropertyValuesHolder(target,
-                PropertyValuesHolder.ofFloat(View.SCALE_X, compressedScaleX, reboundScaleX, startScaleX),
-                PropertyValuesHolder.ofFloat(View.SCALE_Y, compressedScaleY, reboundScaleY, startScaleY),
-                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, pressedTranslationY, reboundTranslationY,
-                        startTranslationY));
-        reboundAnimator.setDuration(NAV_TAP_ANIMATION_DURATION);
-        reboundAnimator.setInterpolator(new OvershootInterpolator(0.95f));
-
-        AnimatorSet tapAnimator = new AnimatorSet();
-        tapAnimator.playSequentially(pressAnimator, reboundAnimator);
-        tapAnimator.start();
     }
 
     private void applyInsets() {
